@@ -14,19 +14,19 @@ const StoryScene = dynamic(() => import("../three/story-scene"), { ssr: false, l
 
 const CHAPTERS = [
   {
-    k: "01 · Nghe",
-    title: "Ba giọng nói, *một mối thù.*",
-    body: "Captain Gambit gào thét vì mỗi pha thí quân. GS. Zugzwang lạnh lùng chấm điểm. MC Blunder cà khịa không chừa ai. Ván cờ vô danh nhất cũng có người tường thuật như chung kết.",
+    k: "01 · Listen",
+    title: "Three voices, *one feud.*",
+    body: "Captain Gambit screams at every sacrifice. Prof. Zugzwang scores each move without mercy. MC Blunder roasts everyone. Even the most anonymous game gets called like a world final.",
   },
   {
-    k: "02 · Can thiệp",
-    title: "Một lá bài, *đổi chiều cả ván.*",
-    body: "Khán giả ném Chaos Card ngay giữa trận: phủ sương mù, hoán đổi quân, ép nước ngẫu nhiên. Kỳ thủ phải xoay xở, host AI phát cuồng, chat bùng nổ.",
+    k: "02 · Intervene",
+    title: "One card *flips the whole game.*",
+    body: "The audience throws Chaos Cards mid-match: fog over the board, swapped pieces, forced random moves. Players scramble, the hosts lose it, the chat explodes.",
   },
   {
-    k: "03 · Lan toả",
-    title: "Khoảnh khắc hay nhất *tự thành clip.*",
-    body: "AI nhận ra lúc cao trào, cắt thành video dọc kèm phụ đề, sẵn sàng cho TikTok và Reels. Mỗi clip kéo người xem mới quay lại sân khấu.",
+    k: "03 · Spread",
+    title: "The best moments *clip themselves.*",
+    body: "The AI spots the peak, cuts a captioned vertical video and ships it to TikTok and Reels. Every clip pulls new viewers back to the stage.",
   },
 ];
 
@@ -65,7 +65,7 @@ export function Story() {
   }, []);
 
   return (
-    <section ref={ref} className="relative h-[420vh]" aria-label="ChessCast hoạt động thế nào">
+    <section ref={ref} className="relative h-[420vh]" aria-label="How the show works">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="absolute inset-0">
           <StoryScene active={active} onLine={setLine} />
@@ -74,7 +74,7 @@ export function Story() {
 
         <div className="shell relative flex h-full flex-col justify-end pb-14 md:justify-center md:pb-0">
           <div className="max-w-md">
-            <Kicker>Cách show vận hành</Kicker>
+            <Kicker>How the show works</Kicker>
             <div className="mt-6 flex gap-2">
               {CHAPTERS.map((c, i) => (
                 <div key={c.k} className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
@@ -102,7 +102,7 @@ export function Story() {
           </div>
         </div>
 
-        {/* Lớp phủ theo chương */}
+        {/* Chapter overlays */}
         <AnimatePresence>
           {ch === 0 && line && (
             <motion.div
@@ -118,7 +118,7 @@ export function Story() {
                   initial={{ opacity: 0, y: 16, scale: 0.96, filter: "blur(6px)" }}
                   animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
                   exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
-                  transition={{ type: "spring", stiffness: 300, damping: 28 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 28, filter: { type: "tween", duration: 0.45, ease: "easeOut" } }}
                   className="glass-strong rounded-3xl p-4"
                 >
                   <div className="flex items-center gap-3">
@@ -144,8 +144,8 @@ export function Story() {
                   <CloudFog size={22} />
                 </span>
                 <div className="flex-1">
-                  <div className="text-[14px] font-medium">Sương Mù Chiến Trường</div>
-                  <div className="font-mono text-[11px] text-fg-3">ném bởi bạn · 6 nước</div>
+                  <div className="text-[14px] font-medium">Fog of War</div>
+                  <div className="font-mono text-[11px] text-fg-3">thrown by you · 6 moves</div>
                 </div>
                 <span className="rounded-full bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] text-rose">−50</span>
               </div>
@@ -165,12 +165,12 @@ export function Story() {
                   <span className="flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 font-mono text-[11px] backdrop-blur">
                     <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-rose" /> REC 0:15
                   </span>
-                  <span className="rounded-full bg-black/50 px-2.5 py-1 font-mono text-[11px] backdrop-blur">9:16 · tự động</span>
+                  <span className="rounded-full bg-black/50 px-2.5 py-1 font-mono text-[11px] backdrop-blur">9:16 · auto</span>
                 </div>
                 <div className="absolute bottom-24 left-4 right-14">
                   <div className="text-[13px] font-semibold">@chesscast</div>
-                  <p className="mt-1 text-[13px] leading-snug">Chiếu hết bằng Xe sau khi thí cả Hậu 😱 #cờvua #chesscast</p>
-                  <span className="mt-2 inline-block rounded-lg bg-white px-2 py-1 text-[13px] font-semibold text-void">“CHIẾU HẾT! TÔI KHÔNG THỞ ĐƯỢC NỮA!”</span>
+                  <p className="mt-1 text-[13px] leading-snug">Mate with the rook after sacrificing the queen 😱 #chess #chesscast</p>
+                  <span className="mt-2 inline-block rounded-lg bg-white px-2 py-1 text-[13px] font-semibold text-void">“CHECKMATE! I CAN'T BREATHE!”</span>
                 </div>
                 <div className="absolute bottom-24 right-3 flex flex-col items-center gap-4">
                   {[Heart, MessageCircle, Send].map((I, i) => (

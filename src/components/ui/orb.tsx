@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { HOSTS, type HostId } from "@/lib/hosts";
 import { cn } from "@/lib/utils";
 
-/** Quả cầu giọng nói của host AI — xoay gradient, “thở” khi đang nói. */
+/** AI host voice orb — a rotating gradient that “breathes” while the host is speaking. */
 export function HostOrb({ id, size = 48, talking = false, className }: { id: HostId; size?: number; talking?: boolean; className?: string }) {
   const [a, b, c] = HOSTS[id].orb;
   return (

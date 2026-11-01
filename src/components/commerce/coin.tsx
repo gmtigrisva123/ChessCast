@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Chaos Coin — đồng xu ánh xà cừ. */
+/** Chaos Coin — a mother-of-pearl coin. */
 export function Coin({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={cn("h-4 w-4", className)} aria-hidden>

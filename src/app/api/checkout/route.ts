@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
-import { getStripe, resolveItem, siteUrl, type CheckoutRequest } from "@/lib/payments";
+import { CURRENCY, getStripe, resolveItem, siteUrl, type CheckoutRequest } from "@/lib/payments";
 
 export async function POST(req: Request) {
   let body: CheckoutRequest;
   try {
     body = (await req.json()) as CheckoutRequest;
   } catch {
-    return NextResponse.json({ error: "Yêu cầu không hợp lệ" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const item = resolveItem(body);
-  if (!item) return NextResponse.json({ error: "Không tìm thấy sản phẩm" }, { status: 404 });
+  if (!item) return NextResponse.json({ error: "Product not found" }, { status: 404 });
 
   const stripe = getStripe();
   if (!stripe) {
-    // Chưa cấu hình cổng thanh toán → chế độ demo
+    // No payment provider configured → demo mode
     return NextResponse.json({ demo: true, item });
   }
 
@@ -21,12 +21,12 @@ export async function POST(req: Request) {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: item.mode,
-      locale: "vi",
+      locale: "auto",
       line_items: [
         {
           quantity: 1,
           price_data: {
-            currency: "vnd",
+            currency: CURRENCY,
             unit_amount: item.amount,
             product_data: { name: item.label, description: item.description },
             ...(item.mode === "subscription"
@@ -43,6 +43,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (e) {
     console.error("[checkout] stripe error", e);
-    return NextResponse.json({ error: "Không tạo được phiên thanh toán" }, { status: 502 });
+    return NextResponse.json({ error: "Could not create a checkout session" }, { status: 502 });
   }
 }

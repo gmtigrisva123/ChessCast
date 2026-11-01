@@ -1,8 +1,11 @@
 /**
- * Danh mục sản phẩm của ChessCast — nguồn duy nhất cho giá, gói và vật phẩm.
- * Mọi nguồn thu đều là cơ chế giải trí ảo: coin không có giá trị quy đổi
- * thành tiền và không dùng để đặt cược kết quả trận đấu.
+ * ChessCast product catalog — the single source of truth for prices, plans and items.
+ * Every revenue stream is a virtual entertainment mechanic: coins have no cash value
+ * and can never be used to bet on the outcome of a game.
  */
+
+/** ISO currency used for checkout (Stripe expects lowercase). Prices below are in minor units (cents). */
+export const CURRENCY = "usd" as const;
 
 export type ChaosCardId = "fog" | "swap" | "random" | "freeze" | "spotlight" | "earthquake";
 
@@ -12,93 +15,86 @@ export type ChaosCard = {
   short: string;
   description: string;
   cost: number;
-  rarity: "Thường" | "Hiếm" | "Sử thi" | "Huyền thoại";
+  rarity: "Common" | "Rare" | "Epic" | "Legendary";
   accent: string;
-  /** Cặp màu gradient cho thẻ */
+  /** Gradient pair used to tint the card */
   tint: [string, string];
   icon: "fog" | "dice" | "swap" | "freeze" | "spotlight" | "quake";
-  glyph: string;
   durationLabel: string;
 };
 
 export const CHAOS_CARDS: ChaosCard[] = [
   {
     id: "fog",
-    name: "Sương Mù Chiến Trường",
-    short: "Fog of War",
-    description: "Phủ sương 3 hàng giữa bàn cờ trong 6 nước. Cả hai kỳ thủ phải đánh trong mù mịt.",
+    name: "Fog of War",
+    short: "Blind spot",
+    description: "Three middle ranks vanish under fog for six moves. Both players fight half blind.",
     cost: 50,
-    rarity: "Thường",
+    rarity: "Common",
     accent: "#7cc4ff",
     tint: ["#4d8dff", "#3ee6e0"],
     icon: "fog",
-    glyph: "☁",
-    durationLabel: "6 nước",
+    durationLabel: "6 moves",
   },
   {
     id: "random",
-    name: "Nước Đi Ngẫu Nhiên",
-    short: "Random Move",
-    description: "Nước kế tiếp của bên đang đi bị chọn ngẫu nhiên trong các nước hợp lệ. Định mệnh quyết định.",
+    name: "Random Move",
+    short: "Fate decides",
+    description: "The next move of the side to play is picked at random from every legal move. Pray.",
     cost: 80,
-    rarity: "Hiếm",
+    rarity: "Rare",
     accent: "#b5a8ff",
     tint: ["#8b7cff", "#4d8dff"],
     icon: "dice",
-    glyph: "⚄",
-    durationLabel: "1 nước",
+    durationLabel: "1 move",
   },
   {
     id: "swap",
-    name: "Hoán Đổi Quân",
-    short: "Piece Swap",
-    description: "Đổi chỗ một Mã và một Tượng của bên đang đi. Thế trận lộn tùng phèo trong tích tắc.",
+    name: "Piece Swap",
+    short: "Shuffle",
+    description: "A knight and a bishop of the side to play trade places. Every plan is suddenly wrong.",
     cost: 120,
-    rarity: "Sử thi",
+    rarity: "Epic",
     accent: "#ff8fb4",
     tint: ["#ff6b9a", "#8b7cff"],
     icon: "swap",
-    glyph: "⇄",
-    durationLabel: "Tức thì",
+    durationLabel: "Instant",
   },
   {
     id: "freeze",
-    name: "Đóng Băng Đồng Hồ",
-    short: "Time Freeze",
-    description: "Trừ 15 giây trên đồng hồ của bên đang đi. Áp lực thời gian lên tột đỉnh.",
+    name: "Time Freeze",
+    short: "Clock drain",
+    description: "Steals 15 seconds from the clock of the side to play. Time pressure, maximum.",
     cost: 60,
-    rarity: "Thường",
+    rarity: "Common",
     accent: "#9ff3ff",
     tint: ["#3ee6e0", "#c7fff7"],
     icon: "freeze",
-    glyph: "❄",
-    durationLabel: "-15 giây",
+    durationLabel: "−15 sec",
   },
   {
     id: "spotlight",
-    name: "Đèn Sân Khấu",
-    short: "Spotlight",
-    description: "Ép cả dàn host AI dồn toàn lực bình luận nước tiếp theo. Hype meter nhân đôi.",
+    name: "Spotlight",
+    short: "All eyes",
+    description: "Forces all three AI hosts to go all-in on the next move. The hype meter doubles.",
     cost: 30,
-    rarity: "Thường",
+    rarity: "Common",
     accent: "#ffd28a",
     tint: ["#ffc56b", "#ff8a4c"],
     icon: "spotlight",
-    glyph: "✦",
-    durationLabel: "1 nước",
+    durationLabel: "1 move",
   },
   {
     id: "earthquake",
-    name: "Động Đất",
-    short: "Earthquake",
-    description: "Rung chuyển bàn cờ — một tốt ngẫu nhiên của bên đang đi bị đẩy lên một ô nếu còn trống.",
+    name: "Earthquake",
+    short: "Board shake",
+    description: "The board quakes — a random pawn of the side to play is shoved one square forward.",
     cost: 200,
-    rarity: "Huyền thoại",
+    rarity: "Legendary",
     accent: "#ffa877",
     tint: ["#ff8a4c", "#ff6b9a"],
     icon: "quake",
-    glyph: "≋",
-    durationLabel: "Tức thì",
+    durationLabel: "Instant",
   },
 ];
 
@@ -110,15 +106,16 @@ export type CoinPack = {
   name: string;
   coins: number;
   bonus: number;
-  price: number; // VND
+  /** Price in cents */
+  price: number;
   tag?: string;
 };
 
 export const COIN_PACKS: CoinPack[] = [
-  { id: "starter", name: "Khởi Động", coins: 120, bonus: 0, price: 25_000 },
-  { id: "fan", name: "Fan Cứng", coins: 600, bonus: 50, price: 119_000, tag: "Phổ biến" },
-  { id: "chaos", name: "Hỗn Loạn", coins: 1_250, bonus: 200, price: 239_000, tag: "Lời nhất" },
-  { id: "overlord", name: "Chúa Tể", coins: 2_600, bonus: 600, price: 479_000 },
+  { id: "starter", name: "Opening", coins: 120, bonus: 0, price: 99 },
+  { id: "fan", name: "Middlegame", coins: 600, bonus: 50, price: 499, tag: "Popular" },
+  { id: "chaos", name: "Chaos", coins: 1_250, bonus: 200, price: 999, tag: "Best value" },
+  { id: "overlord", name: "Overlord", coins: 2_600, bonus: 600, price: 1_999 },
 ];
 
 export type PlanId = "free" | "pro" | "lord";
@@ -126,8 +123,10 @@ export type Plan = {
   id: PlanId;
   name: string;
   tagline: string;
-  monthly: number; // VND
-  yearly: number; // VND / năm
+  /** Monthly price in cents */
+  monthly: number;
+  /** Yearly price in cents */
+  yearly: number;
   monthlyCoins: number;
   features: string[];
   highlight?: boolean;
@@ -136,50 +135,50 @@ export type Plan = {
 export const PLANS: Plan[] = [
   {
     id: "free",
-    name: "Khán Giả",
-    tagline: "Xem mọi trận, chơi thử hỗn loạn.",
+    name: "Spectator",
+    tagline: "Watch everything. Taste the chaos.",
     monthly: 0,
     yearly: 0,
     monthlyCoins: 0,
     features: [
-      "Xem không giới hạn trận live",
-      "1 host AI bình luận cơ bản",
-      "3 clip cao trào mỗi ngày",
-      "Mua Chaos Cards bằng coin",
-      "Tham gia bồi thẩm đoàn Chess Court",
+      "Unlimited live matches",
+      "One core AI host",
+      "3 highlight clips per day",
+      "Buy Chaos Cards with coins",
+      "Sit on the Chess Court jury",
     ],
   },
   {
     id: "pro",
     name: "Fan Pro",
-    tagline: "Giọng bình luận cao cấp, clip vô hạn.",
-    monthly: 79_000,
-    yearly: 759_000,
+    tagline: "Premium voices, endless clips.",
+    monthly: 399,
+    yearly: 3_799,
     monthlyCoins: 200,
     highlight: true,
     features: [
-      "Mọi quyền lợi gói Khán Giả",
-      "Mở khóa toàn bộ giọng host AI cao cấp",
-      "Clip cao trào không giới hạn, xuất 1080p",
-      "Tặng 200 Chaos Coins mỗi tháng",
-      "Giảm 10% mọi Chaos Card",
-      "Huy hiệu Fan Pro trong chat",
+      "Everything in Spectator",
+      "Every premium AI host voice",
+      "Unlimited clips, 1080p export",
+      "200 Chaos Coins every month",
+      "10% off every Chaos Card",
+      "Fan Pro badge in chat",
     ],
   },
   {
     id: "lord",
     name: "Chaos Lord",
-    tagline: "Cho người muốn điều khiển cả show.",
-    monthly: 199_000,
-    yearly: 1_899_000,
+    tagline: "For people who want to run the show.",
+    monthly: 899,
+    yearly: 8_599,
     monthlyCoins: 600,
     features: [
-      "Mọi quyền lợi gói Fan Pro",
-      "Tặng 600 Chaos Coins mỗi tháng",
-      "Đặt lời “cà khịa” riêng cho host AI",
-      "Ưu tiên ghế bồi thẩm Chess Court",
-      "Vào sớm Chess Royale mùa mới",
-      "Không quảng cáo, khung avatar Huyền thoại",
+      "Everything in Fan Pro",
+      "600 Chaos Coins every month",
+      "Write custom roasts for the hosts",
+      "Priority Chess Court jury seat",
+      "Early access to Chess Royale seasons",
+      "No ads, legendary avatar frame",
     ],
   },
 ];
@@ -197,52 +196,32 @@ export type B2BPlan = {
 export const B2B_PLANS: B2BPlan[] = [
   {
     id: "sponsor",
-    name: "Tài Trợ Giải Đấu",
-    price: "Từ $2,500",
-    unit: "/ giải",
-    description: "Thương hiệu của bạn đứng tên một giải nghiệp dư — có host AI riêng mang giọng thương hiệu.",
-    features: [
-      "Host AI tùy biến theo brand voice",
-      "Logo trên bàn cờ 3D & overlay",
-      "Chaos Card mang thương hiệu",
-      "Báo cáo lượt xem & clip viral",
-    ],
-    cta: "Đặt lịch tư vấn",
+    name: "Tournament sponsorship",
+    price: "From $2,500",
+    unit: "/ event",
+    description: "Put your brand on an amateur tournament — with an AI host that speaks in your brand's voice.",
+    features: ["Custom AI host in your brand voice", "Logo on the 3D board and overlays", "Branded Chaos Cards", "Reach and viral-clip reporting"],
+    cta: "Book a call",
   },
   {
     id: "api",
     name: "License / API",
-    price: "Từ $499",
-    unit: "/ tháng",
-    description: "Gắn lớp giải trí của ChessCast vào nền tảng cờ vua của bạn chỉ với vài dòng code.",
-    features: [
-      "API bình luận AI thời gian thực",
-      "Chaos Cards engine + webhook",
-      "Bộ cắt clip cao trào tự động",
-      "SLA 99.9%, hỗ trợ kỹ thuật riêng",
-    ],
-    cta: "Lấy API key dùng thử",
+    price: "From $499",
+    unit: "/ month",
+    description: "Plug the ChessCast entertainment layer into your chess platform with a few lines of code.",
+    features: ["Real-time AI commentary API", "Chaos Cards engine + webhooks", "Automatic highlight clipping", "99.9% SLA, dedicated support"],
+    cta: "Get a trial API key",
   },
   {
     id: "enterprise",
     name: "Enterprise",
-    price: "Tùy chỉnh",
+    price: "Custom",
     unit: "",
-    description: "Liên đoàn, giải đấu esports, nhà đài — triển khai trọn gói và chia sẻ doanh thu.",
-    features: [
-      "White-label toàn bộ trải nghiệm",
-      "Chia sẻ doanh thu Chaos Cards",
-      "Triển khai on-prem / riêng vùng",
-      "Đội ngũ sản xuất nội dung đi kèm",
-    ],
-    cta: "Liên hệ đội ngũ",
+    description: "Federations, esports leagues and broadcasters — full white-label rollout with revenue share.",
+    features: ["Full white-label experience", "Chaos Cards revenue share", "Dedicated or regional deployment", "Embedded content production team"],
+    cta: "Talk to the team",
   },
 ];
-
-export const PRODUCT_SKUS = {
-  coin: COIN_PACKS,
-  plan: PLANS,
-};
 
 export function getCoinPack(id: string) {
   return COIN_PACKS.find((p) => p.id === id);

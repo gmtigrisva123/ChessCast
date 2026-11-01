@@ -1,44 +1,55 @@
 # ChessCast
 
-> Mọi ván cờ đều xứng đáng một sân khấu.
+> Every game deserves a stage.
 
-Website hoàn chỉnh cho ChessCast: trang chủ 3D, sản phẩm Arena chạy được thật, các chế độ Chess Royale / Chess Court, bảng giá và luồng thanh toán, trang B2B và trang nhà đầu tư.
+The complete website for ChessCast — AI-hosted live chess entertainment. It includes a real-time 3D homepage, a working **Arena** product, the Chess Royale and Chess Court modes, pricing with a checkout flow, a partners/API page and an investors page. The whole interface is in English and prices are in USD.
 
-**Ngôn ngữ thiết kế “Aurora Noir”:** nền đen sâu với cực quang tím–xanh, kính mờ, quân cờ ngọc trai ánh xà cừ & obsidian, chữ Inter Tight kết hợp Newsreader Italic, nhãn JetBrains Mono.
+**Design language — “Aurora Noir v3”:** a deep void-black stage lit by violet–cyan aurora, real refracting **Liquid Glass** UI, crystal and pearl chess pieces, GPU particle sculptures and cinematic post-processing. Type is Mona Sans (variable weight *and* width) with Instrument Serif italics and Geist Mono labels.
 
-## Ảnh giao diện
+## Screenshots
 
-| Hero — Vua kính khúc xạ | Kể chuyện khi cuộn — lá bài kính + sương mù |
+| Hero — refracting glass king, depth of field | Manifesto — 16,000-particle knight |
 | --- | --- |
-| ![Hero](docs/screenshots/01-home-hero.jpg) | ![Story](docs/screenshots/04-home-story-chaos.jpg) |
-| **Arena live** | **Dock Chaos Cards phóng to kiểu macOS** |
-| ![Arena](docs/screenshots/10-live-arena.jpg) | ![Dock](docs/screenshots/12-live-dock.jpg) |
+| ![Hero](docs/screenshots/01-home-hero.jpg) | ![Manifesto](docs/screenshots/02-home-manifesto-knight.jpg) |
+| **Scroll story — crystal board, Fog of War** | **Arena — live studio** |
+| ![Story](docs/screenshots/05-home-story-chaos.jpg) | ![Arena](docs/screenshots/13-live-arena.jpg) |
 
-Toàn bộ ảnh (desktop + mobile) nằm trong [`docs/screenshots/`](docs/screenshots).
+Every screenshot (desktop and mobile) is in [`docs/screenshots/`](docs/screenshots).
 
-## Tính năng
+## Graphics
 
-| Trang | Nội dung |
+- **Liquid Glass** — real backdrop refraction in Chromium: every glass element (navbar, Arena HUD, hero cards, Chaos dock) builds its own SVG displacement map from its exact size and corner radius, with RGB dispersion along the rim. Other browsers get a frosted-glass fallback.
+- **Hero** — a king in `MeshTransmissionMaterial` (refraction, chromatic aberration, iridescence) on a glowing halo, orbiting pearl and crystal pieces, floating glass shards, bloom + depth of field + vignette, mouse parallax and scroll choreography.
+- **Ambient WebGL** — a full-screen GLSL aurora (simplex-noise flow fields) behind the whole site.
+- **Manifesto** — 16,000 GPU particles sampled from the piece meshes (`MeshSurfaceSampler`) morph nebula → king → knight → queen as you scroll, scattering through a simplex-noise flow field between shapes.
+- **Scroll story** — a pinned three-act 3D scene: host orbs, a glass Chaos Card dropping onto a crystal board with Fog of War, a mirror-reflective floor.
+- **Voices** — a shader-driven voice orb per AI host. **Final CTA** — a hyperspace warp shader.
+- **Type & motion** — variable-font proximity headlines, text scramble, scroll-velocity marquees, holographic foil cards, magnetic buttons, Lenis smooth scrolling, blur-to-sharp transitions.
+- **Performance** — `PerformanceMonitor` drops resolution and heavy effects on slow GPUs; pages pause rendering when off-screen. Append `?hq` to force the high-quality path or `?lq` to force the light path.
+
+## Pages
+
+| Route | What's there |
 | --- | --- |
-| `/` | Hero 3D: quân Vua bằng kính khúc xạ trên vầng hào quang, vòng quân ngọc trai/obsidian quay quanh, tấm kính trôi nổi, nền cực quang chuyển động, thẻ kính bay theo chuột. Dải trận đang phát (bàn cờ mini chạy thật). Phần kể chuyện cuộn ghim 3 chương trên cảnh 3D thứ hai: quả cầu host → lá bài kính rơi + sương mù → khung clip 9:16. Đoạn tuyên ngôn sáng dần theo cuộn, bento tính năng có demo sống, quạt bài Chaos, phòng thu giọng host, bảng giá, lời mời cuối. |
-| `/live` | **Arena** dạng studio: bàn cờ 3D xoay được, 2 bot đánh thật (engine minimax), 3 host AI bình luận theo cá tính (có giọng đọc), dock 6 Chaos Cards phóng to khi rê chuột và tác động thật lên ván cờ, vòng đo hype, tip để host “cà khịa”, chat, tự động cắt clip cao trào. Chế độ **Tự cầm quân** để người dùng chơi với bot. |
-| `/royale` | Chess Royale: đếm ngược mùa giải, giữ chỗ, đấu trường tròn 100 người co dần vào tâm qua từng vòng loại. |
-| `/court` | Chess Court: danh sách vụ án, phiên toà dạng hội thoại giữa AI công tố và AI bào chữa, đồng hồ phán quyết, bồi thẩm đoàn bỏ phiếu (thưởng coin). |
-| `/pricing` | Gói thành viên (Khán Giả / Fan Pro / Chaos Lord, tháng–năm), gói Chaos Coins, bảng giá Chaos Cards, FAQ. |
-| `/partners` | B2B: tài trợ giải đấu, License/API (code mẫu, webhook), form liên hệ. |
-| `/investors` | Thị trường TAM/SAM/SOM, 5 nguồn thu, lộ trình, phân bổ vốn, đội ngũ, form nhận pitch deck. |
+| `/` | Hero, manifesto particle morph, pinned 3D story, live games rail (real mini boards), feature bento with live demos, Chaos Card deck, host voice studio, pricing, final call to action. |
+| `/live` | **Arena** studio: orbitable 3D board (pearl or crystal piece set), two bots playing real chess (minimax engine), three AI hosts with distinct personalities and speech, a Liquid Glass dock of six Chaos Cards that really change the game, hype meter, tips for roasts, chat, automatic highlight clips, and **Play the bot** mode. |
+| `/royale` | Chess Royale: season countdown, reserve a seat, a 100-player circular arena that shrinks round by round. |
+| `/court` | Chess Court: case files, a trial dialogue between an AI prosecutor and defender, verdict timer, jury voting with coin rewards. |
+| `/pricing` | Memberships (Spectator / Fan Pro / Chaos Lord, monthly–yearly), Chaos Coin packs, per-card prices, FAQ. |
+| `/partners` | B2B: tournament sponsorship, License / API (code sample, live webhook stream), contact form. |
+| `/investors` | Seed round card, thesis, TAM/SAM/SOM rings, five revenue streams, roadmap, use-of-funds donut, team, pitch-deck request form. |
 
-Kèm theo: bảng lệnh ⌘K, thanh điều hướng nổi dạng viên thuốc, ví coin nổi, modal thanh toán, toast, màn chào, chuyển trang mờ–rõ, con trỏ tuỳ biến, cuộn mượt Lenis, nút từ tính, card sáng theo chuột, viền gradient chạy.
+Also: ⌘K command menu, floating Liquid Glass navbar, coin wallet drawer, checkout modal, toasts, intro preloader, custom lens cursor.
 
-## Công nghệ
+## Stack
 
 - **Next.js 16** (App Router, Turbopack) · **React 19** · **TypeScript**
-- **Three.js + React Three Fiber + Drei + Postprocessing** (bloom, vignette, môi trường ánh sáng tự dựng, không tải HDR ngoài)
-- **Motion** (Framer Motion) cho animation/transition · **Lenis** cho cuộn mượt
-- **Tailwind CSS v4** · **Zustand** (ví, trạng thái UI) · **chess.js** (luật cờ)
-- **Stripe Checkout** (thanh toán) · **Claude API** (bình luận AI thật, tuỳ chọn) · **Resend** (email form, tuỳ chọn)
+- **Three.js + React Three Fiber + Drei + Postprocessing**, custom GLSL shaders (lighting is built in code, no external HDR downloads)
+- **Motion** for animation and transitions · **Lenis** for smooth scrolling
+- **Tailwind CSS v4** · **Zustand** (wallet, UI state) · **chess.js** (rules)
+- **Stripe Checkout** (payments, USD) · **Claude API** (optional live AI commentary) · **Resend** (optional form email)
 
-## Chạy trên máy
+## Run locally
 
 ```bash
 npm install
@@ -48,49 +59,50 @@ npm install
 npm run dev
 ```
 
-Mở http://localhost:3000. Không cần biến môi trường nào để chạy: thanh toán tự chuyển sang **chế độ demo**, bình luận dùng bộ câu dựng sẵn theo cá tính từng host.
+Open http://localhost:3000. No environment variables are needed: checkout falls back to **demo mode** and commentary uses the built-in, personality-driven lines.
 
-Build production:
+Production build:
 
 ```bash
 npm run build && npm start
 ```
 
-## Biến môi trường
+## Environment variables
 
-Sao chép `.env.example` thành `.env.local` rồi điền:
+Copy `.env.example` to `.env.local` and fill in:
 
-| Biến | Bắt buộc? | Dùng cho |
+| Variable | Required? | Used for |
 | --- | --- | --- |
-| `STRIPE_SECRET_KEY` | Để nhận tiền thật | Tạo phiên Stripe Checkout (VND). Trống = chế độ demo. |
-| `STRIPE_WEBHOOK_SECRET` | Khi bật webhook | Xác thực `POST /api/stripe/webhook`. |
-| `NEXT_PUBLIC_SITE_URL` | Khi deploy | URL gốc để Stripe chuyển hướng về. |
-| `ANTHROPIC_API_KEY` | Tuỳ chọn | Bình luận AI thật trong Arena (`/api/commentary`). |
-| `RESEND_API_KEY`, `CONTACT_TO_EMAIL` | Tuỳ chọn | Gửi email từ form liên hệ / đăng ký. Trống = chỉ ghi log. |
+| `STRIPE_SECRET_KEY` | To take real payments | Creates Stripe Checkout sessions (USD). Empty = demo mode. |
+| `STRIPE_WEBHOOK_SECRET` | When the webhook is enabled | Verifies `POST /api/stripe/webhook`. |
+| `NEXT_PUBLIC_SITE_URL` | When deployed | Base URL Stripe redirects back to. |
+| `ANTHROPIC_API_KEY` | Optional | Live AI commentary in the Arena (`/api/commentary`). |
+| `RESEND_API_KEY`, `CONTACT_TO_EMAIL` | Optional | Sends contact / waitlist emails. Empty = log only. |
 
-## Trước khi ra mắt chính thức
+## Before going live
 
-- **Cổng thanh toán**: điền khóa Stripe (hoặc thay bằng cổng nội địa), cấu hình webhook tới `/api/stripe/webhook`.
-- **Cơ sở dữ liệu & tài khoản**: ví coin hiện lưu trên trình duyệt (`localStorage`) để demo trọn luồng. Bản production cần đăng nhập + database để cộng coin từ webhook phía server (chỗ cần nối đã đánh dấu `TODO(production)`).
-- **Nội dung cần xác nhận**: số liệu thị trường (đang ghi rõ là ước tính), tên/thông tin đội ngũ, quy mô vòng gọi vốn, email liên hệ trong `src/lib/site.ts`, giá trong `src/lib/catalog.ts`.
+- **Payments**: add your Stripe keys and point a webhook at `/api/stripe/webhook`.
+- **Accounts & database**: the coin wallet currently lives in the browser (`localStorage`) so the whole flow can be demoed. Production needs sign-in plus a database so the webhook credits coins server-side (the hook-up points are marked `TODO(production)`).
+- **Content to confirm**: market figures (labelled as estimates), team details, round size, contact emails in `src/lib/site.ts`, prices in `src/lib/catalog.ts`.
 
-## Cấu trúc
+## Structure
 
 ```
 src/
-  app/                 # các route + API (checkout, webhook, commentary, contact, waitlist)
+  app/                 # routes + API (checkout, webhook, commentary, contact, waitlist)
   components/
-    three/             # bàn cờ 3D, quân cờ procedural, ánh sáng, hero scene
-    arena/             # logic + UI trang Live
-    home/              # các section trang chủ
-    commerce/          # ví, thanh toán, gói giá
+    gl/                # GLSL: ambient aurora, particle morph, voice orb, warp
+    three/             # 3D board, procedural pieces, lighting, hero & story scenes
+    arena/             # Live page logic + UI
+    home/              # homepage sections
+    commerce/          # wallet, checkout, plans
     royale/ court/ partners/ investors/ pricing/
-    ui/                # nút từ tính, tilt, holo card, reveal, cursor…
+    ui/                # Liquid Glass, proximity text, scramble, marquee, cursor, cards…
   lib/
-    catalog.ts         # nguồn duy nhất cho giá, gói, Chaos Cards
-    hosts.ts           # 3 host AI + bộ sinh bình luận
-    chess/             # engine bot, theo dõi quân, hiệu ứng Chaos
-    store.ts           # ví & UI (Zustand)
+    catalog.ts         # single source of truth for prices, plans, Chaos Cards
+    hosts.ts           # the three AI hosts + commentary generator
+    chess/             # bot engine, piece tracking, Chaos effects
+    store.ts           # wallet & UI (Zustand)
 ```
 
-Mọi nguồn thu là cơ chế giải trí ảo — coin không quy đổi thành tiền và không dùng để cá cược kết quả trận đấu.
+Every revenue stream is virtual entertainment — coins can't be exchanged for money and are never used to bet on the outcome of a game.

@@ -3,8 +3,9 @@
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { Kicker } from "./section";
-import { Words } from "./reveal";
+import { ProximityText } from "./proximity-text";
 import { Aurora } from "./aurora";
+import { Scramble } from "./scramble";
 
 export function PageHero({
   kicker,
@@ -23,11 +24,18 @@ export function PageHero({
     <section className="relative overflow-hidden pb-14 pt-36 md:pb-20 md:pt-44">
       <Aurora tone={tone} />
       <div className={`shell relative grid items-center gap-12 ${aside ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
-        <div className={aside ? "" : "mx-auto max-w-4xl text-center"}>
+        <div className={aside ? "" : "mx-auto max-w-5xl text-center"}>
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}>
-            <Kicker tone={tone}>{kicker}</Kicker>
+            <Kicker tone={tone}>
+              <Scramble text={kicker} />
+            </Kicker>
           </motion.div>
-          <Words as="h1" onMount delay={0.3} text={title} className="display mt-6 text-[clamp(2.7rem,6.6vw,5.6rem)]" accentClass={tone === "ember" ? "serif-accent text-ember" : "serif-accent text-aurora"} />
+          <ProximityText
+            text={title}
+            delay={0.3}
+            className="display mt-6 text-[clamp(2.8rem,7vw,6.2rem)] leading-[0.95] [text-wrap:balance]"
+            accentClass={tone === "ember" ? "serif-accent text-ember" : "serif-accent text-aurora"}
+          />
           {children && (
             <motion.div
               initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}

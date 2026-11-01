@@ -32,20 +32,20 @@ const START = new Chess().fen();
 const CLOCK = 180_000;
 
 const NAMES = [
-  "tốt_thí_123",
-  "HậuĐen_VN",
-  "MãĐiênSG",
-  "xe_tăng_99",
-  "BishopBốc",
-  "VuaLạcLối",
-  "NhậpThànhSớm",
-  "cờ_chớp_hn",
+  "pawnstorm_23",
+  "QueenSlayer",
+  "knightmare.exe",
+  "rook_n_roll",
+  "BishopBandit",
+  "LostKing404",
+  "CastleEarly",
+  "blitz_bae",
   "EnPassantEm",
-  "ThíHậuMỗiNgày",
+  "SacTheQueen",
   "Zwischenzug_",
-  "tượng_đồng",
+  "en_passant_enjoyer",
 ];
-const COUNTRIES = ["🇻🇳", "🇻🇳", "🇻🇳", "🇹🇭", "🇵🇭", "🇮🇩", "🇰🇷", "🇯🇵"];
+const COUNTRIES = ["🇺🇸", "🇬🇧", "🇻🇳", "🇩🇪", "🇧🇷", "🇮🇳", "🇰🇷", "🇯🇵", "🇫🇷", "🇨🇦"];
 
 function randomPlayer(exclude?: string): Player {
   const name = pick(NAMES.filter((n) => n !== exclude));
@@ -62,30 +62,30 @@ function randomPlayer(exclude?: string): Player {
 const CHAT_USERS = [
   { user: "lan.nguyen", color: "#ff9ec4" },
   { user: "minhkhoa_07", color: "#9be7ff" },
-  { user: "GM_tương_lai", color: "#b9b0ff", badge: "pro" as const },
-  { user: "bé_tốt_đen", color: "#ffd23c" },
+  { user: "future_GM", color: "#b9b0ff", badge: "pro" as const },
+  { user: "tiny_pawn", color: "#ffd23c" },
   { user: "ChaosLord_HN", color: "#ff8fb4", badge: "lord" as const },
   { user: "anh.tuan.dev", color: "#b9a6ff" },
-  { user: "mod_cờ_vua", color: "#48e5ff", badge: "mod" as const },
-  { user: "hùng.chess", color: "#ffb37a" },
+  { user: "chess_mod", color: "#48e5ff", badge: "mod" as const },
+  { user: "blitz_goblin", color: "#ffb37a" },
 ];
 const CHAT_IDLE = [
-  "ai ném sương mù đi mọi người 😂",
-  "trận này căng thật",
-  "Gambit hét to quá trời",
-  "Zugzwang nói đúng mà",
-  "GG sắp tới rồi",
-  "cho xin 1 lá Hoán Đổi Quân nào",
-  "đánh hay vậy trời",
-  "MC Blunder cà khịa đỉnh 🤣",
-  "xem mà tim đập nhanh",
-  "ván này lên TikTok chắc luôn",
-  "trắng đang ép dữ",
-  "đen thủ chắc ghê",
-  "ai tip để Blunder roast đi",
-  "lần đầu xem cờ mà vui vậy",
+  "someone throw fog already 😂",
+  "this game is so tense",
+  "Gambit is SO loud lol",
+  "Zugzwang is right tho",
+  "GG incoming",
+  "can we get a Piece Swap pls",
+  "how is this so good",
+  "MC Blunder's roasts are elite 🤣",
+  "my heart is racing",
+  "this is going on TikTok for sure",
+  "white is pushing hard",
+  "black's defense is solid",
+  "someone tip Blunder for a roast",
+  "first time watching chess and I'm hooked",
 ];
-const CHAT_REACT = ["WTF 😱", "OMG", "ối dồi ôi!!!", "toang rồi", "hahaha", "clip clip clip", "🔥🔥🔥", "không thể tin được", "đỉnh của chóp"];
+const CHAT_REACT = ["WTF 😱", "OMG", "NO WAY", "it's over 💀", "hahaha", "clip it clip it", "🔥🔥🔥", "I can't believe it", "peak content"];
 
 export function useArena() {
   const chessRef = useRef(new Chess());
@@ -112,8 +112,8 @@ export function useArena() {
   const [mode, setModeState] = useState<"watch" | "play">("watch");
   const modeRef = useRef(mode);
   const [players, setPlayers] = useState<{ w: Player; b: Player }>(() => ({
-    w: { name: "tốt_thí_123", rating: 1642, country: "🇻🇳", style: { depth: 2, chaos: 0.06, slack: 30 } },
-    b: { name: "HậuĐen_VN", rating: 1588, country: "🇻🇳", style: { depth: 2, chaos: 0.08, slack: 40 } },
+    w: { name: "pawnstorm_23", rating: 1642, country: "🇺🇸", style: { depth: 2, chaos: 0.06, slack: 30 } },
+    b: { name: "QueenSlayer", rating: 1588, country: "🇬🇧", style: { depth: 2, chaos: 0.08, slack: 40 } },
   }));
   const playersRef = useRef(players);
   playersRef.current = players;
@@ -187,18 +187,18 @@ export function useArena() {
   const clip = useCallback(
     (title: string, san: string, host: HostId) => {
       useWallet.getState().addClip({ title, san, host: HOSTS[host].name, fen: chessRef.current.fen() });
-      pushFeed({ text: `✂ AI vừa cắt clip: “${title}”`, kind: "system" });
-      toast({ title: "✂ Clip cao trào đã được cắt", body: title, tone: "cyan" });
+      pushFeed({ text: `✂ AI just clipped: “${title}”`, kind: "system" });
+      toast({ title: "✂ Highlight clipped", body: title, tone: "cyan" });
     },
     [pushFeed, toast],
   );
 
   const checkOver = useCallback((chess: Chess): GameState["over"] => {
-    if (chess.isCheckmate()) return { winner: chess.turn() === "w" ? "b" : "w", reason: "chiếu hết" };
-    if (chess.isStalemate()) return { winner: null, reason: "hết nước đi (stalemate)" };
-    if (chess.isInsufficientMaterial()) return { winner: null, reason: "không đủ quân chiếu hết" };
-    if (chess.isThreefoldRepetition()) return { winner: null, reason: "lặp lại ba lần" };
-    if (chess.isDraw()) return { winner: null, reason: "luật 50 nước" };
+    if (chess.isCheckmate()) return { winner: chess.turn() === "w" ? "b" : "w", reason: "checkmate" };
+    if (chess.isStalemate()) return { winner: null, reason: "stalemate" };
+    if (chess.isInsufficientMaterial()) return { winner: null, reason: "insufficient material" };
+    if (chess.isThreefoldRepetition()) return { winner: null, reason: "threefold repetition" };
+    if (chess.isDraw()) return { winner: null, reason: "50-move rule" };
     return null;
   }, []);
 
@@ -297,12 +297,12 @@ export function useArena() {
         }
         if (total >= 55) {
           const title = ctx.mate
-            ? `${player} chiếu hết ${opponent}`
+            ? `${player} checkmates ${opponent}`
             : ctx.captured === "q"
-              ? `${player} ăn Hậu bằng ${mv.san}`
+              ? `${player} takes the queen with ${mv.san}`
               : ctx.swing < -180
-                ? `${player} blunder ${mv.san} trên sóng`
-                : `${player}: ${mv.san} gây bão`;
+                ? `${player} blunders ${mv.san} on air`
+                : `${player}: ${mv.san} breaks the chat`;
           clip(title, mv.san, ls[0].host);
           reactBurst(4);
         } else if (ctx.captured || ctx.check) reactBurst(1);
@@ -321,7 +321,7 @@ export function useArena() {
       if (over) {
         later(() => {
           pushFeed({
-            text: over.winner ? `🏁 ${pl[over.winner].name} thắng — ${over.reason}.` : `🤝 Hòa — ${over.reason}.`,
+            text: over.winner ? `🏁 ${pl[over.winner].name} wins — ${over.reason}.` : `🤝 Draw — ${over.reason}.`,
             kind: "system",
           });
         }, 1600);
@@ -334,7 +334,7 @@ export function useArena() {
   const newGame = useCallback(
     (m: "watch" | "play" = modeRef.current) => {
       chessRef.current = new Chess();
-      const w: Player = m === "play" ? { name: useWallet.getState().username, rating: 1200, country: "🇻🇳", style: { depth: 1, chaos: 0, slack: 0 } } : randomPlayer();
+      const w: Player = m === "play" ? { name: useWallet.getState().username, rating: 1200, country: "⭐", style: { depth: 1, chaos: 0, slack: 0 } } : randomPlayer();
       const b = randomPlayer(w.name);
       setPlayers({ w, b });
       playersRef.current = { w, b };
@@ -357,7 +357,7 @@ export function useArena() {
       setTargets([]);
       setHype(15);
       setGameNo((n) => n + 1);
-      pushFeed({ text: `🎬 Ván mới: ${w.name} (Trắng) vs ${b.name} (Đen). Host đã sẵn sàng!`, kind: "system" });
+      pushFeed({ text: `🎬 New game: ${w.name} (White) vs ${b.name} (Black). Hosts are live!`, kind: "system" });
     },
     [pushFeed, update],
   );
@@ -371,11 +371,11 @@ export function useArena() {
     [newGame],
   );
 
-  // Bot đi cờ
+  // Bot moves
   useEffect(() => {
     if (game.over) return;
     if (mode === "play" && game.turn === "w") {
-      // người chơi bị ép nước ngẫu nhiên
+      // the human player was forced into a random move
       if (game.forcedRandom) {
         const t = setTimeout(() => {
           const m = randomMove(chessRef.current.fen());
@@ -397,14 +397,14 @@ export function useArena() {
     return () => clearTimeout(t);
   }, [game.ply, game.turn, game.over, game.forcedRandom, mode, commit]);
 
-  // Tự động sang ván mới khi đang xem
+  // Auto-start a new game in watch mode
   useEffect(() => {
     if (!game.over || mode !== "watch") return;
     const t = setTimeout(() => newGame("watch"), 9000);
     return () => clearTimeout(t);
   }, [game.over, mode, newGame]);
 
-  // Đồng hồ
+  // Clocks
   useEffect(() => {
     const t = setInterval(() => {
       const g = gameRef.current;
@@ -415,15 +415,15 @@ export function useArena() {
       setClocks(next);
       if (next[side] === 0) {
         const winner: Color = side === "w" ? "b" : "w";
-        update((s) => ({ ...s, over: { winner, reason: "hết giờ" } }));
-        pushFeed({ text: `⏰ ${playersRef.current[side].name} hết giờ! ${playersRef.current[winner].name} thắng.`, kind: "system" });
-        say([{ host: "blunder", text: `Hết giờ rồi ${playersRef.current[side].name} ơi, đồng hồ không chờ ai đâu!`, hype: 40 }], "move");
+        update((s) => ({ ...s, over: { winner, reason: "timeout" } }));
+        pushFeed({ text: `⏰ ${playersRef.current[side].name} flagged! ${playersRef.current[winner].name} wins.`, kind: "system" });
+        say([{ host: "blunder", text: `Time's up, ${playersRef.current[side].name}. The clock waits for nobody!`, hype: 40 }], "move");
       }
     }, 100);
     return () => clearInterval(t);
   }, [pushFeed, say, update]);
 
-  // Hype giảm dần, người xem dao động, chat tự nhiên
+  // Hype decay, viewer drift, ambient chat
   useEffect(() => {
     const a = setInterval(() => setHype((h) => Math.max(6, h - 1.2)), 500);
     const b = setInterval(() => setViewers((v) => Math.max(5000, v + Math.round((Math.random() - 0.45) * 90))), 2000);
@@ -441,12 +441,12 @@ export function useArena() {
     };
   }, [pushChat]);
 
-  // Lời chào
+  // Greeting
   const greeted = useRef(false);
   useEffect(() => {
     if (greeted.current) return;
     greeted.current = true;
-    pushFeed({ text: "🎬 Chào mừng tới ChessCast Arena! Ném Chaos Card bất kỳ lúc nào để làm đảo lộn trận đấu.", kind: "system" });
+    pushFeed({ text: "🎬 Welcome to the ChessCast Arena! Throw a Chaos Card any time to flip the game.", kind: "system" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -484,13 +484,13 @@ export function useArena() {
       const g = gameRef.current;
       const card = CHAOS_CARDS.find((c) => c.id === id)!;
       if (g.over) {
-        toast({ title: "Ván đấu đã kết thúc", body: "Chờ ván mới để ném Chaos Card nhé.", tone: "neutral" });
+        toast({ title: "This game is over", body: "Wait for the next game to throw a Chaos Card.", tone: "neutral" });
         return false;
       }
       const cost = cardCost(id);
       const wallet = useWallet.getState();
       if (wallet.coins < cost) {
-        toast({ title: "Không đủ Chaos Coins", body: `Cần ${cost} coin. Nạp thêm để tiếp tục quậy!`, tone: "pink" });
+        toast({ title: "Not enough Chaos Coins", body: `You need ${cost} coins. Top up to keep the chaos going!`, tone: "pink" });
         setWalletOpen(true);
         return false;
       }
@@ -538,18 +538,18 @@ export function useArena() {
           break;
       }
       if (!ok) {
-        toast({ title: "Lá bài không có tác dụng lúc này", body: "Thế cờ hiện tại không cho phép — bạn không bị trừ coin.", tone: "neutral" });
+        toast({ title: "That card can't play right now", body: "The position doesn't allow it — you were not charged.", tone: "neutral" });
         return false;
       }
       useWallet.getState().spend(cost);
       setFlash((n) => n + 1);
       const user = wallet.username;
-      pushChat({ user, color: card.accent, badge: "you", text: `đã ném ${card.glyph} ${card.name}!` });
+      pushChat({ user, color: card.accent, badge: "you", text: `threw ${card.name}!` });
       say(commentChaos(id, user), "chaos");
       reactBurst(5);
       setHype((h) => Math.min(100, h + 30));
-      toast({ title: `${card.glyph} ${card.name}!`, body: `-${cost} coin. Cả arena đang nhìn bạn.`, tone: "pink" });
-      // nếu thế cờ sau chaos khiến ván kết thúc
+      toast({ title: `${card.name}!`, body: `−${cost} coins. The whole arena is watching you.`, tone: "pink" });
+      // a chaos edit can end the game outright
       if (id === "swap" || id === "earthquake") {
         const over = checkOver(chessRef.current);
         if (over) update((s) => ({ ...s, over }));
@@ -563,12 +563,12 @@ export function useArena() {
     (amount: number, target: Color, request?: string) => {
       const wallet = useWallet.getState();
       if (!wallet.spend(amount)) {
-        toast({ title: "Không đủ coin để tip", tone: "pink" });
+        toast({ title: "Not enough coins to tip", tone: "pink" });
         setWalletOpen(true);
         return false;
       }
       const targetName = playersRef.current[target].name;
-      pushChat({ user: wallet.username, color: "#9ff3ff", badge: "you", text: request?.trim() || `tip để host cà khịa ${targetName}`, tip: amount });
+      pushChat({ user: wallet.username, color: "#9ff3ff", badge: "you", text: request?.trim() || `tipped for a roast of ${targetName}`, tip: amount });
       say(commentTip(wallet.username, amount, targetName, request), "tip");
       reactBurst(3);
       return true;
@@ -583,7 +583,7 @@ export function useArena() {
       const w = useWallet.getState();
       pushChat({ user: w.username, color: "#9ff3ff", badge: "you", text: t });
       if (Math.random() < 0.35) {
-        later(() => say([{ host: pick(["gambit", "zugzwang", "blunder"] as HostId[]), text: `Đọc được chat của ${w.username}: “${t.slice(0, 50)}” — chuẩn luôn!`, hype: 8 }], "move"), 900);
+        later(() => say([{ host: pick(["gambit", "zugzwang", "blunder"] as HostId[]), text: `Reading chat from ${w.username}: “${t.slice(0, 50)}” — facts!`, hype: 8 }], "move"), 900);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

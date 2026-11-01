@@ -2,41 +2,41 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/ui/legal";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Điều khoản sử dụng" };
+export const metadata: Metadata = { title: "Terms of Service" };
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Điều khoản sử dụng" updated="01/11/2026">
-      <p>Chào mừng bạn đến với ChessCast. Khi sử dụng nền tảng, bạn đồng ý với các điều khoản dưới đây. Bản này là bản tóm tắt cho giai đoạn ra mắt và sẽ được hoàn thiện cùng đơn vị tư vấn pháp lý.</p>
+    <LegalPage title="Terms of Service" updated="November 1, 2026">
+      <p>Welcome to ChessCast. By using the platform you agree to the terms below. This is a launch summary and will be finalized with legal counsel.</p>
       <div>
-        <h2>1. Dịch vụ</h2>
-        <p>ChessCast cung cấp trải nghiệm xem và chơi cờ vua có bình luận AI, Chaos Cards, Chess Court, Chess Royale và các tính năng giải trí liên quan.</p>
+        <h2>1. The service</h2>
+        <p>ChessCast offers live chess viewing and play with AI commentary, Chaos Cards, Chess Court, Chess Royale and related entertainment features.</p>
       </div>
-      <div id="coin" className="scroll-mt-28">
-        <h2>2. Chaos Coins &amp; vật phẩm ảo</h2>
+      <div id="coins" className="scroll-mt-28">
+        <h2>2. Chaos Coins &amp; virtual items</h2>
         <ul>
-          <li>Chaos Coins là vật phẩm giải trí ảo, chỉ dùng trong ChessCast.</li>
-          <li>Coin không có giá trị quy đổi thành tiền, không thể rút, chuyển nhượng hay bán lại.</li>
-          <li>Coin không bao giờ được dùng để đặt cược vào kết quả trận đấu. ChessCast không cung cấp bất kỳ hình thức cá cược nào.</li>
-          <li>Coin đã sử dụng cho Chaos Cards hoặc tip không được hoàn lại, trừ trường hợp lá bài không kích hoạt được.</li>
+          <li>Chaos Coins are virtual entertainment items usable only inside ChessCast.</li>
+          <li>Coins have no cash value and cannot be withdrawn, transferred or resold.</li>
+          <li>Coins can never be used to bet on the outcome of a game. ChessCast offers no form of gambling.</li>
+          <li>Coins spent on Chaos Cards or tips are non-refundable, except when a card fails to activate.</li>
         </ul>
       </div>
       <div>
-        <h2>3. Gói thành viên</h2>
-        <p>Gói Fan Pro và Chaos Lord được gia hạn tự động theo chu kỳ đã chọn. Bạn có thể huỷ bất kỳ lúc nào; quyền lợi giữ nguyên đến hết chu kỳ đã thanh toán.</p>
+        <h2>3. Memberships</h2>
+        <p>Fan Pro and Chaos Lord renew automatically for the billing cycle you chose. You can cancel at any time; benefits remain until the end of the paid period.</p>
       </div>
       <div>
-        <h2>4. Hành vi người dùng</h2>
+        <h2>4. Conduct</h2>
         <ul>
-          <li>Không gian lận, dùng engine khi thi đấu hoặc lạm dụng lỗi hệ thống.</li>
-          <li>Nội dung tip và chat không được xúc phạm, quấy rối hay phân biệt đối xử. Host AI sẽ từ chối các yêu cầu vi phạm.</li>
-          <li>Hình phạt Chess Court chỉ là thử thách giải trí, không gây thiệt hại vật chất cho người chơi.</li>
+          <li>No cheating, engine assistance during play or abuse of system bugs.</li>
+          <li>Tips and chat must not insult, harass or discriminate. The AI hosts will refuse requests that do.</li>
+          <li>Chess Court penalties are entertainment challenges only and never cause players material loss.</li>
         </ul>
       </div>
       <div>
-        <h2>5. Liên hệ</h2>
+        <h2>5. Contact</h2>
         <p>
-          Mọi thắc mắc vui lòng gửi về <a href={`mailto:${site.emails.support}`}>{site.emails.support}</a>.
+          Questions? Email <a href={`mailto:${site.emails.support}`}>{site.emails.support}</a>.
         </p>
       </div>
     </LegalPage>

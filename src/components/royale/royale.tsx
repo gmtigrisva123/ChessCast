@@ -12,9 +12,10 @@ import { Reveal, Words } from "../ui/reveal";
 import { Kicker } from "../ui/section";
 import { HostOrb, VoiceBars } from "../ui/orb";
 import { Spotlight } from "../ui/spotlight";
+import { LiquidGlass } from "../ui/liquid-glass";
 
-const PREFIX = ["Tốt", "Mã", "Xe", "Hậu", "Vua", "Tượng", "Gambit", "Blitz", "Pawn", "Knight"];
-const SUFFIX = ["Điên", "SG", "HN", "Đen", "Trắng", "VN", "99", "Pro", "Chill", "Nổ", "Ninja", "Bá"];
+const PREFIX = ["Pawn", "Knight", "Rook", "Queen", "King", "Bishop", "Gambit", "Blitz", "Castle", "Fork"];
+const SUFFIX = ["Storm", "Lord", "Ace", "Rush", "Byte", "Nova", "99", "Pro", "Chill", "Boom", "Ninja", "Max"];
 
 function seeded(seed: number) {
   let a = seed;
@@ -36,10 +37,10 @@ function makeField(me: string | null, rng: () => number = Math.random): Tile[] {
   return list;
 }
 
-const ROUNDS = ["100 → 50", "50 → 25", "25 → 13", "13 → 7", "7 → 4", "4 → 2", "Chung kết"];
-const QUIPS = ["{a} tiễn {b} ra khỏi sân khấu!", "{b} nổ tung — {a} đi tiếp!", "Chaos Card định mệnh: {b} bị loại bởi {a}!", "{a} chiếu hết {b} trong 19 nước!", "{b} hết giờ. Đồng hồ không chờ ai."];
+const ROUNDS = ["100 → 50", "50 → 25", "25 → 13", "13 → 7", "7 → 4", "4 → 2", "Final"];
+const QUIPS = ["{a} sends {b} off the stage!", "{b} explodes — {a} moves on!", "Fateful Chaos Card: {b} knocked out by {a}!", "{a} mates {b} in 19 moves!", "{b} flags. The clock waits for nobody."];
 
-/** Toạ độ vòng tròn đồng tâm cho n chấm. */
+/** Concentric-ring coordinates for n dots. */
 function layout(n: number) {
   const out: [number, number][] = [];
   if (n === 1) return [[0, 0]] as [number, number][];
@@ -77,10 +78,10 @@ function Countdown() {
   }, []);
   const diff = Math.max(0, target - (now ?? target));
   const parts = [
-    ["ngày", Math.floor(diff / 86400000)],
-    ["giờ", Math.floor(diff / 3600000) % 24],
-    ["phút", Math.floor(diff / 60000) % 60],
-    ["giây", Math.floor(diff / 1000) % 60],
+    ["days", Math.floor(diff / 86400000)],
+    ["hours", Math.floor(diff / 3600000) % 24],
+    ["min", Math.floor(diff / 60000) % 60],
+    ["sec", Math.floor(diff / 1000) % 60],
   ] as const;
   return (
     <div className="grid grid-cols-4 gap-2">
@@ -152,7 +153,7 @@ function Arena() {
       if (next.length > 1) timer.current = setTimeout(() => step(next, r + 1), 1000);
       else {
         setRunning(false);
-        setLog((lg) => [`👑 ${fieldRef.current[next[0]].name} là Vua Royale!`, ...lg]);
+        setLog((lg) => [`👑 ${fieldRef.current[next[0]].name} is the Royale champion!`, ...lg]);
       }
     }, 850);
   };
@@ -169,7 +170,7 @@ function Arena() {
     <div className="grid gap-5 lg:grid-cols-[1.25fr_1fr]">
       <Spotlight className="relative aspect-square max-h-[640px] w-full p-4 sm:aspect-auto sm:h-[600px]">
         <div className="absolute left-5 top-5 z-10">
-          <div className="kicker text-fg-3">{round >= 0 ? `Vòng ${round + 1} · ${ROUNDS[round]}` : "Sẵn sàng"}</div>
+          <div className="kicker text-fg-3">{round >= 0 ? `Round ${round + 1} · ${ROUNDS[round]}` : "Ready"}</div>
           <div className="display mt-1 text-3xl tabular-nums">
             {alive.length}
             <span className="text-fg-3">/100</span>
@@ -177,9 +178,9 @@ function Arena() {
         </div>
         <div className="absolute right-5 top-5 z-10 flex gap-2">
           <Button size="sm" onClick={start} disabled={running}>
-            <Play size={13} fill="currentColor" /> {round >= 0 ? "Chạy lại" : "Mô phỏng mùa"}
+            <Play size={13} fill="currentColor" /> {round >= 0 ? "Run again" : "Simulate a season"}
           </Button>
-          <Button size="sm" variant="glass" onClick={reset} aria-label="Đặt lại">
+          <Button size="sm" variant="glass" onClick={reset} aria-label="Reset">
             <RotateCcw size={13} />
           </Button>
         </div>
@@ -241,12 +242,12 @@ function Arena() {
             <HostOrb id="gambit" size={36} talking={running} />
             <div className="flex-1">
               <div className="text-[14px] font-medium">Captain Gambit</div>
-              <div className="font-mono text-[10.5px] text-fg-3">bình luận Chess Royale</div>
+              <div className="font-mono text-[10.5px] text-fg-3">calling Chess Royale</div>
             </div>
             {running && <VoiceBars color="#ffb36b" />}
           </div>
           <div className="mt-4 space-y-2" aria-live="polite">
-            {log.length === 0 && <p className="text-[14px] text-fg-3">Bấm “Mô phỏng mùa” để xem 100 kỳ thủ bị loại dần, vòng này qua vòng khác.</p>}
+            {log.length === 0 && <p className="text-[14px] text-fg-3">Hit “Simulate a season” to watch 100 players get knocked out, round after round.</p>}
             <AnimatePresence initial={false}>
               {log.map((l, i) => (
                 <motion.p key={l + i} layout initial={{ opacity: 0, x: 16, filter: "blur(6px)" }} animate={{ opacity: 1 - i * 0.09, x: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} className="rounded-xl bg-white/[0.03] px-3 py-2 text-[13.5px] text-fg-2">
@@ -262,17 +263,17 @@ function Arena() {
 }
 
 const FORMAT = [
-  { icon: Swords, title: "Loại trực tiếp", body: "Bốc cặp ngẫu nhiên mỗi vòng. Thua một ván là rời sân khấu." },
-  { icon: Timer, title: "Blitz 3+0", body: "7 vòng trong khoảng 45 phút — vừa một tập show." },
-  { icon: Zap, title: "Chaos từ khán giả", body: "Từ tứ kết, khán giả được ném Chaos Cards vào bàn đang phát sóng." },
-  { icon: Shield, title: "Fair-play", body: "Engine phát hiện gian lận; mọi tranh cãi được đưa ra Chess Court." },
+  { icon: Swords, title: "Straight knockout", body: "Random pairings every round. Lose once and you leave the stage." },
+  { icon: Timer, title: "Blitz 3+0", body: "Seven rounds in about 45 minutes — the length of one episode." },
+  { icon: Zap, title: "Crowd chaos", body: "From the quarter-finals on, viewers can throw Chaos Cards onto featured boards." },
+  { icon: Shield, title: "Fair play", body: "Engine-based cheat detection; every dispute goes to Chess Court." },
 ];
 
 const BOARD = [
-  { name: "MãĐiênSG", pts: 2140, wins: 3 },
-  { name: "HậuĐen_VN", pts: 1985, wins: 2 },
+  { name: "knightmare.exe", pts: 2140, wins: 3 },
+  { name: "QueenSlayer", pts: 1985, wins: 2 },
   { name: "Zwischenzug_", pts: 1720, wins: 2 },
-  { name: "tốt_thí_123", pts: 1504, wins: 1 },
+  { name: "pawnstorm_23", pts: 1504, wins: 1 },
   { name: "EnPassantEm", pts: 1390, wins: 1 },
 ];
 
@@ -284,12 +285,12 @@ export function RoyaleView() {
   return (
     <>
       <PageHero
-        kicker="Chess Royale · Mùa 1"
-        title="100 người vào. *Một người bước ra.*"
+        kicker="Chess Royale · Season 1"
+        title="100 enter. *One walks out.*"
         aside={
-          <div className="glass-strong beam rounded-[30px] p-6">
+          <LiquidGlass className="beam rounded-[30px] p-6" radius={30} bezel={18} depth={14}>
             <div className="flex items-center justify-between">
-              <span className="kicker text-fg-3">Khai mạc · thứ Bảy 20:00</span>
+              <span className="kicker text-fg-2">Opening night · Saturday 8 PM</span>
               <Crown size={18} className="text-amber" />
             </div>
             <div className="mt-5">
@@ -297,12 +298,12 @@ export function RoyaleView() {
             </div>
             <div className="mt-5 space-y-2 text-[13.5px] text-fg-2">
               <div className="flex justify-between border-b border-white/[0.06] pb-2">
-                <span>Phí tham gia</span>
-                <span className="text-fg">Miễn phí</span>
+                <span>Entry fee</span>
+                <span className="text-fg">Free</span>
               </div>
               <div className="flex justify-between gap-6">
-                <span>Phần thưởng</span>
-                <span className="text-right text-fg">Danh hiệu Vua Royale · 5.000 Chaos Coins</span>
+                <span>Prize</span>
+                <span className="text-right text-fg">Royale Champion title · 5,000 Chaos Coins</span>
               </div>
             </div>
             <Button
@@ -311,20 +312,20 @@ export function RoyaleView() {
               disabled={mounted && registered}
               onClick={() => {
                 register();
-                toast({ title: "Đã giữ chỗ Chess Royale", body: "Bạn sẽ xuất hiện (màu hồng) trong đấu trường mô phỏng bên dưới." });
+                toast({ title: "Your Royale seat is reserved", body: "You will appear (in pink) in the simulated arena below." });
               }}
             >
-              {mounted && registered ? "Đã giữ chỗ ✓" : "Giữ chỗ miễn phí"}
+              {mounted && registered ? "Seat reserved ✓" : "Reserve a free seat"}
             </Button>
-          </div>
+          </LiquidGlass>
         }
       >
-        Đấu trường loại trực tiếp cho cờ vua. Mỗi vòng có host AI riêng, mỗi lần thua là một vụ nổ trên livestream.
+        A knockout arena for chess. Every round has its own AI host, every loss is an explosion on the livestream.
       </PageHero>
 
       <section className="shell py-10">
-        <Kicker>Thử ngay</Kicker>
-        <Words text="Đấu trường *co lại* sau mỗi vòng." className="display mb-10 mt-5 text-[clamp(2rem,4vw,3.2rem)]" />
+        <Kicker>Try it now</Kicker>
+        <Words text="The arena *shrinks* every round." className="display mb-10 mt-5 text-[clamp(2rem,4vw,3.2rem)]" />
         <Arena />
       </section>
 
@@ -348,9 +349,9 @@ export function RoyaleView() {
       <section className="shell pb-28">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
           <div>
-            <Kicker tone="ember">Bảng xếp hạng</Kicker>
-            <Words text="Những cái tên *mùa beta.*" className="display mt-5 text-[clamp(2rem,4vw,3.2rem)]" accentClass="serif-accent text-ember" />
-            <p className="mt-4 max-w-sm text-fg-2">Kết quả các mùa thử nghiệm nội bộ cùng cộng đồng cờ vua đầu tiên. Mùa 1 tính điểm từ tối thứ Bảy.</p>
+            <Kicker tone="ember">Leaderboard</Kicker>
+            <Words text="The names of *the beta season.*" className="display mt-5 text-[clamp(2rem,4vw,3.2rem)]" accentClass="serif-accent text-ember" />
+            <p className="mt-4 max-w-sm text-fg-2">Results from internal test seasons with our first chess community. Season 1 scoring starts Saturday night.</p>
           </div>
           <div className="space-y-2">
             {BOARD.map((b, i) => (
@@ -361,7 +362,7 @@ export function RoyaleView() {
                   <div className="hidden h-1.5 w-40 overflow-hidden rounded-full bg-white/[0.06] sm:block">
                     <motion.div className="h-full rounded-full bg-[linear-gradient(90deg,#8b7cff,#3ee6e0)]" initial={{ width: 0 }} whileInView={{ width: `${(b.pts / 2200) * 100}%` }} viewport={{ once: true }} transition={{ duration: 1.2, delay: i * 0.08 }} />
                   </div>
-                  <span className="font-mono text-[12px] text-fg-3">{b.wins}× vô địch</span>
+                  <span className="font-mono text-[12px] text-fg-3">{b.wins}× champion</span>
                   <span className="w-14 text-right font-mono tabular-nums">{b.pts}</span>
                 </div>
               </Reveal>

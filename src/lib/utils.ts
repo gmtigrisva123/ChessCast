@@ -4,12 +4,16 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
-const vnd = new Intl.NumberFormat("vi-VN");
-export function formatVnd(n: number) {
-  return `${vnd.format(n)}₫`;
+const num = new Intl.NumberFormat("en-US");
+const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
+
+/** Format a price given in cents. */
+export function formatMoney(cents: number) {
+  if (cents === 0) return "$0";
+  return usd.format(cents / 100);
 }
 export function formatNum(n: number) {
-  return vnd.format(Math.round(n));
+  return num.format(Math.round(n));
 }
 export function compact(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`;

@@ -2,17 +2,17 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 
 /**
- * Bình luận AI thời gian thực (tuỳ chọn).
- * Khi chưa đặt ANTHROPIC_API_KEY, route trả 204 và client tự dùng bộ bình luận dựng sẵn.
+ * Optional real-time AI commentary.
+ * Without ANTHROPIC_API_KEY the route answers 204 and the client falls back to the built-in lines.
  */
 
 const PERSONAS = {
   gambit:
-    "Bạn là Captain Gambit — host bình luận cờ vua cuồng nhiệt, hét to, mê thí quân, hay dùng chữ IN HOA và dấu chấm than. Đang có mối thù với GS. Zugzwang.",
+    "You are Captain Gambit — a hyper-energetic chess caster who screams, adores sacrifices and loves ALL CAPS and exclamation marks. You have a three-season feud with Prof. Zugzwang.",
   zugzwang:
-    "Bạn là GS. Zugzwang — chuyên gia phân tích lạnh lùng, nói bằng con số, mỉa mai tinh tế, không bao giờ cười.",
+    "You are Prof. Zugzwang — an ice-cold analyst who speaks in evaluations, with dry, surgical sarcasm. You have not smiled since 1997.",
   blunder:
-    "Bạn là MC Blunder — host Gen Z chuyên cà khịa, dùng tiếng lóng Việt Nam, hài hước nhưng không xúc phạm hay thô tục.",
+    "You are MC Blunder — a Gen Z roast comedian of the chess world. Playful, cheeky and funny, never insulting, never vulgar.",
 } as const;
 
 type Body = {
@@ -29,7 +29,7 @@ let client: Anthropic | null = null;
 export async function POST(req: Request) {
   if (!process.env.ANTHROPIC_API_KEY) return new NextResponse(null, { status: 204 });
   const b = (await req.json().catch(() => null)) as Body | null;
-  if (!b?.san || !b.host || !(b.host in PERSONAS)) return NextResponse.json({ error: "Thiếu dữ liệu" }, { status: 400 });
+  if (!b?.san || !b.host || !(b.host in PERSONAS)) return NextResponse.json({ error: "Missing data" }, { status: 400 });
 
   client ??= new Anthropic();
   const clip = (s: unknown, n: number) => (typeof s === "string" ? s.slice(0, n) : "");
@@ -42,14 +42,14 @@ export async function POST(req: Request) {
       betas: ["server-side-fallback-2026-07-01"],
       fallbacks: "default",
       system: `${PERSONAS[b.host]}
-Bạn bình luận trực tiếp một ván cờ trên ChessCast. Trả lời bằng tiếng Việt, đúng MỘT câu (tối đa 30 từ), giữ đúng cá tính nhân vật. Không bịa nước đi khác ngoài nước được cung cấp. Không nhắc đến cá cược.`,
+You are calling a live chess game on ChessCast. Reply in English with exactly ONE sentence (30 words max), fully in character. Never invent moves other than the one provided. Never mention betting or gambling.`,
       messages: [
         {
           role: "user",
-          content: `Kỳ thủ vừa đi: ${clip(b.player, 40)}. Đối thủ: ${clip(b.opponent, 40)}.
-Nước đi: ${clip(b.san, 12)}
-FEN sau nước đi: ${clip(b.fen, 100)}
-${b.event ? `Sự kiện: ${clip(b.event, 120)}` : ""}`,
+          content: `Player who just moved: ${clip(b.player, 40)}. Opponent: ${clip(b.opponent, 40)}.
+Move: ${clip(b.san, 12)}
+FEN after the move: ${clip(b.fen, 100)}
+${b.event ? `Event: ${clip(b.event, 120)}` : ""}`,
         },
       ],
     });

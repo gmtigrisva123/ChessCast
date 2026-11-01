@@ -35,43 +35,43 @@ const CASES: Case[] = [
   {
     id: "c427",
     no: "0427",
-    title: "Cố tình câu giờ khi thắng thế",
-    accused: "MãĐiênSG",
-    plaintiff: "HậuĐen_VN",
-    charge: "Hơn hẳn một Hậu nhưng không chiếu hết, đi vòng vòng 40 nước chờ đối thủ hết giờ.",
-    prosecution: "Thưa bồi thẩm đoàn, bị cáo có thế thắng +18 nhưng chọn cách hành hạ đối thủ suốt 40 nước. Đây không phải cờ vua — đây là tra tấn tâm lý có tính toán.",
-    defense: "Thân chủ tôi chỉ đang… thưởng thức nghệ thuật. Luật không cấm đi chậm. Đồng hồ là một phần của cờ vua mà!",
+    title: "Stalling a won position on purpose",
+    accused: "knightmare.exe",
+    plaintiff: "QueenSlayer",
+    charge: "A full queen up, refused to mate and shuffled for 40 moves waiting for the opponent to flag.",
+    prosecution: "Members of the jury, the accused stood at +18 and chose to torment his opponent for forty moves. This is not chess — this is calculated psychological warfare.",
+    defense: "My client was simply… savoring the art. No rule forbids slow play. The clock is part of chess!",
     fen: "7k/5Q2/6K1/8/8/8/8/8 w - - 0 61",
     highlight: ["f7", "g7"],
-    penalty: "Chơi ván kế tiếp không có Hậu, trực tiếp trên sóng.",
+    penalty: "Play the next game without a queen, live on stream.",
     base: { guilty: 1284, innocent: 611 },
   },
   {
     id: "c431",
     no: "0431",
-    title: "Ăn mừng khi đối thủ blunder",
-    accused: "tốt_thí_123",
-    plaintiff: "BishopBốc",
-    charge: "Gõ “EZ” vào chat ngay sau khi đối thủ đi hớ Hậu.",
-    prosecution: "Hai ký tự. E. Z. Hai ký tự đã phá huỷ tinh thần thể thao của cả một cộng đồng. Tôi đề nghị mức án cao nhất.",
-    defense: "Thân chủ tôi gõ nhầm. Định gõ “EZ… quá trời là hay”, nhưng mạng lag nên mất phần sau.",
+    title: "Celebrating an opponent's blunder",
+    accused: "pawnstorm_23",
+    plaintiff: "BishopBandit",
+    charge: "Typed “EZ” in chat the moment the opponent hung their queen.",
+    prosecution: "Two letters. E. Z. Two letters that destroyed the sporting spirit of an entire community. I request the maximum sentence.",
+    defense: "A typo. My client meant “EZ… to see why that was a brilliant game”, but the Wi-Fi ate the rest.",
     fen: "r1b1k2r/pppp1ppp/2n2n2/2b1p3/2B1P2q/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 6",
     highlight: ["h4", "f3"],
-    penalty: "Đổi tên hiển thị thành “Tôi Xin Lỗi” trong 24 giờ.",
+    penalty: "Display name changed to “I Am Sorry” for 24 hours.",
     base: { guilty: 902, innocent: 877 },
   },
   {
     id: "c436",
     no: "0436",
-    title: "Nghi vấn được Chaos Card “dắt tay”",
+    title: "Suspected of being carried by Chaos Cards",
     accused: "EnPassantEm",
-    plaintiff: "Cộng đồng",
-    charge: "Thắng 3 ván liên tiếp nhờ khán giả ném Hoán Đổi Quân đúng lúc đối thủ sắp chiếu hết.",
-    prosecution: "Ba lần. Ba lá Hoán Đổi Quân. Ba lần đúng thời điểm vàng. Tôi không tin vào trùng hợp — tôi tin vào thống kê.",
-    defense: "Thân chủ tôi không kiểm soát khán giả. Nếu khán giả yêu mến thân chủ tôi, đó là tội của sự đẹp trai.",
+    plaintiff: "The community",
+    charge: "Won three straight games because viewers threw Piece Swap right before the opponent delivered mate.",
+    prosecution: "Three times. Three Piece Swaps. Three perfect moments. I do not believe in coincidence — I believe in statistics.",
+    defense: "My client does not control the crowd. If the crowd loves my client, the only crime here is charisma.",
     fen: "r3k2r/ppp2ppp/2n5/3qp3/1b1P4/2N2N2/PPP2PPP/R2QKB1R w KQkq - 0 9",
     highlight: ["b4", "c3"],
-    penalty: "Một tuần không được nhận Chaos Card có lợi.",
+    penalty: "One week without receiving any helpful Chaos Card.",
     base: { guilty: 455, innocent: 1310 },
   },
 ];
@@ -125,8 +125,8 @@ function Verdict({ pct }: { pct: number }) {
         <circle cx="100" cy="102" r="7" fill="#fff" />
       </svg>
       <div className="-mt-2 flex justify-between font-mono text-[11.5px]">
-        <span className="text-teal">Vô tội {100 - pct}%</span>
-        <span className="text-rose">Có tội {pct}%</span>
+        <span className="text-teal">Innocent {100 - pct}%</span>
+        <span className="text-rose">Guilty {pct}%</span>
       </div>
     </div>
   );
@@ -153,39 +153,39 @@ function CaseRoom({ c }: { c: Case }) {
   const cast = (v: "guilty" | "innocent") => {
     vote(c.id, v);
     credit(5);
-    toast({ title: v === "guilty" ? "Bạn bỏ phiếu: Có tội" : "Bạn bỏ phiếu: Vô tội", body: "+5 coin thưởng làm bồi thẩm.", tone: v === "guilty" ? "pink" : "cyan" });
+    toast({ title: v === "guilty" ? "You voted: Guilty" : "You voted: Innocent", body: "+5 coins for jury duty.", tone: v === "guilty" ? "pink" : "cyan" });
   };
 
   return (
     <motion.div key={c.id} initial={{ opacity: 0, y: 20, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} exit={{ opacity: 0, y: -10, filter: "blur(8px)" }} transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }} className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       <Spotlight className="p-5 md:p-7">
         <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-fg-3">
-          <span className="rounded-full border border-white/10 px-2.5 py-1">Vụ án #{c.no}</span>
-          <span className="rounded-full border border-white/10 px-2.5 py-1">Bị cáo: {c.accused}</span>
-          <span className="rounded-full border border-white/10 px-2.5 py-1">Nguyên đơn: {c.plaintiff}</span>
+          <span className="rounded-full border border-white/10 px-2.5 py-1">Case #{c.no}</span>
+          <span className="rounded-full border border-white/10 px-2.5 py-1">Accused: {c.accused}</span>
+          <span className="rounded-full border border-white/10 px-2.5 py-1">Plaintiff: {c.plaintiff}</span>
         </div>
         <h3 className="display mt-5 text-3xl">{c.title}</h3>
         <p className="mt-2 text-[15px] text-fg-2">{c.charge}</p>
         <div className="mt-7 space-y-4">
-          <Bubble host="zugzwang" role="Công tố viên AI">
+          <Bubble host="zugzwang" role="AI prosecutor">
             <Typewriter text={c.prosecution} />
           </Bubble>
-          <Bubble host="blunder" role="Luật sư bào chữa (bất đắc dĩ)" side="right">
+          <Bubble host="blunder" role="Defense attorney (reluctantly)" side="right">
             {c.defense}
           </Bubble>
         </div>
       </Spotlight>
       <div className="flex flex-col gap-4">
         <Spotlight className="p-5">
-          <div className="kicker text-fg-3">Vật chứng</div>
+          <div className="kicker text-fg-3">Exhibit A</div>
           <MiniBoard fen={c.fen} highlight={c.highlight} className="mt-3" />
         </Spotlight>
         <Spotlight className="p-5">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-[14px] font-medium">
-              <Users size={16} className="text-violet" /> Bồi thẩm đoàn
+              <Users size={16} className="text-violet" /> Jury
             </span>
-            <span className="font-mono text-[11px] text-fg-3">{formatNum(g + i)} phiếu</span>
+            <span className="font-mono text-[11px] text-fg-3">{formatNum(g + i)} votes</span>
           </div>
           <div className="mt-4">
             <Verdict pct={pct} />
@@ -193,17 +193,17 @@ function CaseRoom({ c }: { c: Case }) {
           {!mine ? (
             <div className="mt-5 grid grid-cols-2 gap-2">
               <Button variant="glass" onClick={() => cast("innocent")}>
-                <Scale size={15} /> Vô tội
+                <Scale size={15} /> Innocent
               </Button>
               <Button variant="ember" onClick={() => cast("guilty")}>
-                <Gavel size={15} /> Có tội
+                <Gavel size={15} /> Guilty
               </Button>
             </div>
           ) : (
             <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-              <div className="kicker text-fg-3">Phán quyết tạm thời · bạn chọn {mine === "guilty" ? "có tội" : "vô tội"}</div>
-              <div className={cn("display mt-2 text-2xl", guilty ? "text-ember" : "text-aurora")}>{guilty ? "Có tội." : "Trắng án."}</div>
-              <p className="mt-1 text-[13.5px] text-fg-2">{guilty ? `Hình phạt: ${c.penalty}` : "Bị cáo được tự do… cho tới vụ tiếp theo."}</p>
+              <div className="kicker text-fg-3">Provisional verdict · you voted {mine === "guilty" ? "guilty" : "innocent"}</div>
+              <div className={cn("display mt-2 text-2xl", guilty ? "text-ember" : "text-aurora")}>{guilty ? "Guilty." : "Acquitted."}</div>
+              <p className="mt-1 text-[13.5px] text-fg-2">{guilty ? `Sentence: ${c.penalty}` : "The accused walks free… until the next case."}</p>
             </motion.div>
           )}
         </Spotlight>
@@ -213,10 +213,10 @@ function CaseRoom({ c }: { c: Case }) {
 }
 
 const STEPS = [
-  { icon: ShieldQuestion, title: "Khiếu nại", body: "Người chơi hoặc khán giả gửi khiếu nại về một hành vi gây tranh cãi." },
-  { icon: Gavel, title: "AI công tố", body: "GS. Zugzwang dựng hồ sơ từ dữ liệu ván đấu, chat và clip." },
-  { icon: Users, title: "Bồi thẩm đoàn", body: "Khán giả bỏ phiếu trong 10 phút. Chaos Lord được ưu tiên ghế bồi thẩm." },
-  { icon: Video, title: "Thi hành án", body: "Hình phạt là một thử thách vui trên sóng — không bao giờ là tiền thật." },
+  { icon: ShieldQuestion, title: "Complaint", body: "A player or viewer files a complaint about controversial behavior." },
+  { icon: Gavel, title: "AI prosecution", body: "Prof. Zugzwang builds the case from game data, chat logs and clips." },
+  { icon: Users, title: "The jury", body: "Viewers vote for ten minutes. Chaos Lords get priority jury seats." },
+  { icon: Video, title: "Sentencing", body: "Penalties are fun on-air challenges — never real money." },
 ];
 
 export function CourtView() {
@@ -224,25 +224,25 @@ export function CourtView() {
   const c = CASES.find((x) => x.id === active)!;
   return (
     <>
-      <PageHero kicker="Chess Court" title="Ván cờ gây tranh cãi? *Đưa ra toà.*" tone="ember">
-        AI công tố buộc tội, AI bào chữa cãi lại, khán giả làm bồi thẩm đoàn. Mỗi lá phiếu của bạn được thưởng 5 coin.
+      <PageHero kicker="Chess Court" title="Controversial game? *Take it to court.*" tone="ember">
+        An AI prosecutor accuses, an AI defender argues back, and the audience is the jury. Every vote you cast earns 5 coins.
       </PageHero>
 
       <section className="shell pb-16">
         <div className="grid gap-4 lg:grid-cols-[300px_1fr]">
           <div className="space-y-2">
-            <div className="kicker mb-3 px-1 text-fg-3">Đang xét xử</div>
+            <div className="kicker mb-3 px-1 text-fg-3">In session</div>
             {CASES.map((x) => (
               <button key={x.id} onClick={() => setActive(x.id)} className={cn("relative w-full rounded-2xl p-4 text-left transition-colors", active !== x.id && "hover:bg-white/[0.03]")}>
                 {active === x.id && <motion.span layoutId="case-pill" className="absolute inset-0 rounded-2xl border border-white/10 bg-white/[0.05]" transition={{ type: "spring", stiffness: 380, damping: 32 }} />}
                 <div className="relative flex items-center justify-between font-mono text-[10.5px] text-fg-3">
                   <span>#{x.no}</span>
                   <span className="flex items-center gap-1 text-rose">
-                    <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-rose" /> đang xử
+                    <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-rose" /> live
                   </span>
                 </div>
                 <div className="relative mt-1.5 text-[14.5px] font-medium">{x.title}</div>
-                <div className="relative mt-0.5 text-[12.5px] text-fg-3">Bị cáo {x.accused}</div>
+                <div className="relative mt-0.5 text-[12.5px] text-fg-3">Accused: {x.accused}</div>
               </button>
             ))}
           </div>
@@ -253,8 +253,8 @@ export function CourtView() {
       </section>
 
       <section className="shell py-24">
-        <Kicker tone="ember">Quy trình</Kicker>
-        <Words text="Từ khiếu nại tới *phán quyết* trong mười phút." className="display mt-5 max-w-2xl text-[clamp(2rem,4vw,3.2rem)]" accentClass="serif-accent text-ember" />
+        <Kicker tone="ember">The process</Kicker>
+        <Words text="From complaint to *verdict* in ten minutes." className="display mt-5 max-w-2xl text-[clamp(2rem,4vw,3.2rem)]" accentClass="serif-accent text-ember" />
         <div className="relative mt-12 grid gap-3 md:grid-cols-4">
           <div className="absolute left-0 right-0 top-[38px] hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent md:block" />
           {STEPS.map((s, i) => {

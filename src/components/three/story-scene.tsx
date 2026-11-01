@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, PerformanceMonitor, RoundedBox, Sparkles } from "@react-three/drei";
+import { Float, MeshReflectorMaterial, PerformanceMonitor, RoundedBox, Sparkles } from "@react-three/drei";
 import { Chess, type Square } from "chess.js";
 import { ChessBoard3D } from "./chess-board-3d";
 import { AuroraBackdrop, StageEffects, StageLights } from "./stage";
@@ -19,8 +19,8 @@ const SCRIPT = [
   "Nc3", "c6", "Bg5", "b5", "Nxb5", "cxb5", "Bxb5+", "Nbd7", "O-O-O", "Rd8", "Rxd7", "Rxd7", "Rd1",
   "Qe6", "Bxd7+", "Nxd7", "Qb8+", "Nxb8", "Rd8#",
 ];
-const WHITE = "tốt_thí_123";
-const BLACK = "HậuĐen_VN";
+const WHITE = "pawnstorm_23";
+const BLACK = "QueenSlayer";
 const FOG: Square[] = (["a", "b", "c", "d", "e", "f", "g", "h"] as const).flatMap((f) => [4, 5, 6].map((r) => `${f}${r}` as Square));
 
 const ss = (a: number, b: number, x: number) => THREE.MathUtils.smoothstep(x, a, b);
@@ -188,15 +188,27 @@ function Scene({ onLine, effects }: { onLine?: (l: Line) => void; effects: boole
       <fog attach="fog" args={["#050508", 18, 40]} />
       <AuroraBackdrop position={[0, 0, -16]} scale={[80, 40]} intensity={0.7} />
       <StageLights />
-      <ChessBoard3D pieces={game.pieces} lastMove={game.last} checkSquare={game.check} fogSquares={fog ? FOG : []} flash={flash} />
+      <ChessBoard3D pieces={game.pieces} lastMove={game.last} checkSquare={game.check} fogSquares={fog ? FOG : []} flash={flash} theme="crystal" />
       {(Object.keys(ORB_POS) as HostId[]).map((h) => (
         <HostOrb3D key={h} id={h} />
       ))}
       <ChaosSlab />
       <Sparkles count={60} scale={[16, 6, 16]} size={1.6} speed={0.3} color="#cfc8ff" opacity={0.6} position={[0, 3, 0]} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.56, 0]} receiveShadow>
-        <circleGeometry args={[30, 64]} />
-        <meshStandardMaterial color="#07070d" roughness={0.9} />
+        <planeGeometry args={[70, 70]} />
+        <MeshReflectorMaterial
+          blur={[400, 120]}
+          resolution={512}
+          mixBlur={1}
+          mixStrength={22}
+          roughness={0.85}
+          depthScale={1.1}
+          minDepthThreshold={0.4}
+          maxDepthThreshold={1.4}
+          color="#06060c"
+          metalness={0.6}
+          mirror={0.6}
+        />
       </mesh>
       <Rig />
       <StageEffects enabled={effects} bloom={0.65} />

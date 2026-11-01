@@ -23,7 +23,7 @@ export function idAt(pieces: PieceMap, sq: Square) {
   return undefined;
 }
 
-/** Áp dụng một nước đi lên bản đồ quân (giữ id ổn định để animation mượt). */
+/** Apply a move to the piece map (keeps ids stable so animations stay smooth). */
 export function applyMove(pieces: PieceMap, move: Move): { pieces: PieceMap; captured?: TrackedPiece } {
   const next: PieceMap = { ...pieces };
   let captured: TrackedPiece | undefined;

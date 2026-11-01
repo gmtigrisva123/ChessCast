@@ -5,7 +5,7 @@ import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from "react
 import { cn } from "@/lib/utils";
 import { Magnetic } from "./magnetic";
 
-type Variant = "primary" | "glass" | "ghost" | "aurora" | "ember" | "outline";
+type Variant = "primary" | "glass" | "liquid" | "ghost" | "aurora" | "ember" | "outline";
 type Size = "sm" | "md" | "lg";
 
 const base =
@@ -15,6 +15,7 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-fg text-void shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_10px_30px_-10px_rgba(139,124,255,0.55)] hover:shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_16px_50px_-12px_rgba(139,124,255,0.85)]",
   glass: "glass text-fg hover:bg-white/10",
+  liquid: "liquid text-fg hover:brightness-125",
   ghost: "text-fg-2 hover:bg-white/[0.06] hover:text-fg",
   aurora:
     "bg-[linear-gradient(110deg,#8b7cff,#4d8dff_45%,#3ee6e0)] text-void shadow-[0_12px_40px_-12px_rgba(77,141,255,0.8)] hover:brightness-110",

@@ -16,6 +16,8 @@ import { ChaosIcon } from "../ui/chaos-icon";
 import { Button } from "../ui/button";
 import { Coin } from "../commerce/coin";
 import { Aurora } from "../ui/aurora";
+import { LiquidGlass } from "../ui/liquid-glass";
+import type { PieceTheme } from "../three/pieces";
 
 const ArenaCanvas = dynamic(() => import("./arena-canvas"), {
   ssr: false,
@@ -23,17 +25,17 @@ const ArenaCanvas = dynamic(() => import("./arena-canvas"), {
     <div className="grid h-full w-full place-items-center">
       <div className="flex flex-col items-center gap-4 text-sm text-fg-3">
         <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/10 border-t-violet" />
-        Đang dựng sân khấu 3D…
+        Building the 3D stage…
       </div>
     </div>
   ),
 });
 
-/* ───────── Người chơi ───────── */
+/* ───────── Players ───────── */
 function PlayerPill({ p, color, ms, active, captured, you }: { p: Player; color: Color; ms: number; active: boolean; captured: string; you?: boolean }) {
   const low = ms < 30_000;
   return (
-    <div className={cn("glass-strong flex items-center gap-3 rounded-2xl py-2 pl-2 pr-2 transition-shadow duration-500", active && "shadow-[0_0_0_1px_rgba(139,124,255,0.7),0_10px_40px_-10px_rgba(139,124,255,0.6)]")}>
+    <LiquidGlass radius={16} bezel={12} depth={10} className={cn("liquid-dark flex items-center gap-3 rounded-2xl py-2 pl-2 pr-2 transition-shadow duration-500", active && "shadow-[0_0_0_1px_rgba(139,124,255,0.75),0_10px_40px_-10px_rgba(139,124,255,0.6)]")}>
       <div className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl text-lg", color === "w" ? "bg-[linear-gradient(135deg,#f3f1ff,#b9b0ff)] text-void" : "bg-[linear-gradient(135deg,#2a2d45,#0b0c14)] text-fg ring-1 ring-white/15")}>
         {color === "w" ? "♔" : "♚"}
       </div>
@@ -41,7 +43,7 @@ function PlayerPill({ p, color, ms, active, captured, you }: { p: Player; color:
         <div className="flex items-center gap-1.5 truncate text-[13.5px] font-medium">
           <span>{p.country}</span>
           <span className="truncate">{p.name}</span>
-          {you && <span className="rounded-md bg-fg px-1.5 font-mono text-[9.5px] text-void">BẠN</span>}
+          {you && <span className="rounded-md bg-fg px-1.5 font-mono text-[9.5px] text-void">YOU</span>}
         </div>
         <div className="flex items-center gap-2 font-mono text-[10.5px] text-fg-3">
           <span>{p.rating}</span>
@@ -49,7 +51,7 @@ function PlayerPill({ p, color, ms, active, captured, you }: { p: Player; color:
         </div>
       </div>
       <div className={cn("ml-auto rounded-xl px-3 py-1.5 font-mono text-[17px] tabular-nums transition-colors", active ? (low ? "bg-rose text-void" : "bg-fg text-void") : "bg-white/[0.04] text-fg-3")}>{formatClock(ms)}</div>
-    </div>
+    </LiquidGlass>
   );
 }
 
@@ -65,12 +67,12 @@ function capturedBy(pieces: Arena["game"]["pieces"]) {
   return { w: fmt(count.b), b: fmt(count.w) };
 }
 
-/* ───────── Đồng hồ hype ───────── */
+/* ───────── Hype meter ───────── */
 function HypeRing({ value }: { value: number }) {
   const R = 22;
   const C = 2 * Math.PI * R;
   return (
-    <div className="glass-strong flex items-center gap-2.5 rounded-2xl py-1.5 pl-1.5 pr-3">
+    <LiquidGlass radius={16} bezel={10} depth={9} className="liquid-dark flex items-center gap-2.5 rounded-2xl py-1.5 pl-1.5 pr-3">
       <svg viewBox="0 0 56 56" className="h-11 w-11 -rotate-90">
         <defs>
           <linearGradient id="hype-g" x1="0" x2="1">
@@ -86,11 +88,11 @@ function HypeRing({ value }: { value: number }) {
         <div className="font-mono text-[15px] tabular-nums leading-none">{Math.round(value)}</div>
         <div className="kicker mt-1 text-[9px] text-fg-3">Hype</div>
       </div>
-    </div>
+    </LiquidGlass>
   );
 }
 
-/* ───────── Phụ đề host ───────── */
+/* ───────── Host subtitles ───────── */
 function Subtitle({ item, speaking }: { item?: FeedItem; speaking: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-x-3 bottom-[132px] z-10 flex justify-center sm:bottom-[136px]">
@@ -101,17 +103,19 @@ function Subtitle({ item, speaking }: { item?: FeedItem; speaking: boolean }) {
             initial={{ opacity: 0, y: 18, scale: 0.96, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
             exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="glass-strong flex max-w-2xl items-center gap-3 rounded-2xl py-2.5 pl-2.5 pr-4"
+            transition={{ type: "spring", stiffness: 320, damping: 28, filter: { type: "tween", duration: 0.45, ease: "easeOut" } }}
+            className="max-w-2xl"
           >
-            <HostOrb id={item.host} size={34} talking={speaking} />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-[11px] font-medium" style={{ color: HOSTS[item.host].color }}>
-                {HOSTS[item.host].name}
-                {item.kind === "ai" && <span className="rounded bg-white/10 px-1 font-mono text-[9px] text-fg-2">AI LIVE</span>}
+            <LiquidGlass radius={18} bezel={12} depth={10} className="liquid-dark flex items-center gap-3 rounded-[18px] py-2.5 pl-2.5 pr-4">
+              <HostOrb id={item.host} size={34} talking={speaking} />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: HOSTS[item.host].color }}>
+                  {HOSTS[item.host].name}
+                  {item.kind === "ai" && <span className="rounded bg-white/10 px-1 font-mono text-[9px] text-fg-2">AI LIVE</span>}
+                </div>
+                <div className="text-[13.5px] leading-snug text-fg sm:text-[15px]">{item.text}</div>
               </div>
-              <div className="text-[13.5px] leading-snug text-fg sm:text-[15px]">{item.text}</div>
-            </div>
+            </LiquidGlass>
           </motion.div>
         )}
       </AnimatePresence>
@@ -119,7 +123,7 @@ function Subtitle({ item, speaking }: { item?: FeedItem; speaking: boolean }) {
   );
 }
 
-/* ───────── Dock Chaos Cards (phóng to kiểu macOS) ───────── */
+/* ───────── Chaos Card dock (macOS-style magnification) ───────── */
 function DockItem({ card, cost, mouseX, onPlay, disabled }: { card: ChaosCard; cost: number; mouseX: MotionValue<number>; onPlay: () => void; disabled: boolean }) {
   const ref = useRef<HTMLButtonElement>(null);
   const dist = useTransform(mouseX, (x) => {
@@ -138,7 +142,7 @@ function DockItem({ card, cost, mouseX, onPlay, disabled }: { card: ChaosCard; c
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       whileTap={{ scale: 0.88 }}
-      aria-label={`Ném ${card.name} — ${cost} coin`}
+      aria-label={`Throw ${card.name} — ${cost} coins`}
       className={cn("relative grid shrink-0 place-items-center rounded-[22%] text-void shadow-[0_10px_30px_-8px_var(--g)]", disabled && "opacity-40 saturate-50")}
     >
       <span className="absolute inset-0 rounded-[inherit]" style={{ background: `linear-gradient(140deg, ${card.tint[0]}, ${card.tint[1]})`, ["--g" as string]: card.tint[0] }} />
@@ -156,7 +160,7 @@ function DockItem({ card, cost, mouseX, onPlay, disabled }: { card: ChaosCard; c
           >
             <span className="block text-[12.5px] font-medium text-fg">{card.name}</span>
             <span className="block font-mono text-[10.5px] text-fg-3">
-              {cost} coin · {card.durationLabel}
+              {cost} coins · {card.durationLabel}
             </span>
           </motion.span>
         )}
@@ -171,10 +175,13 @@ function ChaosDock({ arena }: { arena: Arena }) {
   const mounted = useMounted();
   return (
     <div className="relative z-20 -mt-12 flex justify-center px-3">
-      <motion.div
-        onMouseMove={(e) => mouseX.set(e.clientX)}
+      <LiquidGlass
+        radius={28}
+        bezel={18}
+        depth={16}
+        onMouseMove={(e: React.MouseEvent) => mouseX.set(e.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className="glass-strong no-scrollbar flex max-w-full items-end gap-2.5 overflow-x-auto rounded-[28px] px-3 pb-3 pt-3 md:overflow-visible"
+        className="liquid-dark no-scrollbar flex max-w-full items-end gap-2.5 overflow-x-auto rounded-[28px] px-3 pb-3 pt-3 md:overflow-visible"
       >
         <div className="mr-1 hidden flex-col justify-center self-center pl-1 pr-2 md:flex">
           <span className="kicker text-[9.5px] text-fg-3">Chaos</span>
@@ -186,12 +193,12 @@ function ChaosDock({ arena }: { arena: Arena }) {
           const cost = arena.cardCost(c.id);
           return <DockItem key={c.id} card={c} cost={cost} mouseX={mouseX} onPlay={() => arena.playCard(c.id)} disabled={!!arena.game.over || (mounted && coins < cost)} />;
         })}
-      </motion.div>
+      </LiquidGlass>
     </div>
   );
 }
 
-/* ───────── Thanh bên ───────── */
+/* ───────── Sidebar ───────── */
 function FeedPanel({ feed }: { feed: FeedItem[] }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -238,7 +245,7 @@ function ChatPanel({ arena }: { arena: Arena }) {
           <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={cn("text-[13.5px] leading-snug", m.tip && "rounded-xl border border-teal/20 bg-teal/[0.06] p-2")}>
             {m.badge && (
               <span className={cn("mr-1.5 rounded px-1 py-px font-mono text-[9px] uppercase", m.badge === "lord" ? "bg-rose/20 text-rose" : m.badge === "pro" ? "bg-violet/20 text-violet" : m.badge === "mod" ? "bg-teal/20 text-teal" : "bg-white/15 text-fg")}>
-                {m.badge === "you" ? "bạn" : m.badge}
+                {m.badge}
               </span>
             )}
             <span className="font-medium" style={{ color: m.color }}>
@@ -260,12 +267,12 @@ function ChatPanel({ arena }: { arena: Arena }) {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Nhắn cho cả arena…"
+          placeholder="Say something to the arena…"
           className="min-w-0 flex-1 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm outline-none placeholder:text-fg-3 focus:border-violet/60"
           maxLength={140}
-          aria-label="Tin nhắn chat"
+          aria-label="Chat message"
         />
-        <button className="grid h-10 w-10 place-items-center rounded-full bg-fg text-void" aria-label="Gửi">
+        <button className="grid h-10 w-10 place-items-center rounded-full bg-fg text-void" aria-label="Send">
           <Send size={15} />
         </button>
       </form>
@@ -283,7 +290,7 @@ function ClipsPanel() {
         <div className="grid h-full place-items-center text-center text-[13px] leading-relaxed text-fg-3">
           <div>
             <Clapperboard className="mx-auto mb-3 text-fg-3" />
-            AI tự cắt clip khi có cao trào: ăn Hậu, blunder, chiếu hết, Chaos Card…
+            The AI clips peak moments automatically: queen grabs, blunders, mates, Chaos Cards…
           </div>
         </div>
       )}
@@ -296,7 +303,7 @@ function ClipsPanel() {
           <div className="min-w-0">
             <div className="truncate text-[13.5px] font-medium">{c.title}</div>
             <div className="font-mono text-[10.5px] text-fg-3">
-              {c.host} · {new Date(c.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
+              {c.host} · {new Date(c.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
             </div>
             <div className="mt-1 flex gap-3 text-[11.5px] text-violet">
               <span>TikTok ↗</span>
@@ -317,7 +324,7 @@ function TipComposer({ arena }: { arena: Arena }) {
     <div className="rounded-[26px] border border-white/[0.07] bg-white/[0.02] p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-[14px] font-medium">
-          <HandCoins size={16} className="text-teal" /> Tip để host cà khịa
+          <HandCoins size={16} className="text-teal" /> Tip for a roast
         </div>
         <HostOrb id="blunder" size={24} />
       </div>
@@ -342,22 +349,23 @@ function TipComposer({ arena }: { arena: Arena }) {
       <input
         value={req}
         onChange={(e) => setReq(e.target.value.slice(0, 80))}
-        placeholder="Câu cà khịa bạn muốn (tuỳ chọn)"
+        placeholder="Your custom roast (optional)"
         className="mt-2 w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-[13px] outline-none placeholder:text-fg-3 focus:border-violet/60"
-        aria-label="Nội dung cà khịa"
+        aria-label="Roast text"
       />
       <Button className="mt-3 w-full" onClick={() => arena.tip(amount, target, req) && setReq("")}>
-        <Coin className="h-4 w-4" /> Tip {amount} coin
+        <Coin className="h-4 w-4" /> Tip {amount} coins
       </Button>
     </div>
   );
 }
 
-/* ───────── Trang ───────── */
+/* ───────── Page ───────── */
 export function ArenaView() {
   const arena = useArena();
   const { game, players, clocks, mode } = arena;
   const [tab, setTab] = useState<"feed" | "chat" | "clips">("feed");
+  const [theme, setTheme] = useState<PieceTheme>("pearl");
   const [active, setActive] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -370,9 +378,9 @@ export function ArenaView() {
   const lastHostItem = [...arena.feed].reverse().find((f) => f.host);
   const evalPct = 50 + Math.max(-46, Math.min(46, game.evalCp / 12));
   const effects = [
-    game.fog.left > 0 && { label: `Sương mù · còn ${game.fog.left} nước`, tint: "linear-gradient(135deg,#4d8dff,#3ee6e0)" },
-    game.forcedRandom && { label: "Nước kế tiếp: ngẫu nhiên", tint: "linear-gradient(135deg,#8b7cff,#4d8dff)" },
-    game.spotlight && { label: "Đèn sân khấu đang bật", tint: "linear-gradient(135deg,#ffc56b,#ff8a4c)" },
+    game.fog.left > 0 && { label: `Fog of War · ${game.fog.left} moves left`, tint: "linear-gradient(135deg,#4d8dff,#3ee6e0)" },
+    game.forcedRandom && { label: "Next move: random", tint: "linear-gradient(135deg,#8b7cff,#4d8dff)" },
+    game.spotlight && { label: "Spotlight is on", tint: "linear-gradient(135deg,#ffc56b,#ff8a4c)" },
   ].filter(Boolean) as { label: string; tint: string }[];
 
   return (
@@ -389,18 +397,18 @@ export function ArenaView() {
                 <Eye size={12} /> {compact(arena.viewers)}
               </span>
               <span className="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10.5px]">Blitz 3+0</span>
-              <span className="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10.5px]">Nước {Math.ceil(game.ply / 2) || 0}</span>
+              <span className="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10.5px]">Move {Math.ceil(game.ply / 2) || 0}</span>
             </div>
             <h1 className="display mt-3 text-4xl md:text-5xl">
               Arena <span className="serif-accent text-aurora">#{arena.gameNo}</span>
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1" role="tablist" aria-label="Chế độ">
+            <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1" role="tablist" aria-label="Mode">
               {(
                 [
-                  ["watch", "Xem trận", Tv],
-                  ["play", "Tự cầm quân", Swords],
+                  ["watch", "Watch", Tv],
+                  ["play", "Play the bot", Swords],
                 ] as const
               ).map(([m, label, Icon]) => (
                 <button
@@ -416,14 +424,28 @@ export function ArenaView() {
                 </button>
               ))}
             </div>
+            <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1" role="tablist" aria-label="Piece set">
+              {(["pearl", "crystal"] as const).map((t) => (
+                <button
+                  key={t}
+                  role="tab"
+                  aria-selected={theme === t}
+                  onClick={() => setTheme(t)}
+                  className={cn("relative rounded-full px-3.5 py-2 text-[13px] capitalize transition-colors", theme === t ? "text-void" : "text-fg-2 hover:text-fg")}
+                >
+                  {theme === t && <motion.span layoutId="theme-pill" className="absolute inset-0 rounded-full bg-[linear-gradient(110deg,#d7d1ff,#9ff3ff)]" transition={{ type: "spring", stiffness: 420, damping: 32 }} />}
+                  <span className="relative z-10">{t}</span>
+                </button>
+              ))}
+            </div>
             <button
               onClick={() => arena.setTts(!arena.tts)}
               className={cn("flex h-10 items-center gap-2 rounded-full border px-4 text-[13px] transition-colors", arena.tts ? "border-violet/60 bg-violet/10 text-fg" : "border-white/10 text-fg-2 hover:text-fg")}
               aria-pressed={arena.tts}
             >
-              {arena.tts ? <Volume2 size={15} /> : <VolumeX size={15} />} Giọng host
+              {arena.tts ? <Volume2 size={15} /> : <VolumeX size={15} />} Host voices
             </button>
-            <button onClick={() => arena.newGame()} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-fg-2 transition-colors hover:text-fg" aria-label="Ván mới">
+            <button onClick={() => arena.newGame()} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-fg-2 transition-colors hover:text-fg" aria-label="New game">
               <RotateCcw size={15} />
             </button>
           </div>
@@ -444,6 +466,7 @@ export function ArenaView() {
                 interactive={mode === "play"}
                 onSquare={arena.selectSquare}
                 active={active}
+                theme={theme}
               />
               <div className="pointer-events-none absolute left-3 right-3 top-3 z-10 flex items-start justify-between gap-3 sm:left-5 sm:right-5 sm:top-5">
                 <div className="w-full max-w-[340px]">
@@ -456,8 +479,8 @@ export function ArenaView() {
               <div className="pointer-events-none absolute bottom-16 left-3 z-10 w-[calc(100%-24px)] max-w-[340px] sm:bottom-16 sm:left-5">
                 <PlayerPill p={players.w} color="w" ms={clocks.w} active={!game.over && game.turn === "w"} captured={caps.w} you={mode === "play"} />
               </div>
-              {/* Thanh thế cờ */}
-              <div className="pointer-events-none absolute bottom-24 right-5 top-24 z-10 hidden w-1.5 overflow-hidden rounded-full bg-white/10 sm:block" title="Thế cờ">
+              {/* Evaluation bar */}
+              <div className="pointer-events-none absolute bottom-24 right-5 top-24 z-10 hidden w-1.5 overflow-hidden rounded-full bg-white/10 sm:block" title="Evaluation">
                 <motion.div className="absolute bottom-0 left-0 right-0 rounded-full bg-[linear-gradient(0deg,#f3f1ff,#b9b0ff)]" animate={{ height: `${evalPct}%` }} transition={{ type: "spring", stiffness: 60, damping: 14 }} />
               </div>
               <div className="pointer-events-none absolute left-1/2 top-20 z-10 flex -translate-x-1/2 flex-col items-center gap-1.5 sm:top-24">
@@ -470,18 +493,18 @@ export function ArenaView() {
                 </AnimatePresence>
               </div>
               {mode === "play" && !game.over && game.turn === "w" && (
-                <div className="pointer-events-none absolute right-6 top-24 z-10 hidden rounded-full bg-fg px-3 py-1 text-[12px] font-medium text-void sm:block">Lượt của bạn · bấm quân để đi</div>
+                <div className="pointer-events-none absolute right-6 top-24 z-10 hidden rounded-full bg-fg px-3 py-1 text-[12px] font-medium text-void sm:block">Your move · tap a piece</div>
               )}
               <Subtitle item={lastHostItem} speaking={!!arena.speaking} />
               <AnimatePresence>
                 {game.over && (
                   <motion.div className="absolute inset-0 z-20 grid place-items-center bg-void/60 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <motion.div initial={{ scale: 0.88, y: 24, filter: "blur(10px)" }} animate={{ scale: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} transition={{ type: "spring", stiffness: 220, damping: 20 }} className="glass-strong mx-4 max-w-md rounded-[30px] p-8 text-center">
-                      <div className="kicker text-fg-3">Kết thúc · {game.over.reason}</div>
-                      <div className="display mt-3 text-4xl">{game.over.winner ? <>{players[game.over.winner].name} <span className="serif-accent text-aurora">thắng.</span></> : <span className="serif-accent text-aurora">Hòa cờ.</span>}</div>
-                      <p className="mt-3 text-[14px] text-fg-2">{mode === "watch" ? "Ván mới tự bắt đầu sau vài giây…" : "Phục thù chứ?"}</p>
+                    <motion.div initial={{ scale: 0.88, y: 24, filter: "blur(10px)" }} animate={{ scale: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} transition={{ type: "spring", stiffness: 220, damping: 20, filter: { type: "tween", duration: 0.45, ease: "easeOut" } }} className="glass-strong mx-4 max-w-md rounded-[30px] p-8 text-center">
+                      <div className="kicker text-fg-3">Game over · {game.over.reason}</div>
+                      <div className="display mt-3 text-4xl">{game.over.winner ? <>{players[game.over.winner].name} <span className="serif-accent text-aurora">wins.</span></> : <span className="serif-accent text-aurora">Draw.</span>}</div>
+                      <p className="mt-3 text-[14px] text-fg-2">{mode === "watch" ? "A new game starts in a few seconds…" : "Rematch?"}</p>
                       <Button className="mt-6" onClick={() => arena.newGame()}>
-                        <RotateCcw size={15} /> Ván mới ngay
+                        <RotateCcw size={15} /> New game now
                       </Button>
                     </motion.div>
                   </motion.div>
@@ -489,7 +512,7 @@ export function ArenaView() {
               </AnimatePresence>
             </div>
             <ChaosDock arena={arena} />
-            <p className="mt-3 text-center text-[12px] text-fg-3">Chaos Card tác động lên bên đang tới lượt · rê chuột để phóng to, bấm để ném</p>
+            <p className="mt-3 text-center text-[12px] text-fg-3">Chaos Cards hit the side to move · hover to magnify, tap to throw</p>
           </div>
 
           <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
@@ -497,7 +520,7 @@ export function ArenaView() {
               <div className="flex gap-1 border-b border-white/[0.06] p-1.5" role="tablist">
                 {(
                   [
-                    ["feed", "Bình luận", Mic],
+                    ["feed", "Commentary", Mic],
                     ["chat", "Chat", MessageCircle],
                     ["clips", "Clip", Clapperboard],
                   ] as const
@@ -521,7 +544,7 @@ export function ArenaView() {
                   </div>
                 ))}
                 {arena.speaking && <VoiceBars color={HOSTS[arena.speaking].color} className="ml-1" />}
-                <span className="ml-auto font-mono text-[10.5px] text-fg-3">3 host đang trực</span>
+                <span className="ml-auto font-mono text-[10.5px] text-fg-3">3 hosts on air</span>
               </div>
             </div>
             <TipComposer arena={arena} />

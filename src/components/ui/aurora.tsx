@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Nền cực quang: các đốm gradient mờ trôi chậm. */
+/** Aurora backdrop: soft blurred gradient blobs drifting slowly. */
 export function Aurora({ tone = "violet", className }: { tone?: "violet" | "ember" | "teal"; className?: string }) {
   const c =
     tone === "ember"

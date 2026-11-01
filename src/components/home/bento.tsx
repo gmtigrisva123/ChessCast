@@ -64,7 +64,7 @@ function RoyaleRings() {
         </radialGradient>
       </defs>
       <text y="-60" textAnchor="middle" className="font-mono" fontSize="7" fill="rgba(255,255,255,0.45)">
-        {100 - dead.size} / 100 còn trụ
+        {100 - dead.size} / 100 still standing
       </text>
     </svg>
   );
@@ -95,8 +95,8 @@ function Gauge() {
         <circle cx="100" cy="100" r="7" fill="#fff" />
       </svg>
       <div className="mt-1 flex justify-between font-mono text-[11px]">
-        <span className="text-teal">Vô tội {100 - v}%</span>
-        <span className="text-rose">Có tội {v}%</span>
+        <span className="text-teal">Innocent {100 - v}%</span>
+        <span className="text-rose">Guilty {v}%</span>
       </div>
     </div>
   );
@@ -138,8 +138,8 @@ export function Bento() {
   return (
     <section className="shell py-24 md:py-36" aria-labelledby="bento-title">
       <div className="max-w-3xl">
-        <Kicker tone="teal">Nhiều cách nhập cuộc</Kicker>
-        <Words id="bento-title" text="Không chỉ một ván cờ. *Cả một vũ trụ* để quậy." className="display mt-5 text-[clamp(2.3rem,5vw,4.2rem)]" />
+        <Kicker tone="teal">More ways to play</Kicker>
+        <Words id="bento-title" text="Not just a game. *A whole universe* to mess with." className="display mt-5 text-[clamp(2.3rem,5vw,4.2rem)]" />
       </div>
       <div className="mt-14 grid auto-rows-[minmax(260px,auto)] gap-4 md:grid-cols-6">
         <Reveal className="md:col-span-4 md:row-span-2">
@@ -150,9 +150,9 @@ export function Bento() {
             <div className="grid flex-1 items-center gap-6 md:grid-cols-[1fr_1.1fr]">
               <div>
                 <h3 className="display mt-4 text-[clamp(2rem,3.6vw,3.2rem)]">
-                  100 người vào. <span className="serif-accent text-aurora">Một người</span> bước ra.
+                  100 enter. <span className="serif-accent text-aurora">One</span> walks out.
                 </h3>
-                <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-fg-2">Lưới đấu loại trực tiếp, blitz 3 phút. Mỗi lần thua là một vụ nổ trên sóng, mỗi vòng có host AI riêng.</p>
+                <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-fg-2">A knockout bracket of 3-minute blitz. Every loss is an on-air explosion, every round gets its own AI host.</p>
               </div>
               <div className="mx-auto aspect-square w-full max-w-[340px]">
                 <RoyaleRings />
@@ -165,7 +165,7 @@ export function Bento() {
             <div className="flex items-center gap-2 text-[13px] text-fg-2">
               <Gavel size={16} className="text-rose" /> Chess Court
             </div>
-            <h3 className="display mt-4 text-2xl">Khán giả làm bồi thẩm.</h3>
+            <h3 className="display mt-4 text-2xl">The crowd is the jury.</h3>
             <div className="mt-auto pt-6">
               <Gauge />
             </div>
@@ -174,10 +174,10 @@ export function Bento() {
         <Reveal delay={0.16} className="md:col-span-2">
           <Card href="/live">
             <div className="flex items-center gap-2 text-[13px] text-fg-2">
-              <Clapperboard size={16} className="text-violet" /> Clip tự động
+              <Clapperboard size={16} className="text-violet" /> Auto clips
             </div>
             <div className="mt-4 flex flex-1 items-center gap-5">
-              <h3 className="display text-2xl">Cao trào thành video dọc trong vài giây.</h3>
+              <h3 className="display text-2xl">Peak moments become vertical videos in seconds.</h3>
               <ClipPhone />
             </div>
           </Card>
@@ -185,12 +185,12 @@ export function Bento() {
         <Reveal delay={0.08} className="md:col-span-3">
           <Card href="/live">
             <div className="flex items-center gap-2 text-[13px] text-fg-2">
-              <Swords size={16} className="text-teal" /> Tự cầm quân
+              <Swords size={16} className="text-teal" /> Play yourself
             </div>
             <div className="mt-4 grid flex-1 items-center gap-6 sm:grid-cols-[1fr_150px]">
               <div>
-                <h3 className="display text-2xl">Đánh với bot. Để host bình luận chính bạn.</h3>
-                <p className="mt-3 text-[14.5px] text-fg-2">Mọi nước đi của bạn đều được tường thuật — kể cả những nước không nên đi.</p>
+                <h3 className="display text-2xl">Play the bot. Let the hosts call your game.</h3>
+                <p className="mt-3 text-[14.5px] text-fg-2">Every move you make gets called — especially the ones you shouldn&apos;t have made.</p>
               </div>
               <MiniBoard fen="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4" highlight={["h5", "f7"]} />
             </div>
@@ -203,8 +203,8 @@ export function Bento() {
             </div>
             <div className="mt-4 flex flex-1 items-center justify-between gap-6">
               <div>
-                <h3 className="display text-2xl">Bắt đầu với 300 coin, miễn phí.</h3>
-                <p className="mt-3 text-[14.5px] text-fg-2">Đủ để ném sáu lá Sương Mù. Hết thì nạp thêm, không bao giờ là cá cược.</p>
+                <h3 className="display text-2xl">Start with 300 coins, free.</h3>
+                <p className="mt-3 text-[14.5px] text-fg-2">Enough for six Fog of War cards. Top up any time — it&apos;s never gambling.</p>
               </div>
               <motion.div animate={{ rotateY: 360 }} transition={{ duration: 6, repeat: Infinity, ease: "linear" }} className="shrink-0 [transform-style:preserve-3d]">
                 <Coin className="h-24 w-24 drop-shadow-[0_20px_40px_rgba(109,92,255,0.6)]" />

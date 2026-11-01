@@ -2,7 +2,7 @@
   "name": "chesscast",
   "version": "1.0.0",
   "private": true,
-  "description": "ChessCast — biến mỗi ván cờ thành một show giải trí sống.",
+  "description": "ChessCast — every chess game becomes a live entertainment show.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "@fontsource-variable/inter": "^5.3.0",
-    "@fontsource-variable/inter-tight": "^5.3.0",
-    "@fontsource-variable/jetbrains-mono": "^5.3.0",
-    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource-variable/mona-sans": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "@react-three/postprocessing": "^3.2.2",

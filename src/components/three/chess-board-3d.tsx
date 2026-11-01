@@ -7,7 +7,7 @@ import { RoundedBox, useCursor } from "@react-three/drei";
 import type { Square } from "chess.js";
 import type { PieceMap, TrackedPiece } from "@/lib/chess/tracker";
 import { FILES, squareToXZ } from "@/lib/chess/engine";
-import { getPieceGeometries, getPieceMaterials } from "./pieces";
+import { getPieceGeometries, getPieceMaterials, type PieceTheme } from "./pieces";
 
 const LIGHT = new THREE.Color("#7d82ad");
 const DARK = new THREE.Color("#171928");
@@ -25,6 +25,7 @@ export type BoardProps = {
   shake?: number;
   accent?: string;
   intro?: boolean;
+  theme?: PieceTheme;
 };
 
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -50,6 +51,7 @@ function AnimatedPiece({
   intro,
   onClick,
   interactive,
+  theme,
 }: {
   p: TrackedPiece;
   hidden: boolean;
@@ -57,9 +59,10 @@ function AnimatedPiece({
   intro: boolean;
   onClick?: (sq: Square) => void;
   interactive?: boolean;
+  theme: PieceTheme;
 }) {
   const geoms = getPieceGeometries();
-  const mats = getPieceMaterials();
+  const mats = getPieceMaterials(theme);
   const ref = useRef<THREE.Group>(null!);
   const [hovered, setHovered] = useState(false);
   useCursor(hovered && !!interactive);
@@ -87,7 +90,7 @@ function AnimatedPiece({
         s.t = 0;
         s.dur = 1.1;
         s.arc = 0;
-        // xếp quân rơi theo hàng
+        // line captured pieces up in rows
         const rank = Number(p.square[1]);
         s.delay = 0.15 + (p.color === "w" ? rank : 9 - rank) * 0.09 + (p.square.charCodeAt(0) - 97) * 0.03;
       } else {
@@ -157,9 +160,9 @@ function AnimatedPiece({
 
 type GhostT = { key: string; piece: TrackedPiece; start: number; dir: THREE.Vector3; spin: number };
 
-function Ghost({ g }: { g: GhostT }) {
+function Ghost({ g, theme }: { g: GhostT; theme: PieceTheme }) {
   const geoms = getPieceGeometries();
-  const mats = getPieceMaterials();
+  const mats = getPieceMaterials(theme);
   const ref = useRef<THREE.Group>(null!);
   const [x, z] = squareToXZ(g.piece.square);
   useFrame(({ clock }) => {
@@ -304,6 +307,7 @@ export function ChessBoard3D({
   shake = 0,
   accent = "#8b7cff",
   intro = true,
+  theme = "pearl",
 }: BoardProps) {
   const sqRef = useRef<THREE.InstancedMesh>(null!);
   const group = useRef<THREE.Group>(null!);
@@ -351,7 +355,7 @@ export function ChessBoard3D({
     }
   });
 
-  // Ghosts cho quân bị ăn
+  // Ghosts for captured pieces
   const prev = useRef<PieceMap>(pieces);
   const [ghosts, setGhosts] = useState<GhostT[]>([]);
   const clockRef = useRef(0);
@@ -393,11 +397,11 @@ export function ChessBoard3D({
 
   return (
     <group ref={group}>
-      {/* Khung bàn cờ */}
+      {/* Board frame */}
       <RoundedBox args={[9.1, 0.42, 9.1]} radius={0.16} smoothness={4} position={[0, -0.33, 0]} receiveShadow castShadow>
         <meshPhysicalMaterial color="#090a12" roughness={0.18} metalness={0.7} clearcoat={1} clearcoatRoughness={0.08} iridescence={0.6} iridescenceIOR={1.4} />
       </RoundedBox>
-      {/* Viền phát sáng */}
+      {/* Glowing rim */}
       {[
         [0, 4.035, 8.1, 0.035],
         [0, -4.035, 8.1, 0.035],
@@ -409,9 +413,9 @@ export function ChessBoard3D({
           <meshBasicMaterial color={i < 2 ? accent : "#3ee6e0"} toneMapped={false} />
         </mesh>
       ))}
-      {/* Nhãn cột/hàng */}
+      {/* File/rank labels */}
       <BoardLabels />
-      {/* Ô cờ */}
+      {/* Squares */}
       <instancedMesh
         ref={sqRef}
         args={[undefined, undefined, 64]}
@@ -428,7 +432,7 @@ export function ChessBoard3D({
         <meshPhysicalMaterial roughness={0.28} metalness={0.15} clearcoat={1} clearcoatRoughness={0.12} />
       </instancedMesh>
 
-      {/* Đánh dấu */}
+      {/* Markers */}
       {lastMove && (
         <>
           <SquareMarker sq={lastMove.from} color="#8b7cff" opacity={0.3} />
@@ -442,7 +446,7 @@ export function ChessBoard3D({
       ))}
       {checkSquare && <SquareMarker sq={checkSquare} color="#ff4f7b" opacity={0.75} />}
 
-      {/* Quân cờ */}
+      {/* Pieces */}
       {pieceList.map((p) => (
         <AnimatedPiece
           key={p.id}
@@ -452,15 +456,16 @@ export function ChessBoard3D({
           intro={intro}
           onClick={onSquareClick}
           interactive={interactive}
+          theme={theme}
         />
       ))}
       {ghosts.map((g) => (
-        <Ghost key={g.key} g={g} />
+        <Ghost key={g.key} g={g} theme={theme} />
       ))}
 
       <Fog squares={fogSquares} />
 
-      {/* Flash khi có Chaos Card */}
+      {/* Chaos Card flash */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <planeGeometry args={[8.2, 8.2]} />
         <meshBasicMaterial ref={flashMat} color="#8b7cff" transparent opacity={0} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />

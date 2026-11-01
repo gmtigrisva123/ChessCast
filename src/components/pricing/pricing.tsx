@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, ShieldCheck } from "lucide-react";
+import { BadgeCheck, CreditCard, Plus, ShieldCheck, Undo2 } from "lucide-react";
 import { CHAOS_CARDS } from "@/lib/catalog";
 import { useUI } from "@/lib/store";
 import { PlanCards, CoinPacks } from "../commerce/plan-cards";
@@ -11,32 +11,33 @@ import { PageHero } from "../ui/page-hero";
 import { Kicker } from "../ui/section";
 import { Reveal, Words } from "../ui/reveal";
 import { ChaosCard } from "../ui/chaos-card";
+import { LiquidGlass } from "../ui/liquid-glass";
 import { cn } from "@/lib/utils";
 
 const FAQ = [
   {
-    q: "Chaos Coins có phải là cá cược không?",
-    a: "Không. Coin là vật phẩm giải trí ảo dùng để kích hoạt hiệu ứng trong show (Chaos Cards, tip cho host). Coin không quy đổi thành tiền, không rút ra được và không bao giờ dùng để đặt cược vào kết quả trận đấu.",
+    q: "Are Chaos Coins gambling?",
+    a: "No. Coins are virtual entertainment items that trigger in-show effects (Chaos Cards, tips for the hosts). They can't be exchanged for money, can't be withdrawn, and are never used to bet on the result of a game.",
   },
   {
-    q: "Tôi thanh toán bằng gì?",
-    a: "Thẻ Visa, Mastercard, JCB và các phương thức ví điện tử mà cổng thanh toán hỗ trợ. Thông tin thẻ được cổng thanh toán xử lý trực tiếp, ChessCast không lưu số thẻ.",
+    q: "How can I pay?",
+    a: "Visa, Mastercard, American Express and the wallets our payment processor supports where available, such as Apple Pay and Google Pay. Card details are handled directly by Stripe — ChessCast never stores your card number.",
   },
   {
-    q: "Tôi có thể huỷ gói thành viên bất cứ lúc nào?",
-    a: "Có. Bạn huỷ gia hạn bất kỳ lúc nào; quyền lợi vẫn giữ đến hết chu kỳ đã thanh toán. Coin đã nhận vẫn nằm trong ví.",
+    q: "Can I cancel my membership at any time?",
+    a: "Yes. Turn off renewal whenever you like — your perks stay active until the end of the period you've paid for, and any coins you've received stay in your wallet.",
   },
   {
-    q: "Chaos Card không có tác dụng thì sao?",
-    a: "Nếu thế cờ không cho phép lá bài phát huy (ví dụ không còn quân để hoán đổi), hệ thống từ chối kích hoạt và bạn không bị trừ coin.",
+    q: "What if a Chaos Card can't take effect?",
+    a: "If the position doesn't allow the card to work (for example, there are no pieces left to swap), the system refuses to activate it and no coins are charged.",
   },
   {
-    q: "Kỳ thủ có đồng ý bị can thiệp không?",
-    a: "Có. Chỉ những trận mà cả hai kỳ thủ bật chế độ “Hỗn loạn” mới nhận Chaos Cards, và kỳ thủ được chia sẻ doanh thu từ những lá bài ném vào trận của họ.",
+    q: "Do players agree to the chaos?",
+    a: "Yes. Only games where both players switch on Chaos Mode accept Chaos Cards, and players earn a revenue share from every card thrown into their game.",
   },
   {
-    q: "Doanh nghiệp muốn tài trợ giải đấu thì sao?",
-    a: "Xem trang Đối tác để biết các gói tài trợ và License/API, hoặc gửi form liên hệ — đội ngũ phản hồi trong 1 ngày làm việc.",
+    q: "We're a business. Can we sponsor a tournament?",
+    a: "See the Partners page for sponsorship packages and License / API, or send us the contact form — the team replies within one business day.",
   },
 ];
 
@@ -69,29 +70,59 @@ function CanceledNotice() {
   const sp = useSearchParams();
   const toast = useUI((s) => s.toast);
   useEffect(() => {
-    if (sp.get("canceled")) toast({ title: "Đã huỷ thanh toán", body: "Bạn chưa bị trừ tiền. Quay lại bất cứ lúc nào.", tone: "neutral" });
+    if (sp.get("canceled")) toast({ title: "Payment canceled", body: "You haven't been charged. Come back any time.", tone: "neutral" });
   }, [sp, toast]);
   return null;
+}
+
+const TRUST = [
+  { icon: CreditCard, t: "Secure checkout", b: "Payments run on Stripe" },
+  { icon: Undo2, t: "Cancel anytime", b: "Perks last the full period" },
+  { icon: BadgeCheck, t: "Never gambling", b: "Coins can't be cashed out" },
+];
+
+function TrustStrip() {
+  return (
+    <div className="mt-8 grid gap-3 sm:grid-cols-3">
+      {TRUST.map((x, i) => {
+        const Icon = x.icon;
+        return (
+          <motion.div key={x.t} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
+            <LiquidGlass className="flex items-center gap-3 rounded-[22px] px-4 py-3.5" radius={22} bezel={12} depth={10}>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white/[0.07] text-teal">
+                <Icon size={18} />
+              </span>
+              <span>
+                <span className="block text-[14px] font-medium text-fg">{x.t}</span>
+                <span className="block text-[12.5px] text-fg-3">{x.b}</span>
+              </span>
+            </LiquidGlass>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
 }
 
 export function PricingView() {
   return (
     <>
       <CanceledNotice />
-      <PageHero kicker="Bảng giá" title="Xem miễn phí. *Quậy theo cách của bạn.*">
-        Mọi trận đều xem được. Gói thành viên mở khoá giọng host cao cấp và clip không giới hạn; Chaos Coins để bạn tự tay bẻ lái trận đấu.
+      <PageHero kicker="Pricing" title="Watch for free. *Cause chaos your way.*">
+        Every game is free to watch. Memberships unlock premium host voices and unlimited clips; Chaos Coins put the game in your hands.
       </PageHero>
       <section className="shell pb-24">
         <PlanCards />
+        <TrustStrip />
       </section>
 
       <section id="coins" className="shell scroll-mt-28 py-24">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <Kicker tone="teal">Chaos Coins</Kicker>
-            <Words text="Nạp coin. *Thả hỗn loạn.*" className="display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" />
+            <Words text="Top up. *Unleash chaos.*" className="display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" />
           </div>
-          <p className="max-w-sm text-fg-2">Gói càng lớn, thưởng càng nhiều. Coin không hết hạn và dùng được ở mọi trận live.</p>
+          <p className="max-w-sm text-fg-2">The bigger the pack, the bigger the bonus. Coins never expire and work in every live game.</p>
         </div>
         <div className="mt-12">
           <CoinPacks />
@@ -99,8 +130,8 @@ export function PricingView() {
       </section>
 
       <section className="shell py-24">
-        <Kicker tone="ember">Giá từng lá bài</Kicker>
-        <Words text="Sáu cách để *làm loạn.*" className="display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" accentClass="serif-accent text-ember" />
+        <Kicker tone="ember">Card prices</Kicker>
+        <Words text="Six ways to *cause trouble.*" className="display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" accentClass="serif-accent text-ember" />
         <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
           {CHAOS_CARDS.map((c, i) => (
             <Reveal key={c.id} delay={i * 0.05}>
@@ -110,15 +141,15 @@ export function PricingView() {
         </div>
         <div className="mt-6 flex items-start gap-3 rounded-2xl border border-teal/20 bg-teal/[0.04] p-4 text-[14px] text-fg-2">
           <ShieldCheck className="mt-0.5 shrink-0 text-teal" size={18} />
-          Thành viên Fan Pro và Chaos Lord được giảm 10% mọi Chaos Card. Lá bài không kích hoạt được thì không bị trừ coin.
+          Fan Pro and Chaos Lord members save 10% on every Chaos Card. If a card can't activate, you're never charged.
         </div>
       </section>
 
       <section className="shell grid gap-12 py-24 lg:grid-cols-[1fr_1.6fr]">
         <div>
-          <Kicker>Câu hỏi thường gặp</Kicker>
-          <Words text="Còn thắc mắc? *Hỏi đi.*" className="display mt-5 text-[clamp(2.2rem,4.2vw,3.4rem)]" />
-          <p className="mt-5 max-w-sm text-[15px] text-fg-2">Mọi nguồn thu của ChessCast là cơ chế giải trí ảo — không phải cá cược trên kết quả trận đấu.</p>
+          <Kicker>FAQ</Kicker>
+          <Words text="Questions? *Ask away.*" className="display mt-5 text-[clamp(2.2rem,4.2vw,3.4rem)]" />
+          <p className="mt-5 max-w-sm text-[15px] text-fg-2">Every ChessCast revenue stream is virtual entertainment — never betting on the outcome of a game.</p>
         </div>
         <Faq />
       </section>

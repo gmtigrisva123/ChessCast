@@ -1,6 +1,6 @@
 import { Chess, type Move, type PieceSymbol, type Square } from "chess.js";
 
-/** Giá trị quân (centipawn). */
+/** Piece values (centipawns). */
 export const PIECE_VALUE: Record<PieceSymbol, number> = {
   p: 100,
   n: 320,
@@ -10,7 +10,7 @@ export const PIECE_VALUE: Record<PieceSymbol, number> = {
   k: 0,
 };
 
-// Bảng vị trí (góc nhìn quân Trắng, hàng 8 → hàng 1).
+// Piece-square tables (from White's point of view, rank 8 → rank 1).
 const PST: Record<PieceSymbol, number[]> = {
   p: [
     0, 0, 0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50, 50, 50, 10, 10, 20, 30, 30, 20, 10, 10, 5, 5, 10, 25, 25, 10, 5, 5, 0,
@@ -42,7 +42,7 @@ const PST: Record<PieceSymbol, number[]> = {
   ],
 };
 
-/** Điểm thế cờ theo góc nhìn quân Trắng (centipawn). */
+/** Static evaluation from White's point of view (centipawns). */
 export function evaluate(chess: Chess): number {
   if (chess.isCheckmate()) return chess.turn() === "w" ? -100000 : 100000;
   if (chess.isDraw() || chess.isStalemate()) return 0;
@@ -97,15 +97,15 @@ function negamax(chess: Chess, depth: number, alpha: number, beta: number, color
 
 export type BotStyle = {
   depth: 1 | 2 | 3;
-  /** 0..1 — xác suất chọn nước “ngẫu hứng” thay vì nước tốt nhất. */
+  /** 0..1 — probability of playing an “inspired” move instead of the best one. */
   chaos: number;
-  /** Biên độ chấp nhận (centipawn) khi chọn ngẫu nhiên giữa các nước gần tốt nhất. */
+  /** Tolerance (centipawns) when picking randomly among near-best moves. */
   slack: number;
 };
 
 export const DEFAULT_STYLE: BotStyle = { depth: 2, chaos: 0.08, slack: 35 };
 
-/** Chọn nước đi cho bên đang tới lượt. */
+/** Choose a move for the side to move. */
 export function pickMove(fen: string, style: BotStyle = DEFAULT_STYLE): Move | null {
   const chess = new Chess(fen);
   const moves = chess.moves({ verbose: true });

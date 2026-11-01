@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, Loader2, Lock, ShieldCheck, X } from "lucide-react";
 import { getCoinPack, getPlan } from "@/lib/catalog";
 import { useUI, useWallet } from "@/lib/store";
-import { formatNum, formatVnd } from "@/lib/utils";
+import { formatMoney, formatNum } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Coin } from "./coin";
 
@@ -46,12 +46,12 @@ export function CheckoutModal() {
     if (req.kind === "coin") {
       const p = getCoinPack(req.id);
       if (!p) return null;
-      return { kind: "coin", id: p.id, label: `Gói ${p.name}`, description: `${formatNum(p.coins)} coin${p.bonus ? ` + ${formatNum(p.bonus)} thưởng` : ""}`, amount: p.price, coins: p.coins + p.bonus };
+      return { kind: "coin", id: p.id, label: `${p.name} pack`, description: `${formatNum(p.coins)} coins${p.bonus ? ` + ${formatNum(p.bonus)} bonus` : ""}`, amount: p.price, coins: p.coins + p.bonus };
     }
     const p = getPlan(req.id);
     if (!p) return null;
     const yearly = req.cycle === "yearly";
-    return { kind: "plan", id: p.id, cycle: yearly ? "yearly" : "monthly", label: `${p.name} · ${yearly ? "năm" : "tháng"}`, description: p.tagline, amount: yearly ? p.yearly : p.monthly, coins: yearly ? p.monthlyCoins * 12 : p.monthlyCoins };
+    return { kind: "plan", id: p.id, cycle: yearly ? "yearly" : "monthly", label: `${p.name} · ${yearly ? "yearly" : "monthly"}`, description: p.tagline, amount: yearly ? p.yearly : p.monthly, coins: yearly ? p.monthlyCoins * 12 : p.monthlyCoins };
   }, [req]);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function CheckoutModal() {
     try {
       const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: item.kind, id: item.id, cycle: item.cycle }) });
       const j = await r.json();
-      if (!r.ok) throw new Error(j.error ?? "Lỗi thanh toán");
+      if (!r.ok) throw new Error(j.error ?? "Payment error");
       if (j.url) {
         window.location.href = j.url;
         return;
@@ -86,7 +86,7 @@ export function CheckoutModal() {
     purchase({ label: item.label, amount: item.amount, coins: item.coins, provider: "demo" });
     if (item.kind === "plan") setPlan(item.id as "pro" | "lord", item.cycle ?? "monthly");
     setPhase("done");
-    toast({ title: "Thanh toán thành công", body: item.coins ? `+${formatNum(item.coins)} Chaos Coins đã vào ví.` : undefined });
+    toast({ title: "Payment successful", body: item.coins ? `+${formatNum(item.coins)} Chaos Coins added to your wallet.` : undefined });
   };
 
   return (
@@ -97,35 +97,35 @@ export function CheckoutModal() {
           <motion.div
             role="dialog"
             aria-modal
-            aria-label="Thanh toán"
+            aria-label="Checkout"
             className="glass-strong relative w-full max-w-[420px] overflow-hidden rounded-[30px]"
             initial={{ y: 40, scale: 0.94, filter: "blur(10px)" }}
             animate={{ y: 0, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
             exit={{ y: 20, scale: 0.97, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 280, damping: 28 }}
+            transition={{ type: "spring", stiffness: 280, damping: 28, filter: { type: "tween", duration: 0.45, ease: "easeOut" } }}
           >
             <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-72 -translate-x-1/2 rounded-full bg-iris/40 blur-[70px]" />
             <div className="relative p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="kicker text-fg-3">Thanh toán an toàn</div>
+                  <div className="kicker text-fg-3">Secure checkout</div>
                   <div className="display mt-2 text-[28px]">{item.label}</div>
                   <div className="mt-1 text-sm text-fg-2">{item.description}</div>
                 </div>
-                <button onClick={close} className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-fg-2 hover:text-fg" aria-label="Đóng">
+                <button onClick={close} className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-fg-2 hover:text-fg" aria-label="Close">
                   <X size={16} />
                 </button>
               </div>
               {phase === "done" && <Burst />}
               <div className="mt-6 space-y-2 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-fg-2">Tổng cộng</span>
-                  <span className="font-mono text-lg text-fg">{formatVnd(item.amount)}</span>
+                  <span className="text-fg-2">Total</span>
+                  <span className="font-mono text-lg text-fg">{formatMoney(item.amount)}</span>
                 </div>
                 {item.coins > 0 && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2 text-fg-2">
-                      <Coin className="h-4 w-4" /> Nhận vào ví
+                      <Coin className="h-4 w-4" /> Added to wallet
                     </span>
                     <span className="font-mono text-teal">+{formatNum(item.coins)}</span>
                   </div>
@@ -135,22 +135,22 @@ export function CheckoutModal() {
                 {phase === "review" || phase === "loading" || phase === "error" ? (
                   <motion.div key="r" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <Button className="mt-5 w-full" size="lg" onClick={pay} disabled={phase === "loading"}>
-                      {phase === "loading" ? <Loader2 className="animate-spin" size={17} /> : <Lock size={15} />} Tiếp tục thanh toán
+                      {phase === "loading" ? <Loader2 className="animate-spin" size={17} /> : <Lock size={15} />} Continue to payment
                     </Button>
                     {err && <p className="mt-3 text-center text-sm text-rose">{err}</p>}
                     <p className="mt-4 flex items-start gap-2 text-[12px] leading-relaxed text-fg-3">
                       <ShieldCheck size={14} className="mt-0.5 shrink-0 text-teal" />
-                      Thông tin thẻ do cổng thanh toán xử lý trực tiếp, ChessCast không lưu số thẻ. Coin là vật phẩm giải trí ảo, không dùng để cá cược.
+                      Card details are handled directly by the payment provider — ChessCast never stores card numbers. Coins are virtual entertainment items and are never used for betting.
                     </p>
                   </motion.div>
                 ) : phase === "demo" || phase === "processing" ? (
                   <motion.div key="d" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="mt-5">
                     <div className="rounded-2xl border border-dashed border-violet/40 bg-violet/[0.06] p-4 text-[13px] leading-relaxed text-fg-2">
-                      <b className="text-fg">Chế độ demo.</b> Cổng thanh toán chưa được kết nối nên không có khoản tiền thật nào bị trừ.
+                      <b className="text-fg">Demo mode.</b> No payment provider is connected yet, so no real money will be charged.
                     </div>
                     <Button className="mt-3 w-full" size="lg" variant="aurora" onClick={confirmDemo} disabled={phase === "processing"}>
                       {phase === "processing" ? <Loader2 className="animate-spin" size={17} /> : null}
-                      {phase === "processing" ? "Đang xử lý…" : "Xác nhận thanh toán thử"}
+                      {phase === "processing" ? "Processing…" : "Confirm test payment"}
                     </Button>
                   </motion.div>
                 ) : (
@@ -163,9 +163,9 @@ export function CheckoutModal() {
                     >
                       <Check size={26} strokeWidth={2.5} />
                     </motion.div>
-                    <div className="display mt-4 text-2xl">Xong. Lên sân khấu thôi.</div>
+                    <div className="display mt-4 text-2xl">Done. Take the stage.</div>
                     <Button className="mt-5 w-full" variant="glass" onClick={close}>
-                      Tiếp tục
+                      Continue
                     </Button>
                   </motion.div>
                 )}

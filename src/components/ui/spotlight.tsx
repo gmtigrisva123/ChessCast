@@ -3,7 +3,7 @@
 import { useRef, type ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
-/** Card có vệt sáng & viền phát sáng đi theo con trỏ. */
+/** Card with a glow and luminous border that follow the pointer. */
 export function Spotlight({ className, children, ...rest }: ComponentPropsWithoutRef<"div">) {
   const ref = useRef<HTMLDivElement>(null);
   return (

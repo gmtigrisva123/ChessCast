@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 const GLYPH: Record<string, string> = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
 
-/** Bàn cờ 2D kiểu kính mờ dựng từ FEN. */
+/** Frosted-glass 2D board rendered from a FEN string. */
 export function MiniBoard({ fen, highlight = [], className }: { fen: string; highlight?: string[]; className?: string }) {
   const rows = fen.split(" ")[0].split("/");
   const cells: { sq: string; piece: string | null; dark: boolean }[] = [];

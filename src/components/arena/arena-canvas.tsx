@@ -3,11 +3,13 @@
 import * as THREE from "three";
 import { memo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, PerformanceMonitor, Sparkles } from "@react-three/drei";
+import { MeshReflectorMaterial, OrbitControls, PerformanceMonitor, Sparkles } from "@react-three/drei";
 import type { Square } from "chess.js";
 import { ChessBoard3D } from "../three/chess-board-3d";
 import { AuroraBackdrop, StageEffects, StageLights } from "../three/stage";
 import type { PieceMap } from "@/lib/chess/tracker";
+import type { PieceTheme } from "../three/pieces";
+import { pinnedHighQuality } from "@/lib/quality";
 
 type Props = {
   pieces: PieceMap;
@@ -21,6 +23,7 @@ type Props = {
   interactive: boolean;
   onSquare: (sq: Square) => void;
   active: boolean;
+  theme: PieceTheme;
 };
 
 function ArenaCanvasImpl(p: Props) {
@@ -41,6 +44,7 @@ function ArenaCanvasImpl(p: Props) {
     >
       <PerformanceMonitor
         onDecline={() => {
+          if (pinnedHighQuality()) return;
           setDpr(1);
           setFx(false);
         }}
@@ -60,11 +64,28 @@ function ArenaCanvasImpl(p: Props) {
         shake={p.shake}
         interactive={p.interactive}
         onSquareClick={p.interactive ? p.onSquare : undefined}
+        theme={p.theme}
       />
       <Sparkles count={50} scale={[16, 6, 16]} size={1.6} speed={0.3} color="#cfc8ff" opacity={0.55} position={[0, 3, 0]} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.56, 0]} receiveShadow>
-        <circleGeometry args={[30, 64]} />
-        <meshStandardMaterial color="#07070d" roughness={0.95} />
+        <planeGeometry args={[80, 80]} />
+        {fx ? (
+          <MeshReflectorMaterial
+            blur={[400, 120]}
+            resolution={512}
+            mixBlur={1}
+            mixStrength={18}
+            roughness={0.85}
+            depthScale={1.1}
+            minDepthThreshold={0.4}
+            maxDepthThreshold={1.4}
+            color="#06060c"
+            metalness={0.6}
+            mirror={0.55}
+          />
+        ) : (
+          <meshStandardMaterial color="#07070d" roughness={0.95} />
+        )}
       </mesh>
       <OrbitControls
         makeDefault

@@ -21,12 +21,12 @@ export function Deck() {
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[130px]" style={{ background: `radial-gradient(closest-side, ${card.tint[0]}33, transparent)` }} />
       <div className="shell relative">
         <div className="mx-auto max-w-3xl text-center">
-          <Kicker tone="ember">Bộ bài hỗn loạn</Kicker>
-          <Words id="deck-title" text="Sáu lá bài. *Vô số plot-twist.*" className="display mt-5 text-[clamp(2.3rem,5vw,4.2rem)]" accentClass="serif-accent text-ember" />
-          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-fg-2">Rê qua bộ bài, chọn một lá. Trong Arena, chỉ cần một cú bấm là cả trận đấu đổi chiều.</p>
+          <Kicker tone="ember">The chaos deck</Kicker>
+          <Words id="deck-title" text="Six cards. *Endless plot twists.*" className="display mt-5 text-[clamp(2.3rem,5vw,4.2rem)]" accentClass="serif-accent text-ember" />
+          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-fg-2">Sweep across the deck and pick a card. In the Arena, one tap flips the entire match.</p>
         </div>
 
-        {/* Quạt bài (desktop) */}
+        {/* Card fan (desktop) */}
         <div className="relative mx-auto mt-16 hidden h-[400px] max-w-4xl md:block" onMouseLeave={() => setHover(null)}>
           {CHAOS_CARDS.map((c, i) => {
             const mid = (n - 1) / 2;
@@ -55,7 +55,7 @@ export function Deck() {
           })}
         </div>
 
-        {/* Hàng ngang (mobile) */}
+        {/* Horizontal rail (mobile) */}
         <div className="no-scrollbar -mx-4 mt-12 flex snap-x gap-3 overflow-x-auto px-4 pb-4 md:hidden">
           {CHAOS_CARDS.map((c, i) => (
             <div key={c.id} className="w-[170px] shrink-0 snap-center">
@@ -89,7 +89,7 @@ export function Deck() {
                   {card.cost} <Coin className="h-4 w-4" />
                 </span>
                 <ButtonLink href="/live" size="sm">
-                  Ném thử <ArrowRight size={14} />
+                  Try it live <ArrowRight size={14} />
                 </ButtonLink>
               </div>
             </motion.div>

@@ -39,7 +39,7 @@ function build(p: ReturnType<typeof parse>) {
 const idx = (sq: Square) => ({ r: 8 - Number(sq[1]), f: sq.charCodeAt(0) - 97 });
 const sqOf = (r: number, f: number) => `${FILES[f]}${8 - r}` as Square;
 
-/** Vị trí có hợp lệ để bên `turn` đi tiếp không (vua đối phương không bị chiếu). */
+/** Is the position legal for `turn` to move next (the opponent's king must not be in check)? */
 function legalFor(fen: string): Chess | null {
   try {
     const c = new Chess(fen);
@@ -61,7 +61,7 @@ function shuffle<T>(a: T[]) {
   return a;
 }
 
-/** Hoán đổi một Mã và một Tượng của bên đang đi. */
+/** Swap one knight and one bishop belonging to the side to move. */
 export function chaosSwap(fen: string): { fen: string; a: Square; b: Square } | null {
   const p = parse(fen);
   const turn = p.turn;
@@ -77,7 +77,7 @@ export function chaosSwap(fen: string): { fen: string; a: Square; b: Square } | 
   let pairs: [Square, Square][] = [];
   for (const n of knights) for (const b of bishops) pairs.push([n, b]);
   if (!pairs.length) {
-    // không có cặp Mã/Tượng → đổi bất kỳ hai quân nhẹ/ xe khác loại
+    // no knight/bishop pair → swap any two minor pieces / rooks of different types
     const others: Square[] = [];
     p.grid.forEach((row, r) =>
       row.forEach((c, f) => {
@@ -101,18 +101,18 @@ export function chaosSwap(fen: string): { fen: string; a: Square; b: Square } | 
   return null;
 }
 
-/** Động đất: đẩy một tốt của bên đang đi lên một ô (nếu trống). */
+/** Earthquake: push one of the mover's pawns forward one square (if empty). */
 export function chaosQuake(fen: string): { fen: string; from: Square; to: Square } | null {
   const p = parse(fen);
   const turn = p.turn;
   const pawn = turn === "w" ? "P" : "p";
-  const dir = turn === "w" ? -1 : 1; // hàng trong grid
+  const dir = turn === "w" ? -1 : 1; // row direction in the grid
   const cands: { from: Square; to: Square; r: number; f: number }[] = [];
   p.grid.forEach((row, r) =>
     row.forEach((c, f) => {
       if (c !== pawn) return;
       const nr = r + dir;
-      if (nr <= 0 || nr >= 7) return; // không phong cấp bằng động đất
+      if (nr <= 0 || nr >= 7) return; // never promote via an earthquake
       if (p.grid[nr][f]) return;
       cands.push({ from: sqOf(r, f), to: sqOf(nr, f), r, f });
     }),

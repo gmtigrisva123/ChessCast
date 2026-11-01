@@ -3,12 +3,14 @@
 import * as THREE from "three";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, PerformanceMonitor, RoundedBox, Sparkles } from "@react-three/drei";
+import { Float, MeshTransmissionMaterial, PerformanceMonitor, RoundedBox, Sparkles } from "@react-three/drei";
+import { Bloom, DepthOfField, EffectComposer, Vignette } from "@react-three/postprocessing";
 import type { PieceSymbol } from "chess.js";
-import { AuroraBackdrop, StageEffects, StageLights } from "./stage";
+import { AuroraBackdrop, StageLights } from "./stage";
 import { getGlassMaterial, getPieceGeometries, getPieceMaterials } from "./pieces";
+import { pinnedHighQuality, pinnedLowQuality } from "@/lib/quality";
 
-/** Tín hiệu dùng chung giữa DOM và cảnh 3D (không gây re-render). */
+/** Signals shared between the DOM and the 3D scene (no React re-renders). */
 export const heroSignal = { progress: 0, mx: 0, my: 0 };
 
 const ORBIT: { type: PieceSymbol; color: "w" | "b" }[] = [
@@ -24,9 +26,8 @@ const ORBIT: { type: PieceSymbol; color: "w" | "b" }[] = [
   { type: "b", color: "b" },
 ];
 
-function Centerpiece() {
+function Centerpiece({ quality }: { quality: "high" | "low" }) {
   const geoms = getPieceGeometries();
-  const glass = getGlassMaterial();
   const ref = useRef<THREE.Group>(null!);
   const sm = useRef({ mx: 0, my: 0 });
   useFrame(({ clock }, dt) => {
@@ -34,14 +35,41 @@ function Centerpiece() {
     s.mx += (heroSignal.mx - s.mx) * Math.min(1, dt * 2.5);
     s.my += (heroSignal.my - s.my) * Math.min(1, dt * 2.5);
     const g = ref.current;
-    g.rotation.y = clock.elapsedTime * 0.25 + s.mx * 0.5 + heroSignal.progress * 2.2;
+    g.rotation.y = clock.elapsedTime * 0.22 + s.mx * 0.55 + heroSignal.progress * 2.4;
     g.rotation.x = s.my * 0.12;
     g.rotation.z = -s.mx * 0.06;
     g.position.y = -3.0 + Math.sin(clock.elapsedTime * 0.8) * 0.08;
   });
   return (
     <group ref={ref} position={[0, -3.0, 0]}>
-      <mesh geometry={geoms.k} material={glass} scale={3.3} />
+      <mesh geometry={geoms.k} scale={3.3}>
+        {quality === "high" ? (
+          <MeshTransmissionMaterial
+            samples={8}
+            resolution={768}
+            transmission={1}
+            roughness={0.03}
+            thickness={2.4}
+            ior={1.42}
+            chromaticAberration={0.09}
+            anisotropicBlur={0.22}
+            distortion={0.32}
+            distortionScale={0.45}
+            temporalDistortion={0.14}
+            clearcoat={1}
+            attenuationDistance={3.2}
+            attenuationColor="#cfc8ff"
+            color="#ffffff"
+            iridescence={0.85}
+            iridescenceIOR={1.3}
+            iridescenceThicknessMinimum={200}
+            iridescenceThicknessMaximum={650}
+            envMapIntensity={1.3}
+          />
+        ) : (
+          <primitive object={getGlassMaterial()} attach="material" />
+        )}
+      </mesh>
     </group>
   );
 }
@@ -54,8 +82,8 @@ function Halo() {
     c.width = c.height = 256;
     const ctx = c.getContext("2d")!;
     const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    g.addColorStop(0, "rgba(160,150,255,0.85)");
-    g.addColorStop(0.35, "rgba(110,92,255,0.35)");
+    g.addColorStop(0, "rgba(170,160,255,0.9)");
+    g.addColorStop(0.35, "rgba(110,92,255,0.38)");
     g.addColorStop(0.7, "rgba(62,230,224,0.08)");
     g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g;
@@ -72,16 +100,20 @@ function Halo() {
   return (
     <group position={[0, -3.05, 0]}>
       <mesh ref={disc} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[9, 9]} />
+        <planeGeometry args={[9.5, 9.5]} />
         <meshBasicMaterial map={tex} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
       </mesh>
       <mesh ref={ring} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-        <torusGeometry args={[2.05, 0.012, 16, 160]} />
-        <meshBasicMaterial color="#b9b0ff" toneMapped={false} />
+        <torusGeometry args={[2.05, 0.014, 16, 160]} />
+        <meshBasicMaterial color="#cfc8ff" toneMapped={false} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <torusGeometry args={[3.1, 0.006, 16, 200]} />
-        <meshBasicMaterial color="#3ee6e0" toneMapped={false} transparent opacity={0.6} />
+        <torusGeometry args={[3.15, 0.007, 16, 200]} />
+        <meshBasicMaterial color="#3ee6e0" toneMapped={false} transparent opacity={0.7} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
+        <torusGeometry args={[4.3, 0.004, 16, 220]} />
+        <meshBasicMaterial color="#8b7cff" toneMapped={false} transparent opacity={0.45} />
       </mesh>
     </group>
   );
@@ -89,7 +121,8 @@ function Halo() {
 
 function Orbit() {
   const geoms = getPieceGeometries();
-  const mats = getPieceMaterials();
+  const pearl = getPieceMaterials("pearl");
+  const crystal = getPieceMaterials("crystal");
   const group = useRef<THREE.Group>(null!);
   const pieces = useRef<THREE.Group[]>([]);
   useFrame(({ clock }) => {
@@ -109,7 +142,7 @@ function Orbit() {
     <group ref={group} position={[0, -1.7, 0]} rotation={[0.18, 0, -0.06]}>
       {ORBIT.map((o, i) => (
         <group key={i} ref={(el) => void (el && (pieces.current[i] = el))}>
-          <mesh geometry={geoms[o.type]} material={mats[o.color]} scale={0.95} position={[0, -0.5, 0]} />
+          <mesh geometry={geoms[o.type]} material={o.color === "b" ? pearl.b : i % 4 === 0 ? crystal.w : pearl.w} scale={0.95} position={[0, -0.5, 0]} />
         </group>
       ))}
     </group>
@@ -124,6 +157,7 @@ function Shards() {
       { pos: [5.6, 2.8, -2.2], rot: [-0.1, -0.7, -0.2], s: 0.85 },
       { pos: [4.4, -1.4, 2.2], rot: [0.3, -0.4, 0.35], s: 0.7 },
       { pos: [-4.6, -1.8, 2.4], rot: [-0.25, 0.5, -0.3], s: 0.6 },
+      { pos: [0.4, 4.4, -4.5], rot: [0.5, 0.2, 0.6], s: 0.5 },
     ],
     [],
   );
@@ -159,20 +193,31 @@ function Rig({ mobile }: { mobile: boolean }) {
   return null;
 }
 
-function Scene({ mobile, effects }: { mobile: boolean; effects: boolean }) {
+function Scene({ mobile, quality }: { mobile: boolean; quality: "high" | "low" }) {
   return (
     <>
-      <color attach="background" args={["#050508"]} />
-      <fog attach="fog" args={["#050508", 14, 34]} />
-      <AuroraBackdrop position={[0, -7, -14]} intensity={0.5} />
-      <StageLights shadows={false} intensity={0.9} />
-      <Centerpiece />
+      <color attach="background" args={["#04040a"]} />
+      <fog attach="fog" args={["#04040a", 14, 34]} />
+      <AuroraBackdrop position={[0, -7, -14]} intensity={0.55} />
+      <StageLights shadows={false} intensity={0.95} />
+      <Centerpiece quality={quality} />
       <Halo />
       <Orbit />
       <Shards />
-      <Sparkles count={mobile ? 50 : 110} scale={[20, 10, 12]} size={1.6} speed={0.25} color="#cfc8ff" opacity={0.7} />
+      <Sparkles count={mobile ? 60 : 140} scale={[20, 10, 12]} size={1.6} speed={0.25} color="#cfc8ff" opacity={0.75} />
       <Rig mobile={mobile} />
-      <StageEffects enabled={effects} bloom={0.8} aberration />
+      {quality === "high" ? (
+        <EffectComposer multisampling={0}>
+          <Bloom mipmapBlur luminanceThreshold={0.82} luminanceSmoothing={0.25} intensity={0.9} radius={0.78} />
+          <DepthOfField target={[0, -1.2, 0]} focalLength={0.14} bokehScale={2.2} height={540} />
+          <Vignette offset={0.2} darkness={0.8} />
+        </EffectComposer>
+      ) : (
+        <EffectComposer multisampling={0}>
+          <Bloom mipmapBlur luminanceThreshold={0.82} intensity={0.8} radius={0.75} />
+          <Vignette offset={0.2} darkness={0.8} />
+        </EffectComposer>
+      )}
     </>
   );
 }
@@ -180,7 +225,10 @@ function Scene({ mobile, effects }: { mobile: boolean; effects: boolean }) {
 export default function HeroScene({ active = true }: { active?: boolean }) {
   const [mobile, setMobile] = useState(false);
   const [dpr, setDpr] = useState(1.6);
-  const [effects, setEffects] = useState(true);
+  const [quality, setQuality] = useState<"high" | "low">("high");
+  useEffect(() => {
+    if (pinnedLowQuality()) setQuality("low");
+  }, []);
   useEffect(() => {
     const m = window.matchMedia("(max-width: 767px)");
     const on = () => setMobile(m.matches);
@@ -196,18 +244,19 @@ export default function HeroScene({ active = true }: { active?: boolean }) {
       gl={{ antialias: false, powerPreference: "high-performance", alpha: false, stencil: false }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.1;
+        gl.toneMappingExposure = 1.12;
       }}
     >
       <PerformanceMonitor
         onDecline={() => {
+          if (pinnedHighQuality()) return;
           setDpr(1);
-          setEffects(false);
+          setQuality("low");
         }}
         onIncline={() => setDpr(1.6)}
       />
       <Suspense fallback={null}>
-        <Scene mobile={mobile} effects={effects} />
+        <Scene mobile={mobile} quality={quality} />
       </Suspense>
     </Canvas>
   );

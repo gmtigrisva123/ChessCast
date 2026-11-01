@@ -28,7 +28,7 @@ export function LogoMark({ className }: { className?: string }) {
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className={cn("group flex items-center gap-2", className)} aria-label="ChessCast — Trang chủ">
+    <Link href="/" className={cn("group flex items-center gap-2", className)} aria-label="ChessCast — Home">
       <LogoMark className="transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:rotate-[20deg]" />
       <span className="font-display text-[17px] font-semibold tracking-[-0.03em] text-fg">
         chesscast<span className="text-violet">.</span>

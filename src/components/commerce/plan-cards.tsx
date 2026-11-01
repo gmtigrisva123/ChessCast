@@ -6,14 +6,14 @@ import { ArrowUpRight, Check } from "lucide-react";
 import { COIN_PACKS, PLANS } from "@/lib/catalog";
 import { useUI, useWallet } from "@/lib/store";
 import { useMounted } from "@/hooks/use-mounted";
-import { cn, formatNum, formatVnd } from "@/lib/utils";
+import { cn, formatMoney, formatNum } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Spotlight } from "../ui/spotlight";
 import { Coin } from "./coin";
 
 export function BillingToggle({ value, onChange }: { value: "monthly" | "yearly"; onChange: (v: "monthly" | "yearly") => void }) {
   return (
-    <div className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1" role="tablist" aria-label="Chu kỳ thanh toán">
+    <div className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1" role="tablist" aria-label="Billing cycle">
       {(["monthly", "yearly"] as const).map((v) => (
         <button
           key={v}
@@ -24,7 +24,7 @@ export function BillingToggle({ value, onChange }: { value: "monthly" | "yearly"
         >
           {value === v && <motion.span layoutId="billing-pill" className="absolute inset-0 rounded-full bg-fg" transition={{ type: "spring", stiffness: 420, damping: 32 }} />}
           <span className="relative z-10 flex items-center gap-1.5">
-            {v === "monthly" ? "Hàng tháng" : "Hàng năm"}
+            {v === "monthly" ? "Monthly" : "Yearly"}
             {v === "yearly" && <span className={cn("rounded-full px-1.5 py-px font-mono text-[10px]", value === v ? "bg-void/10" : "bg-teal/15 text-teal")}>−20%</span>}
           </span>
         </button>
@@ -60,7 +60,7 @@ export function PlanCards({ className }: { className?: string }) {
                 {p.highlight && <div className="pointer-events-none absolute -top-20 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-iris/40 blur-[60px]" />}
                 <div className="relative flex items-center justify-between">
                   <div className="font-display text-lg font-semibold tracking-tight">{p.name}</div>
-                  {p.highlight && <span className="rounded-full bg-fg px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-wider text-void">Được chọn nhiều</span>}
+                  {p.highlight && <span className="rounded-full bg-fg px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-wider text-void">Most popular</span>}
                 </div>
                 <p className="relative mt-1 text-sm text-fg-2">{p.tagline}</p>
                 <div className="relative mt-8 flex h-14 items-end gap-2">
@@ -73,14 +73,14 @@ export function PlanCards({ className }: { className?: string }) {
                       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                       className="display text-[44px] leading-none tabular-nums"
                     >
-                      {price === 0 ? "0₫" : formatVnd(price)}
+                      {formatMoney(price)}
                     </motion.span>
                   </AnimatePresence>
-                  <span className="pb-1.5 text-sm text-fg-3">{price === 0 ? "mãi mãi" : cycle === "yearly" ? "/ năm" : "/ tháng"}</span>
+                  <span className="pb-1.5 text-sm text-fg-3">{price === 0 ? "forever" : cycle === "yearly" ? "/ year" : "/ month"}</span>
                 </div>
                 {p.monthlyCoins > 0 ? (
                   <div className="relative mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-fg-2">
-                    <Coin className="h-3.5 w-3.5" /> {formatNum(p.monthlyCoins)} coin mỗi tháng
+                    <Coin className="h-3.5 w-3.5" /> {formatNum(p.monthlyCoins)} coins every month
                   </div>
                 ) : (
                   <div className="relative mt-3 h-[26px]" />
@@ -103,7 +103,7 @@ export function PlanCards({ className }: { className?: string }) {
                   disabled={isCurrent || p.id === "free"}
                   onClick={() => open({ kind: "plan", id: p.id, cycle })}
                 >
-                  {isCurrent ? "Gói hiện tại" : p.id === "free" ? "Đang dùng miễn phí" : <>Chọn {p.name} <ArrowUpRight size={16} /></>}
+                  {isCurrent ? "Current plan" : p.id === "free" ? "Free forever" : <>Choose {p.name} <ArrowUpRight size={16} /></>}
                 </Button>
               </Spotlight>
             </motion.div>
@@ -145,7 +145,7 @@ export function CoinPacks() {
           transition={{ duration: 0.8, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
         >
           <Spotlight className="h-full">
-            <button onClick={() => open({ kind: "coin", id: p.id })} className="group relative flex h-full w-full flex-col p-6 text-left" aria-label={`Mua gói ${p.name}`}>
+            <button onClick={() => open({ kind: "coin", id: p.id })} className="group relative flex h-full w-full flex-col p-6 text-left" aria-label={`Buy the ${p.name} pack`}>
               <div className="flex items-start justify-between">
                 <CoinStack n={Math.min(4, i + 1)} />
                 {p.tag && <span className="rounded-full border border-teal/30 bg-teal/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-teal">{p.tag}</span>}
@@ -156,7 +156,7 @@ export function CoinPacks() {
                 {p.bonus > 0 && <span className="ml-2 align-middle font-mono text-sm font-normal tracking-normal text-teal">+{formatNum(p.bonus)}</span>}
               </div>
               <div className="mt-6 flex w-full items-center justify-between border-t border-white/[0.07] pt-4">
-                <span className="font-mono text-[15px]">{formatVnd(p.price)}</span>
+                <span className="font-mono text-[15px]">{formatMoney(p.price)}</span>
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-white/[0.06] transition-all duration-500 group-hover:rotate-45 group-hover:bg-fg group-hover:text-void">
                   <ArrowUpRight size={15} />
                 </span>

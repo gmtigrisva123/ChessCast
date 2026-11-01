@@ -1,6 +1,6 @@
 import "server-only";
 import Stripe from "stripe";
-import { getCoinPack, getPlan } from "./catalog";
+import { CURRENCY, getCoinPack, getPlan } from "./catalog";
 
 export type CheckoutRequest = { kind: "coin" | "plan"; id: string; cycle?: "monthly" | "yearly" };
 
@@ -10,7 +10,7 @@ export type ResolvedItem = {
   cycle?: "monthly" | "yearly";
   label: string;
   description: string;
-  amount: number; // VND (zero-decimal)
+  amount: number; // cents
   coins: number;
   mode: "payment" | "subscription";
 };
@@ -22,8 +22,8 @@ export function resolveItem(req: CheckoutRequest): ResolvedItem | null {
     return {
       kind: "coin",
       id: p.id,
-      label: `Gói ${p.name} — ${p.coins + p.bonus} Chaos Coins`,
-      description: `${p.coins} coin${p.bonus ? ` + ${p.bonus} coin thưởng` : ""}. Vật phẩm giải trí ảo, không quy đổi thành tiền.`,
+      label: `${p.name} pack — ${p.coins + p.bonus} Chaos Coins`,
+      description: `${p.coins} coins${p.bonus ? ` + ${p.bonus} bonus` : ""}. Virtual entertainment items with no cash value.`,
       amount: p.price,
       coins: p.coins + p.bonus,
       mode: "payment",
@@ -37,7 +37,7 @@ export function resolveItem(req: CheckoutRequest): ResolvedItem | null {
       kind: "plan",
       id: p.id,
       cycle,
-      label: `ChessCast ${p.name} (${cycle === "yearly" ? "năm" : "tháng"})`,
+      label: `ChessCast ${p.name} (${cycle === "yearly" ? "yearly" : "monthly"})`,
       description: p.tagline,
       amount: cycle === "yearly" ? p.yearly : p.monthly,
       coins: cycle === "yearly" ? p.monthlyCoins * 12 : p.monthlyCoins,
@@ -60,3 +60,5 @@ export function siteUrl(reqUrl?: string) {
   if (reqUrl) return new URL(reqUrl).origin;
   return "http://localhost:3000";
 }
+
+export { CURRENCY };

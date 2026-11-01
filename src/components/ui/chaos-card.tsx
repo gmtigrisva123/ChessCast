@@ -6,7 +6,7 @@ import type { ChaosCard as Card } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 import { ChaosIcon } from "./chaos-icon";
 
-/** Thẻ Chaos — tấm kính tối với dải gradient phát sáng, nghiêng 3D theo chuột. */
+/** Chaos card — dark glass with a glowing gradient band and holo foil, tilting in 3D with the pointer. */
 export function ChaosCard({
   card,
   size = "md",
@@ -44,7 +44,7 @@ export function ChaosCard({
         role={onClick ? "button" : undefined}
         tabIndex={onClick ? 0 : undefined}
         aria-disabled={disabled || undefined}
-        aria-label={onClick ? `Ném ${card.name} — ${card.cost} coin` : undefined}
+        aria-label={onClick ? `Throw ${card.name} — ${card.cost} coins` : undefined}
         onClick={disabled ? undefined : onClick}
         onKeyDown={(e) => {
           if (!disabled && onClick && (e.key === "Enter" || e.key === " ")) {
@@ -53,15 +53,21 @@ export function ChaosCard({
           }
         }}
         onPointerMove={(e) => {
-          const r = ref.current!.getBoundingClientRect();
-          px.set((e.clientX - r.left) / r.width);
-          py.set((e.clientY - r.top) / r.height);
+          const el = ref.current!;
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;
+          const y = (e.clientY - r.top) / r.height;
+          px.set(x);
+          py.set(y);
           on.set(1);
+          el.style.setProperty("--pos", `${x * 100}% ${y * 100}%`);
+          el.style.setProperty("--hyp", `${Math.min(1, Math.hypot(x - 0.5, y - 0.5) * 2.2)}`);
         }}
         onPointerLeave={() => {
           px.set(0.5);
           py.set(0.5);
           on.set(0);
+          ref.current?.style.setProperty("--hyp", "0");
         }}
         whileTap={onClick && !disabled ? { scale: 0.95 } : undefined}
         style={{ rotateX: rx, rotateY: ry, y: lift }}
@@ -83,7 +89,7 @@ export function ChaosCard({
           >
             <ChaosIcon icon={card.icon} size={s.icon} strokeWidth={1.8} />
           </span>
-          <span className="rounded-full bg-black/40 px-2 py-0.5 font-mono text-[10.5px] font-medium text-fg ring-1 ring-white/10">{card.cost}c</span>
+          <span className="rounded-full bg-black/40 px-2 py-0.5 font-mono text-[10.5px] font-medium text-fg ring-1 ring-white/10">{card.cost} ◈</span>
         </div>
         <div className="[transform:translateZ(18px)]">
           <div className="kicker text-[9.5px] text-fg-3">{card.short}</div>
@@ -94,6 +100,7 @@ export function ChaosCard({
             {card.durationLabel}
           </div>
         </div>
+        <div className="holo-foil" />
         <motion.div className="pointer-events-none absolute inset-0 rounded-[inherit]" style={{ background: shine, opacity: shineOpacity }} />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
       </motion.div>

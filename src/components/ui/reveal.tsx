@@ -52,7 +52,7 @@ export function Stagger({ children, className, gap = 0.07, delay = 0 }: { childr
 }
 
 /**
- * Tiêu đề hiện từng từ (mờ → rõ). Dùng `*chữ*` để đánh dấu từ in nghiêng kiểu serif.
+ * Headline that reveals word by word (blur → sharp). Wrap words in `*asterisks*` for the italic serif accent.
  */
 export function Words({
   text,
@@ -118,7 +118,7 @@ function ScrubWord({ children, range, p }: { children: string; range: [number, n
   );
 }
 
-/** Đoạn văn sáng dần theo tiến độ cuộn. */
+/** Paragraph that lights up word by word as you scroll. */
 export function ScrollText({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 45%"] });

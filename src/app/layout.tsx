@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
-import "@fontsource-variable/inter-tight";
-import "@fontsource-variable/newsreader/wght-italic.css";
-import "@fontsource-variable/jetbrains-mono";
+import "@fontsource-variable/mona-sans/standard.css";
+import "@fontsource/instrument-serif/400.css";
+import "@fontsource/instrument-serif/400-italic.css";
+import "@fontsource-variable/geist-mono";
 import "./globals.css";
 import { Providers } from "@/components/layout/providers";
 import { Navbar } from "@/components/layout/navbar";
@@ -12,17 +13,17 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "ChessCast — Mọi ván cờ đều xứng đáng một sân khấu",
+    default: "ChessCast — Every game deserves a stage",
     template: "%s · ChessCast",
   },
   description: site.description,
-  keywords: ["cờ vua", "chess", "livestream", "AI bình luận", "Chaos Cards", "Chess Royale", "Chess Court", "giải trí"],
+  keywords: ["chess", "live chess", "AI commentary", "Chaos Cards", "Chess Royale", "Chess Court", "chess streaming", "entertainment"],
   openGraph: {
-    title: "ChessCast — Mọi ván cờ đều xứng đáng một sân khấu",
+    title: "ChessCast — Every game deserves a stage",
     description: site.description,
     url: site.url,
     siteName: "ChessCast",
-    locale: "vi_VN",
+    locale: "en_US",
     type: "website",
   },
   twitter: { card: "summary_large_image", title: "ChessCast", description: site.description },
@@ -30,21 +31,23 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050508",
+  themeColor: "#04040a",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <body className="min-h-dvh bg-void text-fg antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-dvh text-fg antialiased">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[300] focus:rounded-full focus:bg-fg focus:px-4 focus:py-2 focus:text-void">
-          Bỏ qua tới nội dung
+          Skip to content
         </a>
         <Providers>
           <Navbar />
-          <main id="main">{children}</main>
+          <main id="main" className="relative">
+            {children}
+          </main>
           <Footer />
         </Providers>
       </body>

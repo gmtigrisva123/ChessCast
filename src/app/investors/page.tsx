@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { InvestorsView } from "@/components/investors/investors";
 
 export const metadata: Metadata = {
-  title: "Nhà đầu tư",
-  description: "ChessCast — vòng hạt giống: thị trường, mô hình kinh doanh, lộ trình và phân bổ vốn.",
+  title: "Investors",
+  description: "ChessCast seed round — market, business model, roadmap and use of funds.",
 };
 
 export default function InvestorsPage() {

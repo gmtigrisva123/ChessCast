@@ -11,7 +11,7 @@ export type Host = {
   role: string;
   bio: string;
   color: string;
-  /** Gradient cho quả cầu giọng nói */
+  /** Gradient used for the voice orb */
   orb: [string, string, string];
   catchphrase: string;
   voice: { pitch: number; rate: number };
@@ -24,48 +24,48 @@ export const HOSTS: Record<HostId, Host> = {
     id: "gambit",
     name: "Captain Gambit",
     handle: "@captgambit",
-    role: "Host chính · Cuồng thí quân",
-    bio: "Giọng hét có thể làm vỡ kính. Tin rằng mọi quân cờ sinh ra là để hy sinh. Đang có mối thù 3 mùa với GS. Zugzwang.",
+    role: "Lead caster · Sacrifice maniac",
+    bio: "A voice that can shatter glass. Believes every piece was born to be sacrificed. Three seasons into a feud with Prof. Zugzwang.",
     color: "#ffb36b",
     orb: ["#ffd29a", "#ff8a4c", "#ff4f7b"],
-    catchphrase: "THÍ ĐI! THÍ HẾT ĐI!",
-    voice: { pitch: 1.1, rate: 1.12 },
+    catchphrase: "SACRIFICE IT! SACRIFICE EVERYTHING!",
+    voice: { pitch: 1.1, rate: 1.1 },
     rival: "zugzwang",
     stats: [
-      { label: "Độ hype", value: "11/10" },
-      { label: "Quân đã thí", value: "∞" },
+      { label: "Hype level", value: "11/10" },
+      { label: "Pieces sacrificed", value: "∞" },
     ],
   },
   zugzwang: {
     id: "zugzwang",
-    name: "GS. Zugzwang",
-    handle: "@gs.zugzwang",
-    role: "Chuyên gia phân tích · Lạnh lùng",
-    bio: "Tiến sĩ khoa học thế cờ. Nói bằng con số, khinh bỉ bằng ánh mắt. Chưa bao giờ cười kể từ năm 1997.",
+    name: "Prof. Zugzwang",
+    handle: "@prof.zugzwang",
+    role: "Analyst · Ice cold",
+    bio: "Doctor of positional science. Speaks in evaluations, judges with his eyebrows. Has not smiled since 1997.",
     color: "#7cc4ff",
     orb: ["#c7fff7", "#3ee6e0", "#4d8dff"],
-    catchphrase: "Về mặt kỹ thuật, đây là một thảm họa.",
-    voice: { pitch: 0.75, rate: 0.95 },
+    catchphrase: "Technically speaking, this is a catastrophe.",
+    voice: { pitch: 0.8, rate: 0.95 },
     rival: "gambit",
     stats: [
-      { label: "Độ chính xác", value: "99.7%" },
-      { label: "Lần mỉm cười", value: "0" },
+      { label: "Accuracy", value: "99.7%" },
+      { label: "Smiles", value: "0" },
     ],
   },
   blunder: {
     id: "blunder",
     name: "MC Blunder",
     handle: "@mc.blunder",
-    role: "Chuyên gia cà khịa · Hỗn loạn",
-    bio: "Sống vì những nước đi sai. Nhận tip để “cà khịa” kỳ thủ theo yêu cầu. Bị cấm ở 4 giải đấu vì nói quá thật.",
+    role: "Roast master · Pure chaos",
+    bio: "Lives for the wrong move. Takes tips to roast players on request. Banned from four tournaments for being too honest.",
     color: "#c4a8ff",
     orb: ["#ffb3d1", "#ff6b9a", "#8b7cff"],
-    catchphrase: "Ối dồi ôi, toang thật rồi!",
-    voice: { pitch: 1.3, rate: 1.18 },
+    catchphrase: "Oh no. Oh no no no. It's over!",
+    voice: { pitch: 1.25, rate: 1.15 },
     rival: "zugzwang",
     stats: [
-      { label: "Lượt cà khịa", value: "48.2K" },
-      { label: "Lần bị report", value: "312" },
+      { label: "Roasts served", value: "48.2K" },
+      { label: "Times reported", value: "312" },
     ],
   },
 };
@@ -73,12 +73,12 @@ export const HOSTS: Record<HostId, Host> = {
 export const HOST_LIST = Object.values(HOSTS);
 
 export const PIECE_NAME: Record<PieceSymbol, string> = {
-  p: "tốt",
-  n: "mã",
-  b: "tượng",
-  r: "xe",
-  q: "hậu",
-  k: "vua",
+  p: "pawn",
+  n: "knight",
+  b: "bishop",
+  r: "rook",
+  q: "queen",
+  k: "king",
 };
 
 export type Line = { host: HostId; text: string; hype: number };
@@ -94,9 +94,9 @@ export type MoveContext = {
   mate: boolean;
   castle: boolean;
   promotion: boolean;
-  /** Chênh lệch điểm theo góc nhìn người vừa đi (centipawn). Âm = tệ đi. */
+  /** Evaluation change from the mover's perspective (centipawns). Negative = worse. */
   swing: number;
-  /** Điểm thế cờ sau nước đi theo góc nhìn người vừa đi. */
+  /** Evaluation after the move from the mover's perspective. */
   evalAfter: number;
   ply: number;
   forced?: boolean;
@@ -115,69 +115,66 @@ const fill = (s: string, c: MoveContext) =>
 
 const T = {
   mate: {
-    gambit: [
-      "CHIẾU HẾT! {san}! {p} KẾT LIỄU TRẬN ĐẤU! TÔI KHÔNG THỞ ĐƯỢC NỮA!",
-      "HẾT CỜ! {p} vừa viết tên mình lên bầu trời đêm nay!",
-    ],
-    zugzwang: ["Chiếu hết. Kết quả tất yếu của một chuỗi quyết định đáng ngờ từ {o}.", "{san}. Hết cờ. Tôi đã dự đoán điều này từ 9 nước trước."],
-    blunder: ["{o} ơi, về nhà thôi con, mẹ gọi về ăn cơm rồi!", "Toang! Toang thật sự! {o} chính thức bị xóa sổ!"],
+    gambit: ["CHECKMATE! {san}! {p} ENDS IT! I CAN'T BREATHE!", "IT'S OVER! {p} JUST WROTE THEIR NAME ACROSS THE NIGHT SKY!"],
+    zugzwang: ["Checkmate. The inevitable result of a series of questionable decisions by {o}.", "{san}. Mate. I predicted this nine moves ago."],
+    blunder: ["{o}, go home, your mom is calling you for dinner!", "And that's a wrap. {o} has been officially deleted."],
   },
   bigCapture: {
-    gambit: ["ĂN {cap}! {p} vừa nuốt trọn quân {cap} ở {sq}!", "BÙM! {cap} của {o} bay màu! Khán giả dậy sóng!"],
-    zugzwang: ["{piece} ăn {cap} tại {sq}. Cán cân vật chất nghiêng hẳn, khoảng {ev} tốt.", "Bắt {cap}. Đúng như sách vở. Nhàm chán nhưng hiệu quả."],
-    blunder: ["Mất {cap} rồi {o} ơi, đau như bị người yêu cũ block!", "{o} tặng {cap} như phát lì xì Tết vậy á?"],
+    gambit: ["TAKES THE {cap}! {p} SWALLOWS IT WHOLE ON {sq}!", "BOOM! {o}'s {cap} is GONE! The crowd is losing it!"],
+    zugzwang: ["{piece} takes {cap} on {sq}. Material swings by roughly {ev} pawns.", "Captures the {cap}. By the book. Boring, but effective."],
+    blunder: ["{o} just lost a {cap}. That hurts more than getting left on read.", "{o} is handing out {cap}s like free samples at the mall."],
   },
   capture: {
-    gambit: ["{p} ăn quân ở {sq}! Trận đấu nóng lên rồi!", "Đổi quân! Máu đã đổ trên bàn cờ!"],
-    zugzwang: ["{san}. Một trao đổi hợp lý.", "Bắt quân ở {sq}. Không có gì để bàn thêm."],
-    blunder: ["Ăn qua ăn lại như hai đứa giành đồ ăn vặt.", "Cái {cap} đó tội nghiệp, chưa kịp làm gì đã ra đi."],
+    gambit: ["{p} takes on {sq}! Blood on the board!", "TRADES! The board is heating up!"],
+    zugzwang: ["{san}. A reasonable exchange.", "Capture on {sq}. Nothing more to say."],
+    blunder: ["Trading pieces like two kids fighting over snacks.", "That {cap} didn't even get to do anything. Rest in peace."],
   },
   check: {
-    gambit: ["CHIẾU! {p} đang dí vua {o} chạy khắp bàn!", "CHIẾU TƯỚNG! Vua {o} đổ mồ hôi hột!"],
-    zugzwang: ["Chiếu. Câu hỏi là: {p} có kế hoạch tiếp theo không, hay chỉ chiếu cho vui?", "{san}. Một nước chiếu… thiếu chiều sâu."],
-    blunder: ["Vua {o} đang chạy như bị đòi nợ!", "Chiếu kìa! {o} ơi bình tĩnh, hít thở sâu nào!"],
+    gambit: ["CHECK! {p} IS CHASING THE KING ALL OVER THE BOARD!", "CHECK! {o}'s king is sweating bullets!"],
+    zugzwang: ["Check. The question is whether {p} has a plan or is just checking for fun.", "{san}. A check… lacking depth."],
+    blunder: ["{o}'s king is running like it owes somebody money!", "Check! {o}, breathe. Inhale. Exhale. Panic."],
   },
   castle: {
-    gambit: ["Nhập thành! {p} xây pháo đài, chuẩn bị tổng tấn công!"],
-    zugzwang: ["Nhập thành. Quyết định đầu tiên tôi đồng ý trong trận này.", "An toàn vua. Ít nhất {p} có đọc chương 1."],
-    blunder: ["Vua trốn vào góc như né deadline vậy đó.", "Nhập thành rồi, giờ ai cũng giả vờ an toàn."],
+    gambit: ["CASTLES! {p} builds the fortress — the assault is coming!"],
+    zugzwang: ["Castling. The first decision I agree with all game.", "King safety. At least {p} read chapter one."],
+    blunder: ["King hiding in the corner like it's dodging a deadline.", "Castled. Now everyone pretends to be safe."],
   },
   promotion: {
-    gambit: ["PHONG HẬU! Tốt nhỏ thành nữ hoàng! CỔ TÍCH CÓ THẬT!"],
-    zugzwang: ["Phong cấp. Lợi thế quyết định, khoảng +{ev}."],
-    blunder: ["Tốt lên đời rồi kìa, giờ đi đâu cũng có người chào!"],
+    gambit: ["PROMOTION! A tiny pawn becomes a QUEEN! FAIRY TALES ARE REAL!"],
+    zugzwang: ["Promotion. A decisive edge, approximately +{ev}."],
+    blunder: ["The pawn just glowed up. Main character energy."],
   },
   blunder: {
-    gambit: ["KHOAN! {san}?! {p} vừa làm gì vậy?! Đây là thí quân hay thí… sự nghiệp?!", "Một nước đi táo bạo! Hoặc là thiên tài, hoặc là… không!"],
-    zugzwang: ["{san}. Đánh giá: sai lầm nghiêm trọng. Thế cờ tụt khoảng {ev} tốt.", "Tôi cần một phút để chấp nhận rằng {p} thật sự vừa đi {san}."],
-    blunder: ["ỐI DỒI ÔI! {p} vừa blunder trên sóng trực tiếp!", "Clip này lên TikTok chắc chắn triệu view, {p} ơi là {p}!"],
+    gambit: ["WAIT. {san}?! What did {p} just do?! Is that a sacrifice or a career sacrifice?!", "A bold move! Either genius… or absolutely not!"],
+    zugzwang: ["{san}. Assessment: serious mistake. The position drops about {ev} pawns.", "I need a moment to accept that {p} really played {san}."],
+    blunder: ["OH NO! {p} just blundered on live TV!", "That clip is going straight to a million views. {p}, why?!"],
   },
   great: {
-    gambit: ["NƯỚC ĐI ĐẸP NHƯ TRANH! {san}! {p} đang bay!", "Đó mới là cờ! {p} đọc bàn cờ như đọc truyện tranh!"],
-    zugzwang: ["{san}. Chính xác. Tôi miễn cưỡng công nhận.", "Nước tốt nhất trong thế cờ. Hiếm thấy ở trình độ này."],
-    blunder: ["Ơ kìa, {p} hôm nay ăn gì mà đánh hay thế?", "Ủa ai cho {p} đánh hay vậy? Không cho phép!"],
+    gambit: ["WHAT A MOVE! {san}! {p} IS FLYING!", "THAT is chess! {p} reads the board like a comic book!"],
+    zugzwang: ["{san}. Precise. I reluctantly approve.", "The best move in the position. Rare at this level."],
+    blunder: ["Excuse me, what did {p} eat today?", "Who allowed {p} to play this well? Not allowed!"],
   },
   quiet: {
-    gambit: ["{p} đi {san}! Từng nước một, áp lực đang dâng!", "{piece} lên {sq}! Tôi cảm nhận được một cơn bão sắp tới!", "{san}! Mọi người chuẩn bị Chaos Card đi là vừa!"],
-    zugzwang: ["{san}. Hợp lý.", "{piece} về {sq}. Thế cờ cân bằng, khoảng {ev} tốt.", "Một nước chờ. Thú vị như xem sơn khô."],
-    blunder: ["{p} đi {san}, nhìn tự tin vậy chứ chắc đang run.", "{piece} đi dạo tới {sq} thôi à, chill ghê.", "Trận này mà không ai ném Chaos Card thì tôi ngủ mất."],
+    gambit: ["{p} plays {san}! Move by move, the pressure is building!", "{piece} to {sq}! I can feel a storm coming!", "{san}! Get your Chaos Cards ready, people!"],
+    zugzwang: ["{san}. Sensible.", "{piece} to {sq}. Balanced, roughly {ev} pawns.", "A waiting move. As thrilling as watching paint dry."],
+    blunder: ["{p} plays {san} looking confident. Probably shaking inside.", "{piece} just went for a walk to {sq}. Chill.", "If nobody throws a Chaos Card soon I'm taking a nap."],
   },
   opening: {
-    gambit: ["Trận đấu bắt đầu! {p} mở màn với {san}! KHÁN GIẢ ƠI CHUẨN BỊ!"],
-    zugzwang: ["{san}. Khai cuộc kinh điển. Hãy xem họ phá hỏng nó nhanh thế nào."],
-    blunder: ["{p} mở bằng {san}, chưa gì đã thấy mùi drama."],
+    gambit: ["WE ARE LIVE! {p} opens with {san}! BUCKLE UP!"],
+    zugzwang: ["{san}. A classical opening. Let's see how quickly they ruin it."],
+    blunder: ["{p} opens with {san} and I already smell drama."],
   },
   forced: {
-    gambit: ["CHAOS CARD! Nước đi bị định mệnh chọn: {san}! KHÔNG AI ĐOÁN ĐƯỢC!"],
-    zugzwang: ["Nước đi ngẫu nhiên: {san}. Đây là lý do tôi phản đối Chaos Cards."],
-    blunder: ["Khán giả chọn giùm {p} nước {san} luôn rồi, khỏi cần nghĩ!"],
+    gambit: ["CHAOS CARD! Fate picks the move: {san}! NOBODY SAW THAT COMING!"],
+    zugzwang: ["Random move: {san}. This is exactly why I oppose Chaos Cards."],
+    blunder: ["The audience picked {san} for {p}. No thinking required!"],
   },
 };
 
 const banter: Record<HostId, string[]> = {
-  gambit: ["Zugzwang, ông có biết “vui” là gì không?", "Đừng nghe ông giáo sư, ông ấy chưa thí quân bao giờ!"],
-  zugzwang: ["Gambit, la hét không làm nước đi hay hơn.", "Như mọi khi, Gambit đã sai về mặt toán học."],
-  blunder: ["Hai ông già cãi nhau kìa, tôi đi pha mì đây.", "Theo dõi drama của Gambit với Zugzwang mùa 3 trên kênh tụi tui nha!"],
+  gambit: ["Zugzwang, do you even know what fun is?", "Don't listen to the professor — he's never sacrificed anything!"],
+  zugzwang: ["Gambit, shouting does not improve the move.", "As usual, Gambit is mathematically wrong."],
+  blunder: ["The two grandpas are fighting again, I'm getting snacks.", "Catch season three of the Gambit vs Zugzwang drama, right here!"],
 };
 
 function hostOrder(primary: HostId): HostId[] {
@@ -185,7 +182,7 @@ function hostOrder(primary: HostId): HostId[] {
   return [primary, pick(others)];
 }
 
-/** Sinh 1–2 câu bình luận cho một nước đi. */
+/** Produce one or two commentary lines for a move. */
 export function commentMove(c: MoveContext): Line[] {
   let bucket: keyof typeof T = "quiet";
   let hype = 8;
@@ -239,34 +236,34 @@ export function commentMove(c: MoveContext): Line[] {
 
 export const CHAOS_LINES: Record<ChaosCardId, Record<HostId, string[]>> = {
   fog: {
-    gambit: ["SƯƠNG MÙ PHỦ KÍN CHIẾN TRƯỜNG! {u} vừa ném Fog of War!"],
-    zugzwang: ["Sương mù. Cảm ơn {u}, giờ không ai thấy gì, kể cả tôi."],
-    blunder: ["{u} bật chế độ đánh cờ trong phòng xông hơi luôn rồi!"],
+    gambit: ["THE FOG ROLLS IN! {u} just threw Fog of War!"],
+    zugzwang: ["Fog. Thank you, {u}. Now nobody can see anything, including me."],
+    blunder: ["{u} turned the board into a sauna. Good luck, everyone!"],
   },
   random: {
-    gambit: ["{u} kích hoạt NƯỚC ĐI NGẪU NHIÊN! ĐỊNH MỆNH NẮM QUYỀN!"],
-    zugzwang: ["Nước đi ngẫu nhiên. {u}, anh/chị có biết mình vừa làm gì không?"],
-    blunder: ["{u} vừa bảo kỳ thủ: thôi để vũ trụ quyết định đi em!"],
+    gambit: ["{u} TRIGGERS RANDOM MOVE! FATE IS IN CONTROL!"],
+    zugzwang: ["A random move. {u}, do you understand what you have done?"],
+    blunder: ["{u} just told the player: relax, let the universe decide."],
   },
   swap: {
-    gambit: ["HOÁN ĐỔI QUÂN! Mã và Tượng đổi chỗ! {u} ĐÚNG LÀ ĐIÊN!"],
-    zugzwang: ["Mã và Tượng hoán đổi. Toàn bộ phân tích của tôi vừa thành rác. Cảm ơn {u}."],
-    blunder: ["{u} xáo bàn cờ như xáo bài Tiến Lên, kỳ thủ đứng hình!"],
+    gambit: ["PIECE SWAP! Knight and bishop trade places! {u} IS INSANE!"],
+    zugzwang: ["Knight and bishop swapped. My entire analysis is now garbage. Thank you, {u}."],
+    blunder: ["{u} shuffled the board like a deck of cards. The player froze!"],
   },
   freeze: {
-    gambit: ["ĐÓNG BĂNG! {u} lấy mất 15 giây! ĐỒNG HỒ ĐANG GÀO THÉT!"],
-    zugzwang: ["Trừ 15 giây. Áp lực thời gian làm tăng 34% xác suất sai lầm."],
-    blunder: ["{u} rút 15 giây như rút tiền lương cuối tháng!"],
+    gambit: ["TIME FREEZE! {u} STEALS 15 SECONDS! THE CLOCK IS SCREAMING!"],
+    zugzwang: ["Minus fifteen seconds. Time pressure raises blunder odds by 34 percent."],
+    blunder: ["{u} took 15 seconds like it's the last slice of pizza!"],
   },
   spotlight: {
-    gambit: ["ĐÈN SÂN KHẤU BẬT! Cả dàn host dồn mắt vào nước tiếp theo!"],
-    zugzwang: ["Spotlight. Tôi buộc phải tập trung. Miễn cưỡng."],
-    blunder: ["{u} bật đèn rồi, ai blunder giờ là lên sóng toàn quốc!"],
+    gambit: ["SPOTLIGHT ON! Every host is locked on the next move!"],
+    zugzwang: ["Spotlight. I am now obligated to concentrate. Reluctantly."],
+    blunder: ["{u} turned the lights on — whoever blunders now goes viral!"],
   },
   earthquake: {
-    gambit: ["ĐỘNG ĐẤT!!! BÀN CỜ RUNG CHUYỂN! {u} LÀ HUYỀN THOẠI!"],
-    zugzwang: ["Một con tốt vừa bị đẩy lên bởi… địa chất. Tôi từ chức."],
-    blunder: ["{u} đạp bàn luôn rồi mọi người ơi! Động đất 9 độ richter!"],
+    gambit: ["EARTHQUAKE!!! THE BOARD IS SHAKING! {u} IS A LEGEND!"],
+    zugzwang: ["A pawn has just been advanced by… geology. I resign."],
+    blunder: ["{u} kicked the table, everyone! Magnitude nine!"],
   },
 };
 
@@ -285,11 +282,11 @@ export function commentTip(user: string, amount: number, target: string, request
     {
       host: "blunder",
       text: req
-        ? `Cảm ơn ${user} tip ${amount} coin! Theo yêu cầu: “${req}” — ${target} nghe rõ chưa?!`
+        ? `Thanks for the ${amount} coins, ${user}! By request: “${req}” — you hear that, ${target}?!`
         : pick([
-            `${user} tip ${amount} coin để tôi cà khịa ${target}: đánh cờ như đang chơi cờ caro vậy đó!`,
-            `${amount} coin từ ${user}! ${target} ơi, nước đi của bạn làm Stockfish phải xin nghỉ phép!`,
-            `Tip ${amount} coin! ${target}, nhìn bạn suy nghĩ mà tôi thấy cái đồng hồ cũng mệt!`,
+            `${user} tipped ${amount} coins for a roast: ${target}, you play like it's tic-tac-toe!`,
+            `${amount} coins from ${user}! ${target}, your moves just made Stockfish ask for a day off!`,
+            `Tip of ${amount}! ${target}, even the clock looks tired watching you think!`,
           ]),
       hype: Math.min(60, 10 + amount / 10),
     },
@@ -301,13 +298,13 @@ export function speak(text: string, host: HostId, enabled: boolean) {
   try {
     const u = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
-    const vi = voices.find((v) => v.lang?.toLowerCase().startsWith("vi"));
-    if (vi) u.voice = vi;
-    u.lang = vi?.lang ?? "vi-VN";
+    const en = voices.find((v) => v.lang?.toLowerCase().startsWith("en-us")) ?? voices.find((v) => v.lang?.toLowerCase().startsWith("en"));
+    if (en) u.voice = en;
+    u.lang = en?.lang ?? "en-US";
     u.pitch = HOSTS[host].voice.pitch;
     u.rate = HOSTS[host].voice.rate;
     window.speechSynthesis.speak(u);
   } catch {
-    /* bỏ qua */
+    /* ignore */
   }
 }

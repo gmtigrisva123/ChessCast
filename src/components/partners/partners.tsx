@@ -15,11 +15,11 @@ const SNIPPET = `import { ChessCast } from "@chesscast/sdk";
 
 const cc = new ChessCast({ apiKey: process.env.CHESSCAST_KEY });
 
-// Gắn host AI vào một ván đấu của bạn
+// Attach AI hosts to one of your games
 const show = await cc.shows.create({
   gameId: "your-game-123",
   hosts: ["gambit", "zugzwang"],
-  language: "vi",
+  language: "en",
 });
 
 show.on("commentary", (line) => overlay.say(line));
@@ -38,7 +38,7 @@ function CodeWindow() {
   const [copied, setCopied] = useState(false);
   const lines = SNIPPET.split("\n");
   return (
-    <div className="glass-strong overflow-hidden rounded-[26px]">
+    <div className="glass-strong beam overflow-hidden rounded-[26px]">
       <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
         <div className="flex gap-1.5">
           <span className="h-3 w-3 rounded-full bg-white/15" />
@@ -54,7 +54,7 @@ function CodeWindow() {
           }}
           className="flex items-center gap-1 font-mono text-[11px] text-fg-3 hover:text-fg"
         >
-          {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? "đã chép" : "chép"}
+          {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? "copied" : "copy"}
         </button>
       </div>
       <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-[1.75]" data-lenis-prevent>
@@ -65,18 +65,18 @@ function CodeWindow() {
           </motion.div>
         ))}
       </pre>
-      <div className="border-t border-white/[0.06] px-5 py-3 font-mono text-[11px] text-fg-3">Bản xem trước API · đăng ký truy cập sớm bên dưới</div>
+      <div className="border-t border-white/[0.06] px-5 py-3 font-mono text-[11px] text-fg-3">API preview · request early access below</div>
     </div>
   );
 }
 
 const EVENTS = [
-  ["commentary.line", "gambit: “THÍ XE! KHÔNG AI CẢN NỔI!”"],
-  ["chaos.played", "fog · bởi viewer_2841 · 50c"],
+  ["commentary.line", "gambit: “ROOK SACRIFICE! NOBODY CAN STOP THIS!”"],
+  ["chaos.played", "fog · by viewer_2841 · 50c"],
   ["clip.ready", "clip_9f2a · 0:15 · 9:16"],
-  ["court.verdict", "case_0427 · có tội 68%"],
+  ["court.verdict", "case_0427 · guilty 68%"],
   ["royale.eliminated", "round 3 · KnightPro89"],
-  ["commentary.line", "zugzwang: “−2,4. Đúng như dự đoán.”"],
+  ["commentary.line", "zugzwang: “−2.4. Exactly as predicted.”"],
 ];
 
 function EventStream() {
@@ -85,14 +85,14 @@ function EventStream() {
     let k = 0;
     const push = () => {
       const d = new Date();
-      setItems((s) => [{ k: k++, e: EVENTS[k % EVENTS.length], t: d.toLocaleTimeString("vi-VN") }, ...s].slice(0, 6));
+      setItems((s) => [{ k: k++, e: EVENTS[k % EVENTS.length], t: d.toLocaleTimeString("en-US", { hour12: false }) }, ...s].slice(0, 6));
     };
     push();
     const t = setInterval(push, 1600);
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="glass-strong h-[340px] overflow-hidden rounded-[26px] p-4 font-mono text-[12px]">
+    <div className="glass-strong beam h-[340px] overflow-hidden rounded-[26px] p-4 font-mono text-[12px]">
       <div className="mb-3 flex items-center gap-2 text-fg-3">
         <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-teal" /> webhook · POST /your-endpoint
       </div>
@@ -167,32 +167,32 @@ function Offerings() {
 export function PartnersView() {
   return (
     <>
-      <PageHero kicker="Đối tác & API" title="Đưa *sân khấu* tới nền tảng của bạn." tone="teal" aside={<CodeWindow />}>
-        Thương hiệu tài trợ giải đấu với host AI mang giọng riêng. Nền tảng cờ vua tích hợp bình luận AI, Chaos Cards và clip tự động chỉ với vài dòng code.
+      <PageHero kicker="Partners & API" title="Bring *the stage* to your platform." tone="teal" aside={<CodeWindow />}>
+        Brands sponsor tournaments with an AI host that speaks in their voice. Chess platforms add AI commentary, Chaos Cards and auto-clips with a few lines of code.
       </PageHero>
 
       <section className="shell py-20">
-        <Kicker tone="teal">Cách hợp tác</Kicker>
-        <Words text="Ba cách để *cùng tạo kịch tính.*" className="display mb-10 mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" />
+        <Kicker tone="teal">Ways to partner</Kicker>
+        <Words text="Three ways to *make drama together.*" className="display mb-10 mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" />
         <Offerings />
       </section>
 
       <section id="api" className="shell grid scroll-mt-28 items-center gap-12 py-24 lg:grid-cols-2">
         <div>
-          <Kicker>Webhook thời gian thực</Kicker>
-          <Words text="Mọi khoảnh khắc là *một sự kiện.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" />
-          <p className="mt-5 max-w-md text-[16px] leading-relaxed text-fg-2">Bình luận, Chaos Cards, clip, phán quyết Court, loại khỏi Royale — tất cả được đẩy tới hệ thống của bạn ngay khi xảy ra, kèm SLA 99,9% cho gói API.</p>
+          <Kicker>Real-time webhooks</Kicker>
+          <Words text="Every moment is *an event.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" />
+          <p className="mt-5 max-w-md text-[16px] leading-relaxed text-fg-2">Commentary, Chaos Cards, clips, Court verdicts, Royale eliminations — all pushed to your systems the moment they happen, with a 99.9% SLA on the API plan.</p>
         </div>
         <EventStream />
       </section>
 
       <section id="contact" className="shell grid scroll-mt-28 gap-12 py-24 lg:grid-cols-[1fr_1.3fr]">
         <div>
-          <Kicker tone="ember">Liên hệ</Kicker>
-          <Words text="Kể cho chúng tôi *về sân khấu của bạn.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" accentClass="serif-accent text-ember" />
-          <p className="mt-5 max-w-md text-fg-2">Giải đấu, nền tảng hay thương hiệu — bản demo tuỳ biến sẵn sàng trong 24 giờ.</p>
+          <Kicker tone="ember">Contact</Kicker>
+          <Words text="Tell us *about your stage.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" accentClass="serif-accent text-ember" />
+          <p className="mt-5 max-w-md text-fg-2">Tournament, platform or brand — a tailored demo can be ready within 24 hours.</p>
         </div>
-        <ContactForm topics={["Tài trợ giải đấu", "License / API", "Enterprise", "Khác"]} />
+        <ContactForm topics={["Tournament sponsorship", "License / API", "Enterprise", "Other"]} />
       </section>
     </>
   );

@@ -12,12 +12,12 @@ import { Kicker } from "../ui/section";
 import { Words } from "../ui/reveal";
 
 const MATCHES: { id: string; w: string; b: string; tag: string; host: HostId; viewers: string; opening: string[] }[] = [
-  { id: "a", w: "MãĐiênSG", b: "tượng_đồng", tag: "Hỗn loạn bật", host: "gambit", viewers: "12.4K", opening: ["e4", "c5", "Nf3", "d6"] },
-  { id: "b", w: "Zwischenzug_", b: "VuaLạcLối", tag: "Royale · vòng 3", host: "zugzwang", viewers: "8.1K", opening: ["d4", "Nf6", "c4", "e6"] },
-  { id: "c", w: "EnPassantEm", b: "cờ_chớp_hn", tag: "Blitz 3+0", host: "blunder", viewers: "5.6K", opening: ["e4", "e5", "Bc4", "Nc6"] },
-  { id: "d", w: "ThíHậuMỗiNgày", b: "NhậpThànhSớm", tag: "Đang xử ở Court", host: "zugzwang", viewers: "3.9K", opening: ["c4", "e5", "Nc3", "Nf6"] },
-  { id: "e", w: "BishopBốc", b: "xe_tăng_99", tag: "Hỗn loạn bật", host: "gambit", viewers: "2.7K", opening: ["e4", "e6", "d4", "d5"] },
-  { id: "f", w: "HậuĐen_VN", b: "tốt_thí_123", tag: "Tái đấu", host: "blunder", viewers: "2.2K", opening: ["Nf3", "d5", "g3", "c6"] },
+  { id: "a", w: "knightmare.exe", b: "en_passant_enjoyer", tag: "Chaos on", host: "gambit", viewers: "12.4K", opening: ["e4", "c5", "Nf3", "d6"] },
+  { id: "b", w: "Zwischenzug_", b: "LostKing404", tag: "Royale · round 3", host: "zugzwang", viewers: "8.1K", opening: ["d4", "Nf6", "c4", "e6"] },
+  { id: "c", w: "BishopBandit", b: "blitz_bae", tag: "Blitz 3+0", host: "blunder", viewers: "5.6K", opening: ["e4", "e5", "Bc4", "Nc6"] },
+  { id: "d", w: "SacTheQueen", b: "CastleEarly", tag: "On trial in Court", host: "zugzwang", viewers: "3.9K", opening: ["c4", "e5", "Nc3", "Nf6"] },
+  { id: "e", w: "rook_n_roll", b: "tiny_pawn", tag: "Chaos on", host: "gambit", viewers: "2.7K", opening: ["e4", "e6", "d4", "d5"] },
+  { id: "f", w: "QueenSlayer", b: "pawnstorm_23", tag: "Rematch", host: "blunder", viewers: "2.2K", opening: ["Nf3", "d5", "g3", "c6"] },
 ];
 
 function LiveBoard({ opening, seed }: { opening: string[]; seed: number }) {
@@ -78,11 +78,11 @@ export function LiveRail() {
     <section className="relative py-24 md:py-32" aria-labelledby="live-title">
       <div className="shell flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
         <div>
-          <Kicker tone="ember">Đang phát</Kicker>
-          <Words id="live-title" text="Lúc nào cũng có *chuyện* trên sân khấu." className="display mt-5 max-w-2xl text-[clamp(2.2rem,4.6vw,3.8rem)]" />
+          <Kicker tone="ember">Live now</Kicker>
+          <Words id="live-title" text="There is always *something happening* on stage." className="display mt-5 max-w-2xl text-[clamp(2.2rem,4.6vw,3.8rem)]" />
         </div>
         <Link href="/live" className="group flex items-center gap-2 text-[14px] text-fg-2 hover:text-fg">
-          Mở Arena <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          Open the Arena <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>
       </div>
       <div className="mask-fade-x group/rail relative mt-12 overflow-hidden">

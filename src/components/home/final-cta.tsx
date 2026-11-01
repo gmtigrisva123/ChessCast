@@ -1,31 +1,45 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import dynamic from "next/dynamic";
+import { motion, useMotionValueEvent, useScroll, useSpring, useTransform, useVelocity } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Play } from "lucide-react";
 import { ButtonLink } from "../ui/button";
-import { Words } from "../ui/reveal";
+import { ProximityText } from "../ui/proximity-text";
+import { warpSignal } from "../gl/warp";
+
+const Warp = dynamic(() => import("../gl/warp"), { ssr: false, loading: () => <div className="absolute inset-0 bg-void" /> });
 
 export function FinalCta() {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const scale = useTransform(scrollYProgress, [0, 0.45], [0.9, 1]);
-  const rot = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const [active, setActive] = useState(false);
+  const { scrollYProgress, scrollY } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const vel = useSpring(useVelocity(scrollY), { stiffness: 80, damping: 20 });
+  useMotionValueEvent(vel, "change", (v) => (warpSignal.speed = Math.min(6, Math.abs(v) / 450)));
+  const radius = useTransform(scrollYProgress, [0, 0.45], [120, 40]);
+  const scale = useTransform(scrollYProgress, [0, 0.45], [0.88, 1]);
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => setActive(e.isIntersecting), { rootMargin: "100px" });
+    if (ref.current) io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
   return (
-    <section ref={ref} className="px-3 py-16 md:px-6" aria-label="Bắt đầu">
-      <motion.div style={{ scale }} className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[40px] border border-white/10">
-        <motion.div style={{ rotate: rot }} className="absolute left-1/2 top-1/2 h-[1400px] w-[1400px] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,#6d5cff,#4d8dff,#3ee6e0,#ff8a4c,#ff6b9a,#6d5cff)] opacity-50 blur-[90px]" />
-        <div className="absolute inset-0 bg-void/55" />
-        <div className="dot-grid absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse,#000,transparent_70%)]" />
-        <div className="relative px-6 py-24 text-center md:py-32">
-          <Words text="Ván cờ tiếp theo *đang chờ bạn.*" className="display mx-auto max-w-4xl text-[clamp(2.6rem,6.4vw,5.6rem)]" />
-          <p className="mx-auto mt-6 max-w-lg text-[17px] text-fg-2">300 coin miễn phí đang nằm sẵn trong ví. Ba host AI đã vào vị trí. Chỉ thiếu bạn.</p>
+    <section ref={ref} className="px-3 py-16 md:px-6" aria-label="Get started">
+      <motion.div style={{ scale, borderRadius: radius }} className="relative mx-auto h-[86svh] min-h-[600px] max-w-[1400px] overflow-hidden border border-white/10">
+        <div className="absolute inset-0">
+          <Warp active={active} />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_40%_at_50%_50%,rgba(4,4,10,0.75),transparent)]" />
+        <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
+          <div className="kicker text-fg-2">The next game is about to start</div>
+          <ProximityText as="h2" onMount={false} text="Your *move.*" className="display mt-5 text-[clamp(4rem,14vw,12rem)] leading-[0.9]" />
+          <p className="mx-auto mt-6 max-w-md text-[17px] text-fg-2">300 free coins are already in your wallet. Three AI hosts are in position. The stage is only missing you.</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <ButtonLink href="/live" size="lg" magnetic>
-              <Play size={16} fill="currentColor" /> Vào Arena
+              <Play size={16} fill="currentColor" /> Enter the Arena
             </ButtonLink>
-            <ButtonLink href="/investors" size="lg" variant="glass" magnetic>
-              Dành cho nhà đầu tư <ArrowUpRight size={16} />
+            <ButtonLink href="/investors" size="lg" variant="liquid" magnetic>
+              For investors <ArrowUpRight size={16} />
             </ButtonLink>
           </div>
         </div>

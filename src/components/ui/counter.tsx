@@ -7,7 +7,7 @@ export function Counter({
   to,
   from = 0,
   duration = 2,
-  format = (n: number) => Math.round(n).toLocaleString("vi-VN"),
+  format = (n: number) => Math.round(n).toLocaleString("en-US"),
   className,
 }: {
   to: number;

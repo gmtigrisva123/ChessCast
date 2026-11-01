@@ -88,7 +88,7 @@ const auroraFrag = /* glsl */ `
   }
 `;
 
-/** Tấm nền cực quang chuyển động — cho kính có thứ để khúc xạ. */
+/** Animated aurora backdrop — gives the glass something to refract. */
 export function AuroraBackdrop({ position = [0, 2, -14], scale = [70, 36], intensity = 1 }: { position?: [number, number, number]; scale?: [number, number]; intensity?: number }) {
   const mat = useRef<THREE.ShaderMaterial>(null!);
   const uniforms = useMemo(() => ({ uTime: { value: 0 }, uIntensity: { value: intensity } }), [intensity]);

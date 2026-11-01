@@ -22,7 +22,7 @@ export function ContactForm({ topics, className }: { topics: string[]; className
     if (r.ok) setState("ok");
     else {
       const j = await r.json().catch(() => ({}));
-      setErr(j.error ?? "Có lỗi xảy ra.");
+      setErr(j.error ?? "Something went wrong.");
       setState("err");
     }
   };
@@ -38,8 +38,8 @@ export function ContactForm({ topics, className }: { topics: string[]; className
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 260, damping: 14 }} className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[linear-gradient(135deg,#8b7cff,#3ee6e0)] text-void">
                 <Check size={30} strokeWidth={2.5} />
               </motion.div>
-              <div className="display mt-5 text-3xl">Đã nhận được.</div>
-              <p className="mt-2 text-fg-2">Đội ngũ ChessCast sẽ phản hồi trong 1 ngày làm việc.</p>
+              <div className="display mt-5 text-3xl">Message received.</div>
+              <p className="mt-2 text-fg-2">The ChessCast team will reply within one business day.</p>
             </div>
           </motion.div>
         ) : (
@@ -60,26 +60,26 @@ export function ContactForm({ topics, className }: { topics: string[]; className
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="relative">
-                <input id="cf-name" name="name" required placeholder="Họ và tên" className={field} />
-                <label htmlFor="cf-name" className={label}>Họ và tên</label>
+                <input id="cf-name" name="name" required placeholder="Full name" className={field} />
+                <label htmlFor="cf-name" className={label}>Full name</label>
               </div>
               <div className="relative">
                 <input id="cf-email" name="email" type="email" required placeholder="Email" className={field} />
-                <label htmlFor="cf-email" className={label}>Email công việc</label>
+                <label htmlFor="cf-email" className={label}>Work email</label>
               </div>
             </div>
             <div className="relative">
-              <input id="cf-company" name="company" placeholder="Công ty" className={field} />
-              <label htmlFor="cf-company" className={label}>Công ty / Tổ chức</label>
+              <input id="cf-company" name="company" placeholder="Company" className={field} />
+              <label htmlFor="cf-company" className={label}>Company / organization</label>
             </div>
             <div className="relative">
-              <textarea id="cf-msg" name="message" required minLength={10} rows={5} placeholder="Lời nhắn" className={cn(field, "resize-none")} />
-              <label htmlFor="cf-msg" className={label}>Bạn muốn làm gì cùng ChessCast?</label>
+              <textarea id="cf-msg" name="message" required minLength={10} rows={5} placeholder="Message" className={cn(field, "resize-none")} />
+              <label htmlFor="cf-msg" className={label}>What would you like to build with ChessCast?</label>
             </div>
             <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
             {state === "err" && <p className="text-sm text-rose">{err}</p>}
             <Button type="submit" size="lg" className="w-full" disabled={state === "loading"}>
-              {state === "loading" ? <Loader2 size={18} className="animate-spin" /> : null} Gửi cho đội ngũ <ArrowUpRight size={16} />
+              {state === "loading" ? <Loader2 size={18} className="animate-spin" /> : null} Send to the team <ArrowUpRight size={16} />
             </Button>
           </motion.form>
         )}

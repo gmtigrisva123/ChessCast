@@ -8,7 +8,7 @@ import { uid } from "./utils";
 export type Order = {
   id: string;
   label: string;
-  amount: number; // VND
+  amount: number; // USD cents
   coins: number;
   createdAt: number;
   provider: "stripe" | "demo";
@@ -54,7 +54,7 @@ type WalletState = {
 export const useWallet = create<WalletState>()(
   persist(
     (set, get) => ({
-      username: "khach_" + Math.random().toString(36).slice(2, 6),
+      username: "guest_" + Math.random().toString(36).slice(2, 6),
       coins: 300,
       plan: "free",
       planRenewsAt: null,

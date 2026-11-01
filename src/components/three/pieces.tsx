@@ -21,7 +21,7 @@ function lathe(points: P[], segments = 44, samples = 90) {
 
 function prep(g: THREE.BufferGeometry) {
   const n = g.index ? g.toNonIndexed() : g;
-  // Đảm bảo cùng tập attribute để merge
+  // Make sure every part has the same attribute set so they can be merged
   if (!n.getAttribute("uv")) n.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array((n.getAttribute("position").count) * 2), 2));
   for (const k of Object.keys(n.attributes)) if (!["position", "normal", "uv"].includes(k)) n.deleteAttribute(k);
   return n;
@@ -210,7 +210,7 @@ function buildKnight() {
     curveSegments: 18,
   });
   head.translate(0, 0.17, -depth / 2);
-  // Mắt
+  // Eyes
   const eyeL = new THREE.SphereGeometry(0.03, 8, 6);
   eyeL.translate(-0.17, 0.78, depth / 2 + 0.035);
   const eyeR = new THREE.SphereGeometry(0.03, 8, 6);
@@ -234,40 +234,67 @@ export function getPieceGeometries() {
   return cache;
 }
 
-let mats: { w: THREE.MeshPhysicalMaterial; b: THREE.MeshPhysicalMaterial } | null = null;
+export type PieceTheme = "pearl" | "crystal";
 
-/** Quân Trắng: ngọc trai ánh xà cừ · Quân Đen: obsidian bóng. */
-export function getPieceMaterials() {
-  if (mats) return mats;
-  mats = {
-    w: new THREE.MeshPhysicalMaterial({
-      color: "#ece8ff",
-      roughness: 0.18,
-      metalness: 0.04,
-      clearcoat: 1,
-      clearcoatRoughness: 0.06,
-      iridescence: 1,
-      iridescenceIOR: 1.32,
-      iridescenceThicknessRange: [160, 620],
-      sheen: 0.6,
-      sheenColor: new THREE.Color("#c9c2ff"),
-    }),
-    b: new THREE.MeshPhysicalMaterial({
-      color: "#0b0c14",
-      roughness: 0.1,
-      metalness: 0.55,
-      clearcoat: 1,
-      clearcoatRoughness: 0.04,
-      iridescence: 0.7,
-      iridescenceIOR: 1.6,
-      iridescenceThicknessRange: [300, 900],
-    }),
-  };
-  return mats;
+const matCache: Partial<Record<PieceTheme, { w: THREE.MeshPhysicalMaterial; b: THREE.MeshPhysicalMaterial }>> = {};
+
+/**
+ * pearl   — iridescent pearl vs polished obsidian (best readability)
+ * crystal — refractive glass with dispersion vs obsidian (showcase)
+ */
+export function getPieceMaterials(theme: PieceTheme = "pearl") {
+  const hit = matCache[theme];
+  if (hit) return hit;
+  const obsidian = new THREE.MeshPhysicalMaterial({
+    color: "#0b0c14",
+    roughness: 0.1,
+    metalness: 0.55,
+    clearcoat: 1,
+    clearcoatRoughness: 0.04,
+    iridescence: 0.7,
+    iridescenceIOR: 1.6,
+    iridescenceThicknessMinimum: 300,
+    iridescenceThicknessMaximum: 900,
+  });
+  const white =
+    theme === "crystal"
+      ? new THREE.MeshPhysicalMaterial({
+          color: "#ffffff",
+          roughness: 0.03,
+          metalness: 0,
+          transmission: 1,
+          thickness: 1.1,
+          ior: 1.5,
+          dispersion: 5,
+          attenuationColor: new THREE.Color("#d9d3ff"),
+          attenuationDistance: 2.2,
+          clearcoat: 1,
+          clearcoatRoughness: 0.02,
+          iridescence: 0.55,
+          iridescenceIOR: 1.3,
+          iridescenceThicknessMinimum: 200,
+    iridescenceThicknessMaximum: 650,
+          envMapIntensity: 1.4,
+        })
+      : new THREE.MeshPhysicalMaterial({
+          color: "#ece8ff",
+          roughness: 0.18,
+          metalness: 0.04,
+          clearcoat: 1,
+          clearcoatRoughness: 0.06,
+          iridescence: 1,
+          iridescenceIOR: 1.32,
+          iridescenceThicknessMinimum: 160,
+    iridescenceThicknessMaximum: 620,
+          sheen: 0.6,
+          sheenColor: new THREE.Color("#c9c2ff"),
+        });
+  matCache[theme] = { w: white, b: obsidian };
+  return matCache[theme]!;
 }
 
 let glass: THREE.MeshPhysicalMaterial | null = null;
-/** Kính khúc xạ cho tác phẩm trung tâm ở hero. */
+/** Refractive glass used for the hero centerpiece and shards. */
 export function getGlassMaterial() {
   if (glass) return glass;
   glass = new THREE.MeshPhysicalMaterial({
@@ -284,7 +311,8 @@ export function getGlassMaterial() {
     clearcoatRoughness: 0.02,
     iridescence: 0.9,
     iridescenceIOR: 1.3,
-    iridescenceThicknessRange: [200, 700],
+    iridescenceThicknessMinimum: 200,
+    iridescenceThicknessMaximum: 700,
     envMapIntensity: 1.3,
   });
   return glass;

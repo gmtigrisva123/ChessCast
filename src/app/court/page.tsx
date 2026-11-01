@@ -3,7 +3,7 @@ import { CourtView } from "@/components/court/court";
 
 export const metadata: Metadata = {
   title: "Chess Court",
-  description: "Tòa án của khán giả: AI công tố, bồi thẩm đoàn khán giả, hình phạt là thử thách trên livestream.",
+  description: "The audience's courtroom: an AI prosecutor, a jury of viewers and penalties served live on stream.",
 };
 
 export default function CourtPage() {
