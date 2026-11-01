@@ -18,6 +18,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState<string | null>(null);
   const coins = useWallet((s) => s.coins);
@@ -28,6 +29,7 @@ export function Navbar() {
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
     setHidden(y > 420 && y > prev + 2 && !open);
+    setScrolled(y > 24);
   });
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
@@ -37,7 +39,14 @@ export function Navbar() {
   return (
     <>
       <motion.header className="fixed inset-x-0 top-0 z-[70] px-3 pt-3" animate={{ y: hidden ? -96 : 0 }} transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}>
-        <LiquidGlass className="mx-auto flex h-14 max-w-[1240px] items-center justify-between gap-3 rounded-full pl-4 pr-2" radius={28} bezel={18} depth={16} blur={2.5}>
+        {/* adaptive glass: crystal clear over the hero, darker and softer once content scrolls underneath */}
+        <LiquidGlass
+          className={cn("mx-auto flex h-14 max-w-[1240px] items-center justify-between gap-3 rounded-full pl-4 pr-2 transition-[background-color,background-image] duration-500", scrolled && "liquid-dark")}
+          radius={28}
+          bezel={18}
+          depth={16}
+          blur={scrolled ? 7 : 2.5}
+        >
           <Logo />
           <nav className="hidden items-center lg:flex" onMouseLeave={() => setHover(null)} aria-label="Primary">
             {nav.map((n) => {

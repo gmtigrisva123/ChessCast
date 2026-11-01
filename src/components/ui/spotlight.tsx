@@ -3,7 +3,7 @@
 import { useRef, type ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
-/** Card with a glow and luminous border that follow the pointer. */
+/** Frosted card with a glow and luminous border that follow the pointer. */
 export function Spotlight({ className, children, ...rest }: ComponentPropsWithoutRef<"div">) {
   const ref = useRef<HTMLDivElement>(null);
   return (
@@ -18,7 +18,7 @@ export function Spotlight({ className, children, ...rest }: ComponentPropsWithou
         el.style.setProperty("--o", "1");
       }}
       onPointerLeave={() => ref.current?.style.setProperty("--o", "0")}
-      className={cn("spot relative overflow-hidden rounded-[28px] border border-white/[0.07] bg-gradient-to-b from-white/[0.045] to-white/[0.015]", className)}
+      className={cn("spot relative overflow-hidden rounded-[28px] border border-white/[0.07] bg-gradient-to-b from-white/[0.05] to-white/[0.02] backdrop-blur-xl", className)}
       {...rest}
     >
       <div className="spot-border" />
