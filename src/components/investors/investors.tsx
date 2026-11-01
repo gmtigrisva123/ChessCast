@@ -65,7 +65,7 @@ function RoundCard() {
       <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(139,124,255,0.45),transparent_65%)] blur-2xl" />
       <div className="pointer-events-none absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(62,230,224,0.3),transparent_65%)] blur-2xl" />
       <div className="relative flex items-center justify-between">
-        <span className="kicker text-[10px] text-fg-3">Deal room</span>
+        <span className="kicker text-[10px] text-fg-2">Deal room</span>
         <span className="flex items-center gap-1.5 rounded-full bg-mint/15 px-2.5 py-1 font-mono text-[10.5px] text-mint">
           <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-mint" /> Round open
         </span>
@@ -93,7 +93,7 @@ function RoundCard() {
           <motion.span key={f.label} className="h-full rounded-full" style={{ background: f.c }} initial={{ width: 0 }} animate={{ width: `${f.pct}%` }} transition={{ delay: 1.4 + i * 0.1, duration: 1, ease: EASE }} />
         ))}
       </div>
-      <div className="relative mt-2 font-mono text-[10.5px] text-fg-3">Use of funds · see breakdown below</div>
+      <div className="relative mt-2 font-mono text-[10.5px] text-fg-2">Use of funds · see breakdown below</div>
     </LiquidGlass>
   );
 }
