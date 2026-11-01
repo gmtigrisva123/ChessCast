@@ -160,9 +160,14 @@ const T = {
     blunder: ["{p} plays {san} looking confident. Probably shaking inside.", "{piece} just went for a walk to {sq}. Chill.", "If nobody throws a Chaos Card soon I'm taking a nap."],
   },
   opening: {
-    gambit: ["WE ARE LIVE! {p} opens with {san}! BUCKLE UP!"],
-    zugzwang: ["{san}. A classical opening. Let's see how quickly they ruin it."],
-    blunder: ["{p} opens with {san} and I already smell drama."],
+    gambit: ["WE ARE LIVE! {p} opens with {san}! BUCKLE UP!", "AND WE'RE OFF! {p} kicks things off with {san}!"],
+    zugzwang: ["{san}. A classical opening. Let's see how quickly they ruin it.", "{p} opens {san}. Respectable. For now."],
+    blunder: ["{p} opens with {san} and I already smell drama.", "{san} to start? {p} definitely watched one tutorial."],
+  },
+  reply: {
+    gambit: ["AND {p} FIRES BACK WITH {san}! THE GAME IS ON!", "{p} answers {san}! NOBODY IS BACKING DOWN!"],
+    zugzwang: ["{san} in reply. Theory, for now.", "{p} answers with {san}. Textbook. Enjoy it while it lasts."],
+    blunder: ["{p} replies {san}. Bold. Or copied from a video.", "{san}! {p} came here to fight, apparently."],
   },
   forced: {
     gambit: ["CHAOS CARD! Fate picks the move: {san}! NOBODY SAW THAT COMING!"],
@@ -213,13 +218,16 @@ export function commentMove(c: MoveContext): Line[] {
   } else if (c.swing > 120) {
     bucket = "great";
     hype = 30;
-  } else if (c.ply <= 1) {
+  } else if (c.ply === 0) {
     bucket = "opening";
     hype = 20;
+  } else if (c.ply === 1) {
+    bucket = "reply";
+    hype = 16;
   }
 
   const primary: HostId =
-    bucket === "blunder" ? "blunder" : bucket === "quiet" ? pick(["gambit", "zugzwang", "blunder"] as HostId[]) : bucket === "great" ? "zugzwang" : "gambit";
+    bucket === "blunder" ? "blunder" : bucket === "quiet" || bucket === "reply" ? pick(["gambit", "zugzwang", "blunder"] as HostId[]) : bucket === "great" ? "zugzwang" : "gambit";
   const order = hostOrder(primary);
   const lines: Line[] = [{ host: order[0], text: fill(pick(T[bucket][order[0]]), c), hype }];
   const twoHosts = c.spotlight || hype >= 30 || Math.random() < 0.25;
