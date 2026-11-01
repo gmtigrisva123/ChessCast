@@ -81,42 +81,43 @@ export function Voices() {
           </div>
         </div>
         <div className="relative">
-          <div className="relative mx-auto aspect-square w-full max-w-[560px]">
-            <div className="absolute inset-[10%] rounded-full blur-[70px]" style={{ background: `radial-gradient(circle, ${host.orb[1]}66, transparent 65%)` }} />
+          <div className="relative mx-auto aspect-square w-full max-w-[520px]">
+            <div className="absolute inset-[14%] rounded-full blur-[70px]" style={{ background: `radial-gradient(circle, ${host.orb[1]}66, transparent 65%)` }} />
             <div className="absolute inset-[6%] rounded-full border border-white/[0.06]" />
             <div className="absolute inset-[20%] rounded-full border border-dashed border-white/[0.07]" />
-            <div className="absolute inset-[4%]">
+            <div className="absolute inset-[8%]">
               <VoiceOrb colors={host.orb} talking={speaking || k % 2 === 0} active={active} />
             </div>
-            <div className="absolute bottom-[2%] left-1/2 w-[min(440px,94%)] -translate-x-1/2">
-              <LiquidGlass className="rounded-[28px] p-5" radius={28} bezel={14} depth={12}>
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-semibold" style={{ color: host.color }}>
-                    {host.name}
-                  </span>
-                  <VoiceBars color={host.color} />
-                </div>
-                <AnimatePresence mode="wait">
-                  <motion.p key={id + k} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mt-2 min-h-[48px] text-[15px] leading-snug text-fg">
-                    <Typing text={line} />
-                  </motion.p>
-                </AnimatePresence>
-                <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
-                  <p className="text-[12.5px] leading-snug text-fg-2">{host.bio}</p>
-                  <button
-                    onClick={() => {
-                      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-                      speak(line, id, true);
-                      setSpeaking(true);
-                      setTimeout(() => setSpeaking(false), 2600);
-                    }}
-                    className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-fg px-4 text-[13px] font-semibold text-void"
-                  >
-                    <Volume2 size={15} className={speaking ? "animate-pulse" : ""} /> Listen
-                  </button>
-                </div>
-              </LiquidGlass>
-            </div>
+          </div>
+          {/* caption sits below the orb (overlapping only the outer ring) so the text never fights the bright core */}
+          <div className="relative z-10 mx-auto -mt-20 w-[min(440px,94%)]">
+            <LiquidGlass className="liquid-dark rounded-[28px] p-5" radius={28} bezel={14} depth={12}>
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-semibold" style={{ color: host.color }}>
+                  {host.name}
+                </span>
+                <VoiceBars color={host.color} />
+              </div>
+              <AnimatePresence mode="wait">
+                <motion.p key={id + k} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mt-2 min-h-[48px] text-[15px] leading-snug text-fg">
+                  <Typing text={line} />
+                </motion.p>
+              </AnimatePresence>
+              <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+                <p className="text-[12.5px] leading-snug text-fg-2">{host.bio}</p>
+                <button
+                  onClick={() => {
+                    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+                    speak(line, id, true);
+                    setSpeaking(true);
+                    setTimeout(() => setSpeaking(false), 2600);
+                  }}
+                  className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-fg px-4 text-[13px] font-semibold text-void"
+                >
+                  <Volume2 size={15} className={speaking ? "animate-pulse" : ""} /> Listen
+                </button>
+              </div>
+            </LiquidGlass>
           </div>
         </div>
       </div>

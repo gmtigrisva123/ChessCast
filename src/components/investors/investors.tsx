@@ -137,8 +137,8 @@ function Convergence() {
             style={{ filter: `drop-shadow(0 0 6px ${THESIS[i].c})` }}
           />
         ))}
-        <motion.circle cx={900} cy={110} r={60} fill="url(#conv-glow)" initial={{ scale: 0, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.6, duration: 1, ease: EASE }} style={{ transformOrigin: "900px 110px" }} />
-        <motion.circle cx={900} cy={110} r={6} fill="#fff" initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ delay: 1.7, type: "spring", stiffness: 300, damping: 14 }} style={{ transformOrigin: "900px 110px" }} />
+        <motion.circle cx={900} cy={110} r={60} fill="url(#conv-glow)" initial={{ scale: 0, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.6, duration: 1, ease: EASE }} />
+        <motion.circle cx={900} cy={110} r={6} fill="#fff" initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ delay: 1.7, type: "spring", stiffness: 300, damping: 14 }} />
         <motion.text x={930} y={115} className="fill-fg font-mono text-[13px]" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2 }}>
           ChessCast
         </motion.text>
@@ -170,7 +170,7 @@ function MarketRings() {
           const r = (m.r / 100) * 190;
           const cy = 395 - r;
           return (
-            <motion.g key={m.tag} initial={{ scale: 0.6, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true, margin: "-10% 0px" }} transition={{ duration: 1.4, delay: i * 0.18, ease: EASE }} style={{ transformOrigin: "200px 395px" }}>
+            <motion.g key={m.tag} initial={{ scale: 0.6, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true, margin: "-10% 0px" }} transition={{ duration: 1.4, delay: i * 0.18, ease: EASE }} style={{ originX: 0.5, originY: 1 }}>
               <circle cx={200} cy={cy} r={r} fill={`url(#ring-${m.tag})`} />
               <motion.circle
                 cx={200}

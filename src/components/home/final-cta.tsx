@@ -29,11 +29,11 @@ export function FinalCta() {
         <div className="absolute inset-0">
           <Warp active={active} />
         </div>
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_40%_at_50%_50%,rgba(4,4,10,0.75),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_44%_at_50%_52%,rgba(4,4,10,0.85),rgba(4,4,10,0.4)_62%,transparent)]" />
         <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
-          <div className="kicker text-fg-2">The next game is about to start</div>
+          <div className="kicker text-fg-2 [text-shadow:0_1px_10px_rgba(4,4,10,0.95)]">The next game is about to start</div>
           <ProximityText as="h2" onMount={false} text="Your *move.*" className="display mt-5 text-[clamp(4rem,14vw,12rem)] leading-[0.9]" />
-          <p className="mx-auto mt-6 max-w-md text-[17px] text-fg-2">300 free coins are already in your wallet. Three AI hosts are in position. The stage is only missing you.</p>
+          <p className="mx-auto mt-6 max-w-md text-[17px] text-fg-2 [text-shadow:0_1px_2px_rgba(4,4,10,0.95),0_2px_18px_rgba(4,4,10,0.9)]">300 free coins are already in your wallet. Three AI hosts are in position. The stage is only missing you.</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <ButtonLink href="/live" size="lg" magnetic>
               <Play size={16} fill="currentColor" /> Enter the Arena

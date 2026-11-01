@@ -119,7 +119,7 @@ function Verdict({ pct }: { pct: number }) {
         </defs>
         <path d="M14 102 A86 86 0 0 1 186 102" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="12" strokeLinecap="round" />
         <motion.path d="M14 102 A86 86 0 0 1 186 102" fill="none" stroke="url(#v-g)" strokeWidth="12" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2 }} />
-        <motion.g animate={{ rotate: angle }} transition={{ type: "spring", stiffness: 50, damping: 10 }} style={{ originX: "100px", originY: "102px" }}>
+        <motion.g animate={{ rotate: angle }} transition={{ type: "spring", stiffness: 50, damping: 10 }} style={{ originX: 0.5, originY: 1 }}>
           <line x1="100" y1="102" x2="100" y2="34" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
         </motion.g>
         <circle cx="100" cy="102" r="7" fill="#fff" />

@@ -16,7 +16,7 @@ void main(){
   vec3 n = normalize(normal);
   float slow = snoise(n * 1.5 + uTime * 0.32);
   float fast = snoise(n * 3.6 + uTime * (0.9 + uTalk * 1.6));
-  float d = slow * (0.12 + uTalk * 0.14) + fast * (0.02 + uTalk * 0.09);
+  float d = slow * (0.1 + uTalk * 0.1) + fast * (0.02 + uTalk * 0.06);
   vec3 p = position + n * d;
   vNoise = slow;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -70,7 +70,7 @@ function Blob({ colors, talking }: { colors: [string, string, string]; talking: 
   });
   return (
     <mesh ref={mesh}>
-      <icosahedronGeometry args={[1.25, 48]} />
+      <icosahedronGeometry args={[1.02, 48]} />
       <shaderMaterial ref={mat} uniforms={uniforms} vertexShader={VERT} fragmentShader={FRAG} />
     </mesh>
   );

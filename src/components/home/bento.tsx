@@ -40,7 +40,7 @@ function RoyaleRings() {
     return () => clearInterval(t);
   }, [dots]);
   return (
-    <svg viewBox="-80 -80 160 160" className="h-full w-full">
+    <svg viewBox="-80 -96 160 176" className="h-full w-full">
       <circle r="74" fill="none" stroke="rgba(255,255,255,0.06)" />
       <circle r="44" fill="none" stroke="rgba(255,255,255,0.05)" strokeDasharray="2 4" />
       {dots.map((d) => {
@@ -63,7 +63,7 @@ function RoyaleRings() {
           <stop offset="1" stopColor="#8b7cff" />
         </radialGradient>
       </defs>
-      <text y="-60" textAnchor="middle" className="font-mono" fontSize="7" fill="rgba(255,255,255,0.45)">
+      <text y="-85" textAnchor="middle" className="font-mono" fontSize="7" fill="rgba(255,255,255,0.5)">
         {100 - dead.size} / 100 still standing
       </text>
     </svg>
@@ -89,7 +89,7 @@ function Gauge() {
         </defs>
         <path d="M15 100 A85 85 0 0 1 185 100" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="14" strokeLinecap="round" />
         <path d="M15 100 A85 85 0 0 1 185 100" fill="none" stroke="url(#g-gauge)" strokeWidth="14" strokeLinecap="round" strokeDasharray="4 6" />
-        <motion.g animate={{ rotate: angle }} transition={{ type: "spring", stiffness: 60, damping: 10 }} style={{ originX: "100px", originY: "100px" }}>
+        <motion.g animate={{ rotate: angle }} transition={{ type: "spring", stiffness: 60, damping: 10 }} style={{ originX: 0.5, originY: 1 }}>
           <line x1="100" y1="100" x2="100" y2="30" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
         </motion.g>
         <circle cx="100" cy="100" r="7" fill="#fff" />
