@@ -127,14 +127,14 @@ function AnimatedPiece({
         const e = easeInOutCubic(s.t);
         g.position.lerpVectors(s.from, s.to, e);
         g.position.y += Math.sin(Math.PI * s.t) * s.arc;
-        g.rotation.y = (p.type === "n" ? (p.color === "w" ? -Math.PI / 2 : Math.PI / 2) : 0) + Math.sin(Math.PI * s.t) * 0.4;
+        g.rotation.y = (p.type === "n" ? (p.color === "w" ? -Math.PI / 4 : (3 * Math.PI) / 4) : 0) + Math.sin(Math.PI * s.t) * 0.4;
       }
     } else {
       g.position.y = s.to.y + s.lift;
     }
   });
 
-  const rotY = p.type === "n" ? (p.color === "w" ? -Math.PI / 2 : Math.PI / 2) : 0;
+  const rotY = p.type === "n" ? (p.color === "w" ? -Math.PI / 4 : (3 * Math.PI) / 4) : 0;
 
   return (
     <group ref={ref} rotation={[0, rotY, 0]} visible={!hidden}>
