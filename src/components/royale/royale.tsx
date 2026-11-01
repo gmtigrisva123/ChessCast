@@ -110,7 +110,8 @@ function Arena() {
   const [alive, setAlive] = useState<number[]>(() => Array.from({ length: 100 }, (_, i) => i));
   const [dying, setDying] = useState<Set<number>>(new Set());
   const [round, setRound] = useState(-1);
-  const [log, setLog] = useState<string[]>([]);
+  const [log, setLog] = useState<{ id: number; text: string }[]>([]);
+  const logId = useRef(0);
   const [running, setRunning] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -146,14 +147,14 @@ function Arena() {
     }
     setDying(dead);
     setRound(r);
-    setLog((lg) => [...lines, ...lg].slice(0, 9));
+    setLog((lg) => [...lines.map((text) => ({ id: logId.current++, text })), ...lg].slice(0, 9));
     timer.current = setTimeout(() => {
       setAlive(next.sort((x, y) => x - y));
       setDying(new Set());
       if (next.length > 1) timer.current = setTimeout(() => step(next, r + 1), 1000);
       else {
         setRunning(false);
-        setLog((lg) => [`👑 ${fieldRef.current[next[0]].name} is the Royale champion!`, ...lg]);
+        setLog((lg) => [{ id: logId.current++, text: `👑 ${fieldRef.current[next[0]].name} is the Royale champion!` }, ...lg].slice(0, 9));
       }
     }, 850);
   };
@@ -250,8 +251,9 @@ function Arena() {
             {log.length === 0 && <p className="text-[14px] text-fg-3">Hit “Simulate a season” to watch 100 players get knocked out, round after round.</p>}
             <AnimatePresence initial={false}>
               {log.map((l, i) => (
-                <motion.p key={l + i} layout initial={{ opacity: 0, x: 16, filter: "blur(6px)" }} animate={{ opacity: 1 - i * 0.09, x: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} className="rounded-xl bg-white/[0.03] px-3 py-2 text-[13.5px] text-fg-2">
-                  {l}
+                // stable ids: existing lines keep their element and only slide down when new ones arrive
+                <motion.p key={l.id} layout initial={{ opacity: 0, x: 16, filter: "blur(6px)" }} animate={{ opacity: 1 - i * 0.09, x: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} className="rounded-xl bg-white/[0.03] px-3 py-2 text-[13.5px] text-fg-2">
+                  {l.text}
                 </motion.p>
               ))}
             </AnimatePresence>
