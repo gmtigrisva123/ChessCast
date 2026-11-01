@@ -50,12 +50,15 @@ function LiveBoard({ opening, seed }: { opening: string[]; seed: number }) {
 function MatchCard({ m, i }: { m: (typeof MATCHES)[number]; i: number }) {
   return (
     <Link href="/live" className="group relative block w-[280px] shrink-0 rounded-[26px] border border-white/[0.07] bg-white/[0.025] p-3 transition-colors hover:border-white/20">
+      {/* badges sit in their own header row so board pieces never cover them */}
+      <div className="flex items-center justify-between gap-2 px-1 pb-2.5 pt-0.5">
+        <span className="flex items-center gap-1.5 rounded-full bg-rose/15 px-2 py-0.5 font-mono text-[10px] font-medium text-rose">
+          <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-rose" /> LIVE
+        </span>
+        <span className="truncate rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-fg-2">{m.tag}</span>
+      </div>
       <div className="relative overflow-hidden rounded-[18px]">
         <LiveBoard opening={m.opening} seed={i} />
-        <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[10px] text-fg backdrop-blur">
-          <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-rose" /> LIVE
-        </div>
-        <div className="absolute right-2 top-2 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[10px] text-fg-2 backdrop-blur">{m.tag}</div>
       </div>
       <div className="flex items-center gap-3 px-1.5 pb-1 pt-3">
         <HostOrb id={m.host} size={26} />
