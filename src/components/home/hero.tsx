@@ -84,7 +84,7 @@ export function Hero() {
               </span>
             </motion.div>
 
-            <div className="relative min-h-[11.5rem] max-w-[46rem] sm:min-h-[14rem] md:min-h-[18rem] lg:min-h-[21rem]">
+            <div className="relative min-h-[11.5rem] max-w-[54rem] sm:min-h-[14rem] md:min-h-[18rem] lg:min-h-[21rem]">
               <AnimatePresence mode="wait">
                 {phase === 0 ? (
                   <motion.div key="p0" exit={{ opacity: 0, y: -40, filter: "blur(10px)" }} transition={{ duration: 0.45 }}>
@@ -95,7 +95,7 @@ export function Hero() {
                   </motion.div>
                 ) : (
                   <motion.div key="p1" initial={{ opacity: 0, y: 40, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} exit={{ opacity: 0, y: 40 }} transition={{ duration: 0.5 }}>
-                    <h2 className="font-display text-[clamp(3.2rem,9.5vw,8.6rem)] font-bold uppercase leading-[0.92]">
+                    <h2 className="font-display text-[clamp(3rem,8vw,7.4rem)] font-bold uppercase leading-[0.92]">
                       <span className="block text-cream">Một lá bài.</span>
                       <span className="block text-pink">Đổi cả ván cờ.</span>
                     </h2>

@@ -385,7 +385,7 @@ export function useArena() {
       }
       return;
     }
-    const think = (mode === "play" ? 700 : 1100) + Math.random() * (mode === "play" ? 900 : 1700);
+    const think = (mode === "play" ? 700 : 1500) + Math.random() * (mode === "play" ? 900 : 1900);
     const t = setTimeout(() => {
       const g = gameRef.current;
       if (g.over) return;
@@ -500,7 +500,7 @@ export function useArena() {
       switch (id) {
         case "fog": {
           const squares = fogRows();
-          update((s) => ({ ...s, fog: { squares, left: 4 } }));
+          update((s) => ({ ...s, fog: { squares, left: 6 } }));
           break;
         }
         case "random":

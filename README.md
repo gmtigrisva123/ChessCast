@@ -4,6 +4,16 @@
 
 Website hoàn chỉnh cho ChessCast, dựng từ pitch deck vòng hạt giống: trang chủ 3D, sản phẩm Arena chạy được thật, các chế độ Chess Royale / Chess Court, bảng giá và luồng thanh toán, trang B2B và trang nhà đầu tư.
 
+## Ảnh giao diện
+
+| Trang chủ — hero 3D | Cuộn: Chaos Card + sương mù |
+| --- | --- |
+| ![Hero](docs/screenshots/01-home-hero.jpg) | ![Hero chaos](docs/screenshots/02-home-hero-chaos.jpg) |
+| **Arena live** | **Ném “Sương mù chiến trường”** |
+| ![Arena](docs/screenshots/09-live-arena.jpg) | ![Fog](docs/screenshots/10-live-fog-of-war.jpg) |
+
+Toàn bộ ảnh (desktop + mobile) nằm trong [`docs/screenshots/`](docs/screenshots).
+
 ## Tính năng
 
 | Trang | Nội dung |

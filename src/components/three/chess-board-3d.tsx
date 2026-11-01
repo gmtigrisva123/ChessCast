@@ -203,7 +203,7 @@ const fogFragment = /* glsl */ `
     float n = fbm(p + vec2(uTime*0.18, uTime*0.07));
     float n2 = fbm(p*1.6 - vec2(uTime*0.12, -uTime*0.05));
     float edge = smoothstep(0.0,0.08,vUv.x)*smoothstep(1.0,0.92,vUv.x)*smoothstep(0.0,0.12,vUv.y)*smoothstep(1.0,0.88,vUv.y);
-    float a = clamp(0.62 + (n*n2)*1.1, 0.0, 1.0) * edge * uOpacity;
+    float a = clamp(0.74 + (n*n2)*1.2, 0.0, 1.0) * edge * uOpacity;
     vec3 col = mix(uColor, vec3(0.95,0.97,1.0), n*0.55);
     gl_FragColor = vec4(col, a);
   }
@@ -231,11 +231,11 @@ function Fog({ squares }: { squares: Square[] }) {
   const last = useRef(rect);
   if (rect) last.current = rect;
   const uniformsA = useMemo(
-    () => ({ uTime: { value: 0 }, uOpacity: { value: 0 }, uColor: { value: new THREE.Color("#7f93b8") }, uScale: { value: new THREE.Vector2(4, 2) } }),
+    () => ({ uTime: { value: 0 }, uOpacity: { value: 0 }, uColor: { value: new THREE.Color("#4a5b80") }, uScale: { value: new THREE.Vector2(4, 2) } }),
     [],
   );
   const uniformsB = useMemo(
-    () => ({ uTime: { value: 10 }, uOpacity: { value: 0 }, uColor: { value: new THREE.Color("#c9d6ee") }, uScale: { value: new THREE.Vector2(3, 1.5) } }),
+    () => ({ uTime: { value: 10 }, uOpacity: { value: 0 }, uColor: { value: new THREE.Color("#9fb3d9") }, uScale: { value: new THREE.Vector2(3, 1.5) } }),
     [],
   );
   useFrame((_, dt) => {
