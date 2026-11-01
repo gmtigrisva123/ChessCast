@@ -156,7 +156,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 14, filter: "blur(8px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
           transition={{ delay: 1.2, duration: 1 }}
-          className="max-w-xl text-[15.5px] leading-relaxed text-fg-2 [text-shadow:0_2px_20px_rgba(4,4,10,0.9)] md:text-[17px]"
+          className="max-w-xl text-[15.5px] leading-relaxed text-fg-2 [text-shadow:0_1px_2px_rgba(4,4,10,0.95),0_2px_20px_rgba(4,4,10,0.9)] md:text-[17px]"
         >
           AI hosts with real personalities call every move. You throw Chaos Cards to bend the game. The best moments turn into clips on their own.
         </motion.p>
