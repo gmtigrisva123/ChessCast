@@ -38,7 +38,7 @@ function makeField(me: string | null, rng: () => number = Math.random): Tile[] {
 }
 
 const ROUNDS = ["100 → 50", "50 → 25", "25 → 13", "13 → 7", "7 → 4", "4 → 2", "Final"];
-const QUIPS = ["{a} sends {b} off the stage!", "{b} explodes — {a} moves on!", "Fateful Chaos Card: {b} knocked out by {a}!", "{a} mates {b} in 19 moves!", "{b} flags. The clock waits for nobody."];
+const QUIPS = ["{a} sends {b} off the stage!", "{b} explodes — {a} moves on!", "Fateful Chaos Card: {b} knocked out by {a}!", "{a} mates {b} in {n} moves!", "{b} flags. The clock waits for nobody."];
 
 /** Concentric-ring coordinates for n dots. */
 function layout(n: number) {
@@ -143,7 +143,7 @@ function Arena() {
       const l = w === a ? b : a;
       next.push(w.id);
       dead.add(l.id);
-      if (lines.length < 2) lines.push(pick(QUIPS).replace("{a}", w.name).replace("{b}", l.name));
+      if (lines.length < 2) lines.push(pick(QUIPS).replace("{a}", w.name).replace("{b}", l.name).replace("{n}", String(14 + Math.floor(Math.random() * 30))));
     }
     setDying(dead);
     setRound(r);
@@ -222,7 +222,7 @@ function Arena() {
                   <Crown size={17} />
                 </span>
                 <div>
-                  <div className="kicker text-[9.5px] text-fg-3">Vua Royale</div>
+                  <div className="kicker text-[9.5px] text-fg-3">Royale champion</div>
                   <div className="text-[15px] font-medium">{champion.name}</div>
                 </div>
               </div>
