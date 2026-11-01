@@ -236,25 +236,56 @@ export function getPieceGeometries() {
 
 let mats: { w: THREE.MeshPhysicalMaterial; b: THREE.MeshPhysicalMaterial } | null = null;
 
+/** Quân Trắng: ngọc trai ánh xà cừ · Quân Đen: obsidian bóng. */
 export function getPieceMaterials() {
   if (mats) return mats;
   mats = {
     w: new THREE.MeshPhysicalMaterial({
-      color: "#ebe5d6",
-      roughness: 0.32,
-      metalness: 0.0,
-      clearcoat: 0.9,
-      clearcoatRoughness: 0.18,
-      sheen: 0.4,
-      sheenColor: new THREE.Color("#fff6d8"),
+      color: "#ece8ff",
+      roughness: 0.18,
+      metalness: 0.04,
+      clearcoat: 1,
+      clearcoatRoughness: 0.06,
+      iridescence: 1,
+      iridescenceIOR: 1.32,
+      iridescenceThicknessRange: [160, 620],
+      sheen: 0.6,
+      sheenColor: new THREE.Color("#c9c2ff"),
     }),
     b: new THREE.MeshPhysicalMaterial({
-      color: "#1a1b21",
-      roughness: 0.2,
-      metalness: 0.25,
+      color: "#0b0c14",
+      roughness: 0.1,
+      metalness: 0.55,
       clearcoat: 1,
-      clearcoatRoughness: 0.08,
+      clearcoatRoughness: 0.04,
+      iridescence: 0.7,
+      iridescenceIOR: 1.6,
+      iridescenceThicknessRange: [300, 900],
     }),
   };
   return mats;
+}
+
+let glass: THREE.MeshPhysicalMaterial | null = null;
+/** Kính khúc xạ cho tác phẩm trung tâm ở hero. */
+export function getGlassMaterial() {
+  if (glass) return glass;
+  glass = new THREE.MeshPhysicalMaterial({
+    color: "#ffffff",
+    roughness: 0.04,
+    metalness: 0,
+    transmission: 1,
+    thickness: 2.4,
+    ior: 1.45,
+    dispersion: 6,
+    attenuationColor: new THREE.Color("#b9b0ff"),
+    attenuationDistance: 3.5,
+    clearcoat: 1,
+    clearcoatRoughness: 0.02,
+    iridescence: 0.9,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [200, 700],
+    envMapIntensity: 1.3,
+  });
+  return glass;
 }

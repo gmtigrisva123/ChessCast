@@ -31,7 +31,7 @@ export default function PrivacyPage() {
       <div>
         <h2>4. Quyền của bạn</h2>
         <p>
-          Bạn có thể yêu cầu truy cập, chỉnh sửa hoặc xoá dữ liệu bất kỳ lúc nào qua <a className="text-lime" href={`mailto:${site.emails.support}`}>{site.emails.support}</a>.
+          Bạn có thể yêu cầu truy cập, chỉnh sửa hoặc xoá dữ liệu bất kỳ lúc nào qua <a href={`mailto:${site.emails.support}`}>{site.emails.support}</a>.
         </p>
       </div>
     </LegalPage>

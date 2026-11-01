@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 const GLYPH: Record<string, string> = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
 
-/** Bàn cờ 2D gọn nhẹ dựng từ FEN. */
+/** Bàn cờ 2D kiểu kính mờ dựng từ FEN. */
 export function MiniBoard({ fen, highlight = [], className }: { fen: string; highlight?: string[]; className?: string }) {
   const rows = fen.split(" ")[0].split("/");
   const cells: { sq: string; piece: string | null; dark: boolean }[] = [];
@@ -18,17 +18,27 @@ export function MiniBoard({ fen, highlight = [], className }: { fen: string; hig
     }
   });
   return (
-    <div className={cn("grid aspect-square grid-cols-8 overflow-hidden rounded-xl ring-1 ring-cream/10 [container-type:inline-size]", className)}>
+    <div className={cn("grid aspect-square grid-cols-8 overflow-hidden rounded-2xl ring-1 ring-white/10 [container-type:inline-size]", className)}>
       {cells.map((c) => (
-        <div key={c.sq} className={cn("relative grid place-items-center", c.dark ? "bg-[#2a2d36]" : "bg-[#b8b09a]", highlight.includes(c.sq) && "after:absolute after:inset-0 after:bg-pink/50")}>
+        <div
+          key={c.sq}
+          className={cn(
+            "relative grid place-items-center",
+            c.dark ? "bg-[#151726]" : "bg-[#2a2d45]",
+            highlight.includes(c.sq) && "after:absolute after:inset-0 after:bg-[linear-gradient(135deg,rgba(139,124,255,0.55),rgba(62,230,224,0.35))]",
+          )}
+        >
           {c.piece && (
             <span
               className={cn(
                 "relative z-10 select-none leading-none",
-                c.piece === c.piece.toUpperCase() ? "text-[#f6f1e4] [text-shadow:0_1px_0_#000,0_0_2px_#000]" : "text-[#121317] [text-shadow:0_1px_0_rgba(255,255,255,0.25)]",
+                c.piece === c.piece.toUpperCase()
+                  ? "text-[#f3f1ff] [text-shadow:0_0_14px_rgba(185,176,255,0.6)]"
+                  : "text-[#7b7f9c] [text-shadow:0_1px_0_rgba(0,0,0,0.6)]",
               )}
+              style={{ fontSize: "9.5cqw" }}
             >
-              <span style={{ fontSize: "10cqw" }}>{GLYPH[c.piece.toLowerCase()]}</span>
+              {GLYPH[c.piece.toLowerCase()]}
             </span>
           )}
         </div>

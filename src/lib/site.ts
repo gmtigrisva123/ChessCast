@@ -19,7 +19,7 @@ export const site = {
 };
 
 export const nav = [
-  { href: "/live", label: "Xem Live", badge: "LIVE" },
+  { href: "/live", label: "Arena", badge: "LIVE" },
   { href: "/royale", label: "Chess Royale" },
   { href: "/court", label: "Chess Court" },
   { href: "/pricing", label: "Bảng giá" },

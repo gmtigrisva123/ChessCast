@@ -34,30 +34,30 @@ export function SuccessView() {
   }, [sessionId]);
 
   return (
-    <section className="container-x grid min-h-[80vh] place-items-center pt-28 text-center">
+    <section className="shell grid min-h-[80vh] place-items-center pt-28 text-center">
       <div className="max-w-lg">
         {state === "loading" && (
-          <div className="flex flex-col items-center gap-3 text-cream/60">
+          <div className="flex flex-col items-center gap-3 text-fg-2">
             <Loader2 className="animate-spin" /> Đang xác nhận thanh toán…
           </div>
         )}
         {state === "ok" && item && (
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-            <motion.div initial={{ scale: 0, rotate: -90 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 260, damping: 14 }} className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-lime text-ink">
+            <motion.div initial={{ scale: 0, rotate: -90 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 260, damping: 14 }} className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[linear-gradient(135deg,#8b7cff,#3ee6e0)] text-void">
               <Check size={36} strokeWidth={3} />
             </motion.div>
-            <h1 className="mt-6 font-display text-5xl font-bold uppercase">Thanh toán thành công</h1>
-            <p className="mt-3 text-cream/65">
+            <h1 className="display mt-6 text-5xl">Thanh toán thành công</h1>
+            <p className="mt-3 text-fg-2">
               {item.label}
               {item.coins > 0 && (
                 <>
-                  {" "}— <b className="text-lime">+{formatNum(item.coins)} Chaos Coins</b> đã vào ví.
+                  {" "}— <b className="text-teal">+{formatNum(item.coins)} Chaos Coins</b> đã vào ví.
                 </>
               )}
             </p>
             <div className="mt-8 flex justify-center gap-3">
               <ButtonLink href="/live">Vào Arena quậy ngay</ButtonLink>
-              <ButtonLink href="/" variant="outline">
+              <ButtonLink href="/" variant="glass">
                 Trang chủ
               </ButtonLink>
             </div>
@@ -65,11 +65,11 @@ export function SuccessView() {
         )}
         {state === "err" && (
           <div>
-            <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-pink text-ink">
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-rose text-void">
               <X size={36} strokeWidth={3} />
             </div>
-            <h1 className="mt-6 font-display text-4xl font-bold uppercase">Chưa xác nhận được thanh toán</h1>
-            <p className="mt-3 text-cream/60">Nếu bạn đã bị trừ tiền, vui lòng liên hệ hỗ trợ kèm mã phiên thanh toán.</p>
+            <h1 className="display mt-6 text-4xl">Chưa xác nhận được thanh toán</h1>
+            <p className="mt-3 text-fg-2">Nếu bạn đã bị trừ tiền, vui lòng liên hệ hỗ trợ kèm mã phiên thanh toán.</p>
             <ButtonLink href="/pricing" className="mt-6">
               Quay lại bảng giá
             </ButtonLink>

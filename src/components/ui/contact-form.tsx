@@ -2,12 +2,12 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { Check, Loader2, Send } from "lucide-react";
+import { ArrowUpRight, Check, Loader2 } from "lucide-react";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 
-export function ContactForm({ topics, defaultTopic, className }: { topics: string[]; defaultTopic?: string; className?: string }) {
-  const [topic, setTopic] = useState(defaultTopic ?? topics[0]);
+export function ContactForm({ topics, className }: { topics: string[]; className?: string }) {
+  const [topic, setTopic] = useState(topics[0]);
   const [state, setState] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [err, setErr] = useState("");
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,44 +26,60 @@ export function ContactForm({ topics, defaultTopic, className }: { topics: strin
       setState("err");
     }
   };
-  const field = "w-full rounded-2xl border border-cream/10 bg-ink-3/60 px-4 py-3.5 text-[15px] outline-none transition-colors placeholder:text-cream/35 focus:border-lime";
+  const field =
+    "peer w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 pb-2.5 pt-6 text-[15px] text-fg outline-none transition-colors placeholder-transparent focus:border-violet/70 focus:bg-white/[0.05]";
+  const label = "pointer-events-none absolute left-4 top-2 text-[11px] text-fg-3 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-[15px] peer-focus:top-2 peer-focus:text-[11px] peer-focus:text-violet";
   return (
-    <div className={cn("relative overflow-hidden rounded-[28px] border border-cream/10 bg-ink-2 p-6 md:p-8", className)}>
+    <div className={cn("glass-strong relative overflow-hidden rounded-[28px] p-6 md:p-8", className)}>
       <AnimatePresence mode="wait">
         {state === "ok" ? (
-          <motion.div key="ok" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="grid min-h-[380px] place-items-center text-center">
+          <motion.div key="ok" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="grid min-h-[380px] place-items-center text-center">
             <div>
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 260, damping: 14 }} className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-lime text-ink">
-                <Check size={30} strokeWidth={3} />
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 260, damping: 14 }} className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[linear-gradient(135deg,#8b7cff,#3ee6e0)] text-void">
+                <Check size={30} strokeWidth={2.5} />
               </motion.div>
-              <div className="mt-4 font-display text-3xl font-bold uppercase">Đã nhận!</div>
-              <p className="mt-2 text-cream/60">Đội ngũ ChessCast sẽ phản hồi trong 1 ngày làm việc.</p>
+              <div className="display mt-5 text-3xl">Đã nhận được.</div>
+              <p className="mt-2 text-fg-2">Đội ngũ ChessCast sẽ phản hồi trong 1 ngày làm việc.</p>
             </div>
           </motion.div>
         ) : (
           <motion.form key="form" onSubmit={submit} className="space-y-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 pb-2">
               {topics.map((t) => (
                 <button
                   type="button"
                   key={t}
                   onClick={() => setTopic(t)}
-                  className={cn("rounded-full border px-4 py-2 text-sm font-medium transition-colors", topic === t ? "border-lime bg-lime text-ink" : "border-cream/15 text-cream/70 hover:border-cream/40")}
+                  className={cn("relative rounded-full px-4 py-2 text-sm transition-colors", topic === t ? "text-void" : "text-fg-2 hover:text-fg")}
                 >
-                  {t}
+                  {topic === t && <motion.span layoutId="topic-pill" className="absolute inset-0 rounded-full bg-fg" transition={{ type: "spring", stiffness: 400, damping: 32 }} />}
+                  {topic !== t && <span className="absolute inset-0 rounded-full border border-white/10" />}
+                  <span className="relative">{t}</span>
                 </button>
               ))}
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <input name="name" required placeholder="Họ và tên" className={field} aria-label="Họ và tên" />
-              <input name="email" type="email" required placeholder="Email công việc" className={field} aria-label="Email" />
+              <div className="relative">
+                <input id="cf-name" name="name" required placeholder="Họ và tên" className={field} />
+                <label htmlFor="cf-name" className={label}>Họ và tên</label>
+              </div>
+              <div className="relative">
+                <input id="cf-email" name="email" type="email" required placeholder="Email" className={field} />
+                <label htmlFor="cf-email" className={label}>Email công việc</label>
+              </div>
             </div>
-            <input name="company" placeholder="Công ty / Tổ chức" className={field} aria-label="Công ty" />
-            <textarea name="message" required minLength={10} rows={5} placeholder="Bạn muốn làm gì cùng ChessCast?" className={cn(field, "resize-none")} aria-label="Lời nhắn" />
+            <div className="relative">
+              <input id="cf-company" name="company" placeholder="Công ty" className={field} />
+              <label htmlFor="cf-company" className={label}>Công ty / Tổ chức</label>
+            </div>
+            <div className="relative">
+              <textarea id="cf-msg" name="message" required minLength={10} rows={5} placeholder="Lời nhắn" className={cn(field, "resize-none")} />
+              <label htmlFor="cf-msg" className={label}>Bạn muốn làm gì cùng ChessCast?</label>
+            </div>
             <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-            {state === "err" && <p className="text-sm text-pink">{err}</p>}
+            {state === "err" && <p className="text-sm text-rose">{err}</p>}
             <Button type="submit" size="lg" className="w-full" disabled={state === "loading"}>
-              {state === "loading" ? <Loader2 size={18} className="animate-spin" /> : <Send size={16} />} Gửi cho đội ngũ
+              {state === "loading" ? <Loader2 size={18} className="animate-spin" /> : null} Gửi cho đội ngũ <ArrowUpRight size={16} />
             </Button>
           </motion.form>
         )}

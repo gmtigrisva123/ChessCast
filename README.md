@@ -1,16 +1,18 @@
-# ChessCast — Unhinged Edition
+# ChessCast
 
-> Biến mỗi ván cờ thành một show giải trí sống — nơi khán giả không chỉ xem, mà **can thiệp** vào trận đấu.
+> Mọi ván cờ đều xứng đáng một sân khấu.
 
-Website hoàn chỉnh cho ChessCast, dựng từ pitch deck vòng hạt giống: trang chủ 3D, sản phẩm Arena chạy được thật, các chế độ Chess Royale / Chess Court, bảng giá và luồng thanh toán, trang B2B và trang nhà đầu tư.
+Website hoàn chỉnh cho ChessCast: trang chủ 3D, sản phẩm Arena chạy được thật, các chế độ Chess Royale / Chess Court, bảng giá và luồng thanh toán, trang B2B và trang nhà đầu tư.
+
+**Ngôn ngữ thiết kế “Aurora Noir”:** nền đen sâu với cực quang tím–xanh, kính mờ, quân cờ ngọc trai ánh xà cừ & obsidian, chữ Inter Tight kết hợp Newsreader Italic, nhãn JetBrains Mono.
 
 ## Ảnh giao diện
 
-| Trang chủ — hero 3D | Cuộn: Chaos Card + sương mù |
+| Hero — Vua kính khúc xạ | Kể chuyện khi cuộn — lá bài kính + sương mù |
 | --- | --- |
-| ![Hero](docs/screenshots/01-home-hero.jpg) | ![Hero chaos](docs/screenshots/02-home-hero-chaos.jpg) |
-| **Arena live** | **Ném “Sương mù chiến trường”** |
-| ![Arena](docs/screenshots/09-live-arena.jpg) | ![Fog](docs/screenshots/10-live-fog-of-war.jpg) |
+| ![Hero](docs/screenshots/01-home-hero.jpg) | ![Story](docs/screenshots/04-home-story-chaos.jpg) |
+| **Arena live** | **Dock Chaos Cards phóng to kiểu macOS** |
+| ![Arena](docs/screenshots/10-live-arena.jpg) | ![Dock](docs/screenshots/12-live-dock.jpg) |
 
 Toàn bộ ảnh (desktop + mobile) nằm trong [`docs/screenshots/`](docs/screenshots).
 
@@ -18,15 +20,15 @@ Toàn bộ ảnh (desktop + mobile) nằm trong [`docs/screenshots/`](docs/scree
 
 | Trang | Nội dung |
 | --- | --- |
-| `/` | Hero 3D (React Three Fiber): bàn cờ bóng bẩy tự diễn ván “Opera”, camera bay theo cuộn chuột, lá Chaos Card lao xuống bàn cờ và phủ sương mù. Các section cuộn ghim: 3 xu hướng hội tụ, 4 trụ cột cuộn ngang, bộ bài holographic, 3 host AI, vòng lặp viral, bảng giá, so sánh đối thủ. |
-| `/live` | **Arena**: bàn cờ 3D xoay được, 2 bot đánh thật (engine minimax), 3 host AI bình luận theo cá tính (có giọng đọc), 6 Chaos Cards tác động thật lên ván cờ (sương mù, hoán đổi quân, nước ngẫu nhiên, trừ giờ, đèn sân khấu, động đất), tip để host “cà khịa”, chat, tự động cắt clip cao trào. Chế độ **Tự cầm quân** để người dùng chơi với bot. |
-| `/royale` | Chess Royale: đếm ngược mùa giải, giữ chỗ, mô phỏng lưới đấu 100 người nổ từng vòng. |
-| `/court` | Chess Court: hồ sơ vụ án, AI công tố, bồi thẩm đoàn khán giả bỏ phiếu (thưởng coin). |
+| `/` | Hero 3D: quân Vua bằng kính khúc xạ trên vầng hào quang, vòng quân ngọc trai/obsidian quay quanh, tấm kính trôi nổi, nền cực quang chuyển động, thẻ kính bay theo chuột. Dải trận đang phát (bàn cờ mini chạy thật). Phần kể chuyện cuộn ghim 3 chương trên cảnh 3D thứ hai: quả cầu host → lá bài kính rơi + sương mù → khung clip 9:16. Đoạn tuyên ngôn sáng dần theo cuộn, bento tính năng có demo sống, quạt bài Chaos, phòng thu giọng host, bảng giá, lời mời cuối. |
+| `/live` | **Arena** dạng studio: bàn cờ 3D xoay được, 2 bot đánh thật (engine minimax), 3 host AI bình luận theo cá tính (có giọng đọc), dock 6 Chaos Cards phóng to khi rê chuột và tác động thật lên ván cờ, vòng đo hype, tip để host “cà khịa”, chat, tự động cắt clip cao trào. Chế độ **Tự cầm quân** để người dùng chơi với bot. |
+| `/royale` | Chess Royale: đếm ngược mùa giải, giữ chỗ, đấu trường tròn 100 người co dần vào tâm qua từng vòng loại. |
+| `/court` | Chess Court: danh sách vụ án, phiên toà dạng hội thoại giữa AI công tố và AI bào chữa, đồng hồ phán quyết, bồi thẩm đoàn bỏ phiếu (thưởng coin). |
 | `/pricing` | Gói thành viên (Khán Giả / Fan Pro / Chaos Lord, tháng–năm), gói Chaos Coins, bảng giá Chaos Cards, FAQ. |
 | `/partners` | B2B: tài trợ giải đấu, License/API (code mẫu, webhook), form liên hệ. |
 | `/investors` | Thị trường TAM/SAM/SOM, 5 nguồn thu, lộ trình, phân bổ vốn, đội ngũ, form nhận pitch deck. |
 
-Kèm theo: ví coin, lịch sử giao dịch, clip đã lưu (drawer), modal thanh toán, toast, preloader, chuyển trang dạng màn trập, con trỏ tùy biến, cuộn mượt Lenis, nút từ tính, thẻ nghiêng 3D, foil holographic.
+Kèm theo: bảng lệnh ⌘K, thanh điều hướng nổi dạng viên thuốc, ví coin nổi, modal thanh toán, toast, màn chào, chuyển trang mờ–rõ, con trỏ tuỳ biến, cuộn mượt Lenis, nút từ tính, card sáng theo chuột, viền gradient chạy.
 
 ## Công nghệ
 

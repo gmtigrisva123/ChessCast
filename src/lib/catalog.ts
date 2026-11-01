@@ -14,6 +14,9 @@ export type ChaosCard = {
   cost: number;
   rarity: "Thường" | "Hiếm" | "Sử thi" | "Huyền thoại";
   accent: string;
+  /** Cặp màu gradient cho thẻ */
+  tint: [string, string];
+  icon: "fog" | "dice" | "swap" | "freeze" | "spotlight" | "quake";
   glyph: string;
   durationLabel: string;
 };
@@ -26,7 +29,9 @@ export const CHAOS_CARDS: ChaosCard[] = [
     description: "Phủ sương 3 hàng giữa bàn cờ trong 6 nước. Cả hai kỳ thủ phải đánh trong mù mịt.",
     cost: 50,
     rarity: "Thường",
-    accent: "#48e5ff",
+    accent: "#7cc4ff",
+    tint: ["#4d8dff", "#3ee6e0"],
+    icon: "fog",
     glyph: "☁",
     durationLabel: "6 nước",
   },
@@ -37,7 +42,9 @@ export const CHAOS_CARDS: ChaosCard[] = [
     description: "Nước kế tiếp của bên đang đi bị chọn ngẫu nhiên trong các nước hợp lệ. Định mệnh quyết định.",
     cost: 80,
     rarity: "Hiếm",
-    accent: "#d8ff3c",
+    accent: "#b5a8ff",
+    tint: ["#8b7cff", "#4d8dff"],
+    icon: "dice",
     glyph: "⚄",
     durationLabel: "1 nước",
   },
@@ -48,7 +55,9 @@ export const CHAOS_CARDS: ChaosCard[] = [
     description: "Đổi chỗ một Mã và một Tượng của bên đang đi. Thế trận lộn tùng phèo trong tích tắc.",
     cost: 120,
     rarity: "Sử thi",
-    accent: "#ff4d6a",
+    accent: "#ff8fb4",
+    tint: ["#ff6b9a", "#8b7cff"],
+    icon: "swap",
     glyph: "⇄",
     durationLabel: "Tức thì",
   },
@@ -59,7 +68,9 @@ export const CHAOS_CARDS: ChaosCard[] = [
     description: "Trừ 15 giây trên đồng hồ của bên đang đi. Áp lực thời gian lên tột đỉnh.",
     cost: 60,
     rarity: "Thường",
-    accent: "#9b7bff",
+    accent: "#9ff3ff",
+    tint: ["#3ee6e0", "#c7fff7"],
+    icon: "freeze",
     glyph: "❄",
     durationLabel: "-15 giây",
   },
@@ -70,7 +81,9 @@ export const CHAOS_CARDS: ChaosCard[] = [
     description: "Ép cả dàn host AI dồn toàn lực bình luận nước tiếp theo. Hype meter nhân đôi.",
     cost: 30,
     rarity: "Thường",
-    accent: "#ffd23c",
+    accent: "#ffd28a",
+    tint: ["#ffc56b", "#ff8a4c"],
+    icon: "spotlight",
     glyph: "✦",
     durationLabel: "1 nước",
   },
@@ -81,7 +94,9 @@ export const CHAOS_CARDS: ChaosCard[] = [
     description: "Rung chuyển bàn cờ — một tốt ngẫu nhiên của bên đang đi bị đẩy lên một ô nếu còn trống.",
     cost: 200,
     rarity: "Huyền thoại",
-    accent: "#ff8a3c",
+    accent: "#ffa877",
+    tint: ["#ff8a4c", "#ff6b9a"],
+    icon: "quake",
     glyph: "≋",
     durationLabel: "Tức thì",
   },

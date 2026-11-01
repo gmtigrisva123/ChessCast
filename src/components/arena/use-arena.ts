@@ -62,9 +62,9 @@ function randomPlayer(exclude?: string): Player {
 const CHAT_USERS = [
   { user: "lan.nguyen", color: "#ff9ec4" },
   { user: "minhkhoa_07", color: "#9be7ff" },
-  { user: "GM_tương_lai", color: "#d8ff3c", badge: "pro" as const },
+  { user: "GM_tương_lai", color: "#b9b0ff", badge: "pro" as const },
   { user: "bé_tốt_đen", color: "#ffd23c" },
-  { user: "ChaosLord_HN", color: "#ff4d6a", badge: "lord" as const },
+  { user: "ChaosLord_HN", color: "#ff8fb4", badge: "lord" as const },
   { user: "anh.tuan.dev", color: "#b9a6ff" },
   { user: "mod_cờ_vua", color: "#48e5ff", badge: "mod" as const },
   { user: "hùng.chess", color: "#ffb37a" },
@@ -568,7 +568,7 @@ export function useArena() {
         return false;
       }
       const targetName = playersRef.current[target].name;
-      pushChat({ user: wallet.username, color: "#d8ff3c", badge: "you", text: request?.trim() || `tip để host cà khịa ${targetName}`, tip: amount });
+      pushChat({ user: wallet.username, color: "#9ff3ff", badge: "you", text: request?.trim() || `tip để host cà khịa ${targetName}`, tip: amount });
       say(commentTip(wallet.username, amount, targetName, request), "tip");
       reactBurst(3);
       return true;
@@ -581,7 +581,7 @@ export function useArena() {
       const t = text.trim().slice(0, 140);
       if (!t) return;
       const w = useWallet.getState();
-      pushChat({ user: w.username, color: "#d8ff3c", badge: "you", text: t });
+      pushChat({ user: w.username, color: "#9ff3ff", badge: "you", text: t });
       if (Math.random() < 0.35) {
         later(() => say([{ host: pick(["gambit", "zugzwang", "blunder"] as HostId[]), text: `Đọc được chat của ${w.username}: “${t.slice(0, 50)}” — chuẩn luôn!`, hype: 8 }], "move"), 900);
       }

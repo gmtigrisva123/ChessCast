@@ -9,8 +9,8 @@ import type { PieceMap, TrackedPiece } from "@/lib/chess/tracker";
 import { FILES, squareToXZ } from "@/lib/chess/engine";
 import { getPieceGeometries, getPieceMaterials } from "./pieces";
 
-const LIGHT = new THREE.Color("#b8b09a");
-const DARK = new THREE.Color("#2a2d36");
+const LIGHT = new THREE.Color("#7d82ad");
+const DARK = new THREE.Color("#171928");
 
 export type BoardProps = {
   pieces: PieceMap;
@@ -286,7 +286,7 @@ function TargetDot({ sq, capture }: { sq: Square; capture: boolean }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.006, z]}>
       {capture ? <ringGeometry args={[0.36, 0.46, 40]} /> : <circleGeometry args={[0.13, 32]} />}
-      <meshBasicMaterial color="#d8ff3c" transparent opacity={0.85} depthWrite={false} toneMapped={false} />
+      <meshBasicMaterial color="#3ee6e0" transparent opacity={0.9} depthWrite={false} toneMapped={false} />
     </mesh>
   );
 }
@@ -302,7 +302,7 @@ export function ChessBoard3D({
   interactive,
   flash = 0,
   shake = 0,
-  accent = "#d8ff3c",
+  accent = "#8b7cff",
   intro = true,
 }: BoardProps) {
   const sqRef = useRef<THREE.InstancedMesh>(null!);
@@ -395,7 +395,7 @@ export function ChessBoard3D({
     <group ref={group}>
       {/* Khung bàn cờ */}
       <RoundedBox args={[9.1, 0.42, 9.1]} radius={0.16} smoothness={4} position={[0, -0.33, 0]} receiveShadow castShadow>
-        <meshPhysicalMaterial color="#0f1014" roughness={0.35} metalness={0.55} clearcoat={1} clearcoatRoughness={0.25} />
+        <meshPhysicalMaterial color="#090a12" roughness={0.18} metalness={0.7} clearcoat={1} clearcoatRoughness={0.08} iridescence={0.6} iridescenceIOR={1.4} />
       </RoundedBox>
       {/* Viền phát sáng */}
       {[
@@ -406,7 +406,7 @@ export function ChessBoard3D({
       ].map(([x, z, w, d], i) => (
         <mesh key={i} position={[x, -0.075, z]}>
           <boxGeometry args={[w, 0.03, d]} />
-          <meshBasicMaterial color={accent} toneMapped={false} />
+          <meshBasicMaterial color={i < 2 ? accent : "#3ee6e0"} toneMapped={false} />
         </mesh>
       ))}
       {/* Nhãn cột/hàng */}
@@ -425,22 +425,22 @@ export function ChessBoard3D({
         onPointerOut={() => setHoverSq(null)}
       >
         <boxGeometry args={[1, 0.12, 1]} />
-        <meshPhysicalMaterial roughness={0.42} metalness={0.05} clearcoat={0.6} clearcoatRoughness={0.3} />
+        <meshPhysicalMaterial roughness={0.28} metalness={0.15} clearcoat={1} clearcoatRoughness={0.12} />
       </instancedMesh>
 
       {/* Đánh dấu */}
       {lastMove && (
         <>
-          <SquareMarker sq={lastMove.from} color="#ff4d6a" opacity={0.28} />
-          <SquareMarker sq={lastMove.to} color="#ff4d6a" opacity={0.42} />
+          <SquareMarker sq={lastMove.from} color="#8b7cff" opacity={0.3} />
+          <SquareMarker sq={lastMove.to} color="#8b7cff" opacity={0.5} />
         </>
       )}
-      {selected && <SquareMarker sq={selected} color={accent} opacity={0.5} />}
+      {selected && <SquareMarker sq={selected} color="#3ee6e0" opacity={0.45} />}
       {interactive && hoverSq && hoverSq !== selected && <SquareMarker sq={hoverSq} color="#ffffff" opacity={0.12} />}
       {targets.map((t) => (
         <TargetDot key={t} sq={t} capture={occupied.has(t)} />
       ))}
-      {checkSquare && <SquareMarker sq={checkSquare} color="#ff2e4d" opacity={0.75} />}
+      {checkSquare && <SquareMarker sq={checkSquare} color="#ff4f7b" opacity={0.75} />}
 
       {/* Quân cờ */}
       {pieceList.map((p) => (
@@ -463,7 +463,7 @@ export function ChessBoard3D({
       {/* Flash khi có Chaos Card */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <planeGeometry args={[8.2, 8.2]} />
-        <meshBasicMaterial ref={flashMat} color="#ff4d6a" transparent opacity={0} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
+        <meshBasicMaterial ref={flashMat} color="#8b7cff" transparent opacity={0} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
       </mesh>
     </group>
   );
@@ -477,8 +477,8 @@ function BoardLabels() {
     c.height = 1024;
     const ctx = c.getContext("2d")!;
     ctx.clearRect(0, 0, 1024, 1024);
-    ctx.fillStyle = "rgba(242,239,231,0.55)";
-    ctx.font = "600 30px 'Rubik Variable', sans-serif";
+    ctx.fillStyle = "rgba(166,171,190,0.6)";
+    ctx.font = "500 26px 'JetBrains Mono Variable', monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const cell = 1024 / 9.1;

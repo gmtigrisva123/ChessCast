@@ -36,7 +36,7 @@ export default function TermsPage() {
       <div>
         <h2>5. Liên hệ</h2>
         <p>
-          Mọi thắc mắc vui lòng gửi về <a className="text-lime" href={`mailto:${site.emails.support}`}>{site.emails.support}</a>.
+          Mọi thắc mắc vui lòng gửi về <a href={`mailto:${site.emails.support}`}>{site.emails.support}</a>.
         </p>
       </div>
     </LegalPage>

@@ -1,244 +1,216 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Globe2, Rocket, Users, Zap } from "lucide-react";
+import { Building2, Coins, Crown, HandCoins, Megaphone } from "lucide-react";
 import { PageHero } from "../ui/page-hero";
-import { Reveal, SectionLabel } from "../ui/reveal";
+import { Kicker } from "../ui/section";
+import { Reveal, Words } from "../ui/reveal";
 import { Counter } from "../ui/counter";
 import { ContactForm } from "../ui/contact-form";
-import { Compare } from "../home/compare";
+import { Spotlight } from "../ui/spotlight";
 import { site } from "@/lib/site";
 
+const THESIS = [
+  ["Kinh tế livestream", "Khán giả đã quen trả tiền để tương tác với người họ đang xem trên Twitch, Kick, TikTok Live."],
+  ["AI giải trí thời gian thực", "Giọng nói và nội dung AI đủ rẻ, đủ nhanh để bình luận mọi trận — không chỉ trận của ngôi sao."],
+  ["Gamification có trả phí", "Người dùng sẵn sàng chi cho vật phẩm ảo và yếu tố bất ngờ, mà không cần tới cờ bạc."],
+];
+
 const MARKET = [
-  { n: 650, label: "người chơi cờ vua toàn cầu", tag: "TAM", color: "#d8ff3c", size: 100 },
-  { n: 120, label: "người xem nội dung game & cờ vua trực tuyến", tag: "SAM", color: "#48e5ff", size: 64 },
-  { n: 2, label: "người dùng hoạt động mục tiêu năm đầu", tag: "SOM", color: "#ff4d6a", size: 30 },
+  { n: 650, tag: "TAM", label: "người chơi cờ vua toàn cầu", w: 100, tint: "linear-gradient(90deg,#6d5cff,#8b7cff)" },
+  { n: 120, tag: "SAM", label: "người xem nội dung game & cờ vua trực tuyến", w: 62, tint: "linear-gradient(90deg,#4d8dff,#3ee6e0)" },
+  { n: 2, tag: "SOM", label: "người dùng hoạt động mục tiêu năm đầu", w: 18, tint: "linear-gradient(90deg,#ff8a4c,#ff6b9a)" },
 ];
 
 const REVENUE = [
-  ["Chaos Cards", "Khán giả mua thẻ hỗn loạn để can thiệp trực tiếp vào trận đấu", "Khán giả xem live"],
-  ["Subscription", "Mở khóa giọng bình luận viên cao cấp và clip không giới hạn", "Người dùng trung thành"],
-  ["Tip / Donate", "Khán giả tip để AI host “cà khịa” người chơi theo yêu cầu", "Khán giả xem live"],
-  ["Tài trợ giải đấu", "Thương hiệu tài trợ giải đấu nghiệp dư với bình luận viên AI riêng", "Nhà tài trợ"],
-  ["License / API", "Bán lớp giải trí hóa này cho các nền tảng cờ vua khác", "Đối tác B2B"],
+  { icon: Coins, name: "Chaos Cards", how: "Khán giả mua lá bài để can thiệp trực tiếp vào trận đấu", who: "Khán giả xem live" },
+  { icon: Crown, name: "Gói thành viên", how: "Mở khoá giọng host cao cấp và clip không giới hạn", who: "Người dùng trung thành" },
+  { icon: HandCoins, name: "Tip", how: "Khán giả tip để host AI “cà khịa” kỳ thủ theo yêu cầu", who: "Khán giả xem live" },
+  { icon: Megaphone, name: "Tài trợ giải đấu", how: "Thương hiệu tài trợ giải nghiệp dư với host AI riêng", who: "Nhà tài trợ" },
+  { icon: Building2, name: "License / API", how: "Bán lớp giải trí cho các nền tảng cờ vua khác", who: "Đối tác B2B" },
 ];
 
 const ROADMAP = [
-  { icon: Zap, phase: "Giai đoạn 1", title: "Ra mắt MVP", items: ["Web app với AI bình luận cơ bản", "Chaos Cards bản beta", "Thử nghiệm với cộng đồng cờ vua hiện có"], status: "Đang triển khai" },
-  { icon: Users, phase: "Giai đoạn 2", title: "Mở rộng giải trí", items: ["Ra mắt Chess Court và Chess Royale", "Ứng dụng di động", "Host AI thứ hai, mở màn cốt truyện thù hằn"], status: "Tiếp theo" },
-  { icon: Globe2, phase: "Giai đoạn 3", title: "Quy mô hóa", items: ["Giải đấu nghiệp dư có tài trợ", "License / API cho nền tảng cờ vua khác", "Smart board phần cứng, phiên bản giới hạn"], status: "Tầm nhìn" },
+  { phase: "Giai đoạn 1", title: "Ra mắt MVP", items: ["Web app với AI bình luận", "Chaos Cards bản beta", "Thử nghiệm cùng cộng đồng cờ vua"], now: true },
+  { phase: "Giai đoạn 2", title: "Mở rộng giải trí", items: ["Chess Court & Chess Royale", "Ứng dụng di động", "Host AI mới, mở màn cốt truyện thù hằn"] },
+  { phase: "Giai đoạn 3", title: "Quy mô hoá", items: ["Giải nghiệp dư có tài trợ", "License / API cho nền tảng khác", "Smart board phiên bản giới hạn"] },
 ];
 
 const FUNDS = [
-  { pct: 40, label: "Sản phẩm & kỹ thuật", color: "#d8ff3c" },
-  { pct: 30, label: "Tăng trưởng & nội dung viral", color: "#ff4d6a" },
-  { pct: 15, label: "Vận hành & pháp lý", color: "#48e5ff" },
-  { pct: 15, label: "Đội ngũ", color: "#9b7bff" },
+  { pct: 40, label: "Sản phẩm & kỹ thuật", c: "#8b7cff" },
+  { pct: 30, label: "Tăng trưởng & nội dung viral", c: "#3ee6e0" },
+  { pct: 15, label: "Vận hành & pháp lý", c: "#ffc56b" },
+  { pct: 15, label: "Đội ngũ", c: "#ff6b9a" },
 ];
 
-function Donut() {
-  const R = 80;
-  const C = 2 * Math.PI * R;
-  let acc = 0;
-  return (
-    <svg viewBox="-110 -110 220 220" className="h-full w-full -rotate-90">
-      <circle r={R} fill="none" stroke="rgba(242,239,231,0.06)" strokeWidth="28" />
-      {FUNDS.map((f, i) => {
-        const len = (f.pct / 100) * C;
-        const off = acc;
-        acc += len;
-        return (
-          <motion.circle
-            key={f.label}
-            r={R}
-            fill="none"
-            stroke={f.color}
-            strokeWidth="28"
-            strokeDasharray={`${len - 3} ${C}`}
-            initial={{ strokeDashoffset: -off + len }}
-            whileInView={{ strokeDashoffset: -off }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
-            style={{ opacity: 1 }}
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
 const TEAM = [
-  { code: "CEO", role: "Nhà sáng lập / CEO", exp: "Sản phẩm game, cộng đồng cờ vua, tăng trưởng nền tảng nội dung" },
-  { code: "CTO", role: "CTO", exp: "Kỹ thuật AI thời gian thực, livestream, hạ tầng game" },
-  { code: "CPO", role: "Giám đốc Sản phẩm / Nội dung", exp: "Sản xuất nội dung giải trí, cộng đồng livestream, esports" },
+  ["CEO · Nhà sáng lập", "Sản phẩm game, cộng đồng cờ vua, tăng trưởng nền tảng nội dung"],
+  ["CTO", "AI thời gian thực, livestream, hạ tầng game"],
+  ["CPO · Nội dung", "Sản xuất nội dung giải trí, cộng đồng livestream, esports"],
 ];
 
 export function InvestorsView() {
   return (
     <>
-      <PageHero label="Nhà đầu tư · Vòng hạt giống" title="Môn thể thao" accent="giải trí tiếp theo.">
-        ChessCast đặt ba xu hướng — kinh tế livestream, AI giải trí thời gian thực và gamification có trả phí — lên một bàn cờ vua thật. Chúng tôi đang gọi vốn vòng Seed cho 18 tháng vận hành.
+      <PageHero kicker="Nhà đầu tư · Vòng Seed" title="Chúng tôi đang xây *môn thể thao giải trí* tiếp theo.">
+        Cờ vua, kịch tính sống và khán giả chủ động hội tụ trên cùng một màn hình. Vòng hạt giống đang mở cho 18 tháng vận hành.
       </PageHero>
 
-      <section className="container-x py-16">
-        <SectionLabel>Thị trường</SectionLabel>
-        <div className="mt-8 grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
-          <div className="relative mx-auto aspect-square w-full max-w-md">
-            {MARKET.map((m, i) => (
-              <motion.div
-                key={m.tag}
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full border"
-                style={{ width: `${m.size}%`, height: `${m.size}%`, borderColor: m.color, background: `radial-gradient(circle at 50% 100%, ${m.color}22, transparent 70%)` }}
-              >
-                <span className="absolute left-1/2 top-3 -translate-x-1/2 font-display text-lg font-bold" style={{ color: m.color }}>
-                  {m.tag}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-          <div className="space-y-4">
-            {MARKET.map((m, i) => (
-              <Reveal key={m.tag} delay={i * 0.1}>
-                <div className="flex items-center gap-5 rounded-[24px] border border-cream/10 bg-ink-2 p-6">
-                  <div className="font-display text-6xl font-bold leading-none md:text-7xl" style={{ color: m.color }}>
-                    <Counter to={m.n} />M
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold uppercase tracking-widest text-cream/45">{m.tag}</div>
-                    <div className="text-cream/75">{m.label}</div>
-                  </div>
+      <section className="shell py-20">
+        <Kicker>Luận điểm</Kicker>
+        <div className="mt-10 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+          {THESIS.map(([t, b], i) => (
+            <Reveal key={t} delay={i * 0.06}>
+              <div className="grid gap-4 py-8 md:grid-cols-[80px_1fr_1.3fr] md:items-baseline">
+                <span className="font-mono text-[13px] text-fg-3">0{i + 1}</span>
+                <h3 className="display text-[clamp(1.6rem,3vw,2.4rem)]">{t}</h3>
+                <p className="text-[16px] leading-relaxed text-fg-2">{b}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <p className="mt-8 text-[17px] text-fg">
+          ChessCast là nền tảng đầu tiên đặt cả ba xu hướng này <span className="serif-accent text-aurora text-[1.15em]">lên một bàn cờ thật.</span>
+        </p>
+      </section>
+
+      <section className="shell py-20">
+        <Kicker tone="teal">Thị trường</Kicker>
+        <Words text="Một thị trường lớn *chưa ai xem.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" />
+        <div className="mt-12 space-y-6">
+          {MARKET.map((m, i) => (
+            <div key={m.tag} className="grid items-center gap-4 md:grid-cols-[220px_1fr]">
+              <div>
+                <div className="display text-5xl">
+                  <Counter to={m.n} />M
                 </div>
-              </Reveal>
-            ))}
-            <p className="text-xs text-cream/40">Số liệu là ước tính ban đầu, cần được xác thực bằng nghiên cứu thị trường trước khi đưa vào tài liệu chính thức.</p>
-          </div>
+                <div className="mt-1 text-[13.5px] text-fg-2">
+                  <span className="font-mono text-fg-3">{m.tag} · </span>
+                  {m.label}
+                </div>
+              </div>
+              <div className="h-14 overflow-hidden rounded-2xl bg-white/[0.03]">
+                <motion.div className="h-full rounded-2xl" style={{ background: m.tint }} initial={{ width: 0 }} whileInView={{ width: `${m.w}%` }} viewport={{ once: true }} transition={{ duration: 1.4, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }} />
+              </div>
+            </div>
+          ))}
         </div>
+        <p className="mt-6 text-[12.5px] text-fg-3">Số liệu ước tính ban đầu, cần xác thực bằng nghiên cứu thị trường trước khi đưa vào tài liệu chính thức.</p>
       </section>
 
-      <section className="container-x py-16">
-        <SectionLabel>Mô hình kinh doanh</SectionLabel>
-        <h2 className="mt-3 font-display text-5xl font-bold uppercase leading-[0.95] md:text-6xl">5 nguồn thu, 0 cá cược.</h2>
-        <div className="mt-8 overflow-x-auto rounded-[28px] border border-cream/10">
-          <table className="w-full min-w-[720px] text-left">
-            <thead className="bg-ink-2 text-xs uppercase tracking-widest text-cream/45">
-              <tr>
-                <th className="px-6 py-4 font-bold">Nguồn thu</th>
-                <th className="px-6 py-4 font-bold">Cách hoạt động</th>
-                <th className="px-6 py-4 font-bold">Ai trả tiền</th>
-              </tr>
-            </thead>
-            <tbody>
-              {REVENUE.map(([a, b, c], i) => (
-                <motion.tr key={a} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }} className="border-t border-cream/5">
-                  <td className="px-6 py-5 font-display text-xl font-bold uppercase text-lime">{a}</td>
-                  <td className="px-6 py-5 text-cream/75">{b}</td>
-                  <td className="px-6 py-5 text-cream/60">{c}</td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="mt-3 text-sm text-cream/45">Tất cả nguồn thu đều là cơ chế giải trí ảo — không phải cá cược trên kết quả trận đấu.</p>
-      </section>
-
-      <section className="container-x py-16">
-        <SectionLabel>Lộ trình ra mắt</SectionLabel>
-        <div className="relative mt-10 grid gap-5 lg:grid-cols-3">
-          <div className="absolute left-0 right-0 top-[38px] hidden h-px bg-gradient-to-r from-lime via-pink to-violet lg:block" />
-          {ROADMAP.map((r, i) => {
+      <section className="shell py-20">
+        <Kicker tone="ember">Mô hình doanh thu</Kicker>
+        <Words text="Năm dòng tiền. *Không một đồng cá cược.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" accentClass="serif-accent text-ember" />
+        <div className="mt-12 grid gap-3 md:grid-cols-5">
+          {REVENUE.map((r, i) => {
             const Icon = r.icon;
             return (
-              <Reveal key={r.phase} delay={i * 0.12}>
-                <div className="relative h-full rounded-[28px] border border-cream/10 bg-ink-2 p-7">
-                  <div className="flex items-center justify-between">
-                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-lime text-ink">
-                      <Icon size={22} />
-                    </span>
-                    <span className="rounded-full border border-cream/15 px-3 py-1 text-xs text-cream/60">{r.status}</span>
-                  </div>
-                  <div className="mt-5 text-xs font-bold uppercase tracking-widest text-pink">{r.phase}</div>
-                  <div className="mt-1 font-display text-3xl font-bold uppercase">{r.title}</div>
-                  <ul className="mt-4 space-y-2 text-cream/70">
-                    {r.items.map((it) => (
-                      <li key={it} className="flex gap-2">
-                        <span className="text-lime">✦</span> {it}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <Reveal key={r.name} delay={i * 0.06} className="h-full">
+                <Spotlight className="flex h-full flex-col p-5">
+                  <Icon size={20} className="text-violet" />
+                  <div className="mt-8 font-display text-lg font-semibold tracking-tight">{r.name}</div>
+                  <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-fg-2">{r.how}</p>
+                  <div className="mt-5 font-mono text-[11px] text-fg-3">→ {r.who}</div>
+                </Spotlight>
               </Reveal>
             );
           })}
         </div>
       </section>
 
-      <Compare />
-
-      <section className="container-x py-16">
-        <div className="grid items-center gap-10 rounded-[32px] bg-ink-2 p-6 md:p-12 lg:grid-cols-[1fr_1fr]">
-          <div>
-            <SectionLabel>Gọi vốn · Seed</SectionLabel>
-            <h2 className="mt-3 font-display text-5xl font-bold uppercase leading-[0.95] md:text-6xl">
-              Phân bổ <span className="text-lime">vốn</span>
-            </h2>
-            <p className="mt-4 text-cream/60">Thời gian vận hành dự kiến 18 tháng. Quy mô vòng gọi vốn và điều khoản được chia sẻ trực tiếp với nhà đầu tư quan tâm.</p>
-            <div className="mt-6 space-y-3">
-              {FUNDS.map((f) => (
-                <div key={f.label} className="flex items-center gap-3">
-                  <span className="h-3 w-3 rounded-full" style={{ background: f.color }} />
-                  <span className="flex-1 text-cream/75">{f.label}</span>
-                  <span className="font-display text-2xl font-bold">{f.pct}%</span>
+      <section className="shell py-20">
+        <Kicker>Lộ trình</Kicker>
+        <div className="relative mt-12 grid gap-8 md:grid-cols-3">
+          <div className="absolute left-0 right-0 top-[11px] hidden h-px md:block">
+            <motion.div className="h-full bg-gradient-to-r from-violet via-teal to-white/10" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }} style={{ transformOrigin: "0 50%" }} />
+          </div>
+          {ROADMAP.map((r, i) => (
+            <Reveal key={r.phase} delay={i * 0.12}>
+              <div className="relative">
+                <span className="relative grid h-6 w-6 place-items-center">
+                  {r.now && <span className="absolute inset-0 animate-ping rounded-full bg-violet/50" />}
+                  <span className={`h-3 w-3 rounded-full ${r.now ? "bg-violet shadow-[0_0_14px_4px_rgba(139,124,255,0.7)]" : "bg-white/25"}`} />
+                </span>
+                <div className="mt-6 font-mono text-[11px] text-fg-3">
+                  {r.phase}
+                  {r.now && " · đang triển khai"}
                 </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative mx-auto aspect-square w-full max-w-sm">
-            <Donut />
-            <div className="absolute inset-0 grid place-items-center text-center">
-              <div>
-                <Rocket className="mx-auto text-lime" />
-                <div className="mt-1 font-display text-3xl font-bold uppercase">18 tháng</div>
-                <div className="text-xs uppercase tracking-widest text-cream/45">runway</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="container-x py-16">
-        <SectionLabel>Đội ngũ sáng lập</SectionLabel>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {TEAM.map((t, i) => (
-            <Reveal key={t.role} delay={i * 0.1}>
-              <div className="h-full rounded-[28px] border border-cream/10 bg-ink-2 p-7">
-                <div className="grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-lime to-cyan font-display text-lg font-bold text-ink">{t.code}</div>
-                <div className="mt-5 font-display text-2xl font-bold uppercase">{t.role}</div>
-                <p className="mt-2 text-cream/60">{t.exp}</p>
+                <div className="display mt-2 text-3xl">{r.title}</div>
+                <ul className="mt-4 space-y-2 text-[15px] text-fg-2">
+                  {r.items.map((it) => (
+                    <li key={it} className="flex gap-2">
+                      <span className="text-violet">—</span> {it}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section id="contact" className="container-x scroll-mt-28 py-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
-          <div>
-            <SectionLabel tone="pink">Nhận pitch deck</SectionLabel>
-            <h2 className="mt-3 font-display text-5xl font-bold uppercase leading-[0.95] md:text-6xl">Nói chuyện với nhà sáng lập</h2>
-            <p className="mt-4 text-cream/60">
-              Gửi thông tin để nhận pitch deck đầy đủ và lịch hẹn. Hoặc email trực tiếp{" "}
-              <a href={`mailto:${site.emails.invest}`} className="text-lime hover:underline">
-                {site.emails.invest}
-              </a>
-              .
-            </p>
+      <section className="shell py-20">
+        <Spotlight className="p-7 md:p-12">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+            <div>
+              <Kicker tone="teal">Gọi vốn · Seed</Kicker>
+              <h2 className="display mt-5 text-[clamp(2rem,4vw,3.2rem)]">
+                Phân bổ vốn cho <span className="serif-accent text-aurora">18 tháng.</span>
+              </h2>
+              <p className="mt-4 max-w-md text-[15px] text-fg-2">Quy mô vòng và điều khoản được chia sẻ trực tiếp với nhà đầu tư quan tâm.</p>
+            </div>
+            <div>
+              <div className="flex h-16 gap-1 overflow-hidden rounded-2xl">
+                {FUNDS.map((f, i) => (
+                  <motion.div key={f.label} className="h-full rounded-xl" style={{ background: f.c }} initial={{ width: 0 }} whileInView={{ width: `${f.pct}%` }} viewport={{ once: true }} transition={{ duration: 1.1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }} />
+                ))}
+              </div>
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                {FUNDS.map((f) => (
+                  <div key={f.label} className="flex items-baseline gap-3">
+                    <span className="display text-3xl">{f.pct}%</span>
+                    <span className="flex items-center gap-2 text-[13.5px] text-fg-2">
+                      <span className="h-2 w-2 rounded-full" style={{ background: f.c }} />
+                      {f.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <ContactForm topics={["Đầu tư vòng Seed", "Cố vấn", "Báo chí"]} />
+        </Spotlight>
+      </section>
+
+      <section className="shell py-20">
+        <Kicker>Đội ngũ sáng lập</Kicker>
+        <div className="mt-10 grid gap-3 md:grid-cols-3">
+          {TEAM.map(([role, exp], i) => (
+            <Reveal key={role} delay={i * 0.08}>
+              <Spotlight className="h-full p-6">
+                <div className="h-12 w-12 rounded-full bg-[conic-gradient(from_120deg,#8b7cff,#3ee6e0,#ffc56b,#8b7cff)] p-[2px]">
+                  <div className="h-full w-full rounded-full bg-night" />
+                </div>
+                <div className="mt-6 font-display text-lg font-semibold tracking-tight">{role}</div>
+                <p className="mt-2 text-[14px] leading-relaxed text-fg-2">{exp}</p>
+              </Spotlight>
+            </Reveal>
+          ))}
         </div>
+      </section>
+
+      <section id="contact" className="shell grid scroll-mt-28 gap-12 py-24 lg:grid-cols-[1fr_1.3fr]">
+        <div>
+          <Kicker tone="ember">Nhận pitch deck</Kicker>
+          <Words text="Nói chuyện với *nhà sáng lập.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" accentClass="serif-accent text-ember" />
+          <p className="mt-5 max-w-md text-fg-2">
+            Gửi thông tin để nhận deck đầy đủ và lịch hẹn, hoặc email trực tiếp{" "}
+            <a href={`mailto:${site.emails.invest}`} className="text-fg underline decoration-white/20 underline-offset-4">
+              {site.emails.invest}
+            </a>
+            .
+          </p>
+        </div>
+        <ContactForm topics={["Đầu tư vòng Seed", "Cố vấn", "Báo chí"]} />
       </section>
     </>
   );

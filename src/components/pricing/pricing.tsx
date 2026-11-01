@@ -3,13 +3,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Minus, Plus, ShieldCheck } from "lucide-react";
+import { Plus, ShieldCheck } from "lucide-react";
 import { CHAOS_CARDS } from "@/lib/catalog";
 import { useUI } from "@/lib/store";
 import { PlanCards, CoinPacks } from "../commerce/plan-cards";
 import { PageHero } from "../ui/page-hero";
-import { SectionLabel } from "../ui/reveal";
-import { Coin } from "../commerce/coin";
+import { Kicker } from "../ui/section";
+import { Reveal, Words } from "../ui/reveal";
+import { ChaosCard } from "../ui/chaos-card";
 import { cn } from "@/lib/utils";
 
 const FAQ = [
@@ -19,42 +20,42 @@ const FAQ = [
   },
   {
     q: "Tôi thanh toán bằng gì?",
-    a: "Thẻ Visa, Mastercard, JCB, American Express cùng Apple Pay và Google Pay qua cổng thanh toán Stripe. Thông tin thẻ được xử lý trực tiếp bởi cổng thanh toán, ChessCast không lưu số thẻ.",
+    a: "Thẻ Visa, Mastercard, JCB và các phương thức ví điện tử mà cổng thanh toán hỗ trợ. Thông tin thẻ được cổng thanh toán xử lý trực tiếp, ChessCast không lưu số thẻ.",
   },
   {
     q: "Tôi có thể huỷ gói thành viên bất cứ lúc nào?",
-    a: "Có. Bạn huỷ gia hạn bất kỳ lúc nào; quyền lợi vẫn giữ đến hết chu kỳ đã thanh toán. Coin hàng tháng đã nhận vẫn nằm trong ví.",
+    a: "Có. Bạn huỷ gia hạn bất kỳ lúc nào; quyền lợi vẫn giữ đến hết chu kỳ đã thanh toán. Coin đã nhận vẫn nằm trong ví.",
   },
   {
     q: "Chaos Card không có tác dụng thì sao?",
-    a: "Nếu thế cờ không cho phép lá bài phát huy (ví dụ không còn Mã/Tượng để hoán đổi), hệ thống từ chối kích hoạt và bạn không bị trừ coin.",
+    a: "Nếu thế cờ không cho phép lá bài phát huy (ví dụ không còn quân để hoán đổi), hệ thống từ chối kích hoạt và bạn không bị trừ coin.",
   },
   {
     q: "Kỳ thủ có đồng ý bị can thiệp không?",
-    a: "Có. Chỉ những trận mà cả hai kỳ thủ bật chế độ “Hỗn loạn” mới nhận Chaos Cards. Kỳ thủ được chia sẻ doanh thu từ Chaos Cards ném vào trận của họ.",
+    a: "Có. Chỉ những trận mà cả hai kỳ thủ bật chế độ “Hỗn loạn” mới nhận Chaos Cards, và kỳ thủ được chia sẻ doanh thu từ những lá bài ném vào trận của họ.",
   },
   {
-    q: "Doanh nghiệp muốn tài trợ giải đấu thì liên hệ ở đâu?",
-    a: "Xem trang Đối tác để biết các gói Tài trợ giải đấu và License/API, hoặc gửi form liên hệ — đội ngũ sẽ phản hồi trong 1 ngày làm việc.",
+    q: "Doanh nghiệp muốn tài trợ giải đấu thì sao?",
+    a: "Xem trang Đối tác để biết các gói tài trợ và License/API, hoặc gửi form liên hệ — đội ngũ phản hồi trong 1 ngày làm việc.",
   },
 ];
 
 function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="divide-y divide-cream/10 overflow-hidden rounded-[28px] border border-cream/10 bg-ink-2">
+    <div className="divide-y divide-white/[0.07] border-y border-white/[0.07]">
       {FAQ.map((f, i) => (
         <div key={f.q}>
-          <button onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center justify-between gap-4 p-5 text-left md:p-6" aria-expanded={open === i}>
-            <span className="text-lg font-semibold">{f.q}</span>
-            <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full transition-colors", open === i ? "bg-lime text-ink" : "bg-ink-3 text-cream")}>
-              {open === i ? <Minus size={16} /> : <Plus size={16} />}
-            </span>
+          <button onClick={() => setOpen(open === i ? null : i)} className="group flex w-full items-center justify-between gap-6 py-6 text-left" aria-expanded={open === i}>
+            <span className={cn("font-display text-[19px] font-medium tracking-tight transition-colors", open === i ? "text-fg" : "text-fg-2 group-hover:text-fg")}>{f.q}</span>
+            <motion.span animate={{ rotate: open === i ? 45 : 0 }} className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full border transition-colors", open === i ? "border-transparent bg-fg text-void" : "border-white/10 text-fg-2")}>
+              <Plus size={16} />
+            </motion.span>
           </button>
           <AnimatePresence initial={false}>
             {open === i && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="overflow-hidden">
-                <p className="px-5 pb-6 text-cream/65 md:px-6">{f.a}</p>
+              <motion.div initial={{ height: 0, opacity: 0, filter: "blur(6px)" }} animate={{ height: "auto", opacity: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} className="overflow-hidden">
+                <p className="max-w-2xl pb-7 text-[15.5px] leading-relaxed text-fg-2">{f.a}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -77,66 +78,47 @@ export function PricingView() {
   return (
     <>
       <CanceledNotice />
-      <PageHero label="Bảng giá" title="Xem miễn phí." accent="Quậy có phí.">
-        Ai cũng xem được mọi trận. Gói thành viên mở khóa giọng host cao cấp và clip không giới hạn; Chaos Coins để bạn tự tay làm đảo lộn trận đấu.
+      <PageHero kicker="Bảng giá" title="Xem miễn phí. *Quậy theo cách của bạn.*">
+        Mọi trận đều xem được. Gói thành viên mở khoá giọng host cao cấp và clip không giới hạn; Chaos Coins để bạn tự tay bẻ lái trận đấu.
       </PageHero>
-      <section className="container-x pb-20">
+      <section className="shell pb-24">
         <PlanCards />
       </section>
 
-      <section id="coins" className="container-x scroll-mt-28 py-20">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+      <section id="coins" className="shell scroll-mt-28 py-24">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <SectionLabel>Chaos Coins</SectionLabel>
-            <h2 className="mt-3 font-display text-5xl font-bold uppercase md:text-7xl">
-              Nạp coin, <span className="text-lime">thả hỗn loạn.</span>
-            </h2>
+            <Kicker tone="teal">Chaos Coins</Kicker>
+            <Words text="Nạp coin. *Thả hỗn loạn.*" className="display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" />
           </div>
-          <p className="max-w-sm text-cream/60">Gói càng lớn, thưởng càng nhiều. Coin không hết hạn và dùng được ở mọi trận live.</p>
+          <p className="max-w-sm text-fg-2">Gói càng lớn, thưởng càng nhiều. Coin không hết hạn và dùng được ở mọi trận live.</p>
         </div>
-        <div className="mt-10">
+        <div className="mt-12">
           <CoinPacks />
         </div>
       </section>
 
-      <section className="container-x py-20">
-        <SectionLabel tone="pink">Bảng giá Chaos Cards</SectionLabel>
-        <div className="mt-8 overflow-hidden rounded-[28px] border border-cream/10">
+      <section className="shell py-24">
+        <Kicker tone="ember">Giá từng lá bài</Kicker>
+        <Words text="Sáu cách để *làm loạn.*" className="display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" accentClass="serif-accent text-ember" />
+        <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
           {CHAOS_CARDS.map((c, i) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-cream/5 bg-ink-2 px-5 py-4 last:border-0 md:grid-cols-[auto_1.2fr_2fr_auto]"
-            >
-              <span className="grid h-12 w-12 place-items-center rounded-2xl text-2xl" style={{ background: c.accent + "22", color: c.accent }}>
-                {c.glyph}
-              </span>
-              <div>
-                <div className="font-semibold">{c.name}</div>
-                <div className="text-xs uppercase tracking-widest" style={{ color: c.accent }}>
-                  {c.rarity} · {c.durationLabel}
-                </div>
-              </div>
-              <p className="hidden text-sm text-cream/60 md:block">{c.description}</p>
-              <span className="flex items-center gap-1.5 font-display text-2xl font-bold">
-                {c.cost} <Coin className="h-5 w-5" />
-              </span>
-            </motion.div>
+            <Reveal key={c.id} delay={i * 0.05}>
+              <ChaosCard card={c} />
+            </Reveal>
           ))}
+        </div>
+        <div className="mt-6 flex items-start gap-3 rounded-2xl border border-teal/20 bg-teal/[0.04] p-4 text-[14px] text-fg-2">
+          <ShieldCheck className="mt-0.5 shrink-0 text-teal" size={18} />
+          Thành viên Fan Pro và Chaos Lord được giảm 10% mọi Chaos Card. Lá bài không kích hoạt được thì không bị trừ coin.
         </div>
       </section>
 
-      <section className="container-x grid gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
+      <section className="shell grid gap-12 py-24 lg:grid-cols-[1fr_1.6fr]">
         <div>
-          <SectionLabel>Câu hỏi thường gặp</SectionLabel>
-          <h2 className="mt-3 font-display text-5xl font-bold uppercase">Hỏi gì cũng được</h2>
-          <div className="mt-6 flex items-start gap-3 rounded-2xl border border-lime/30 bg-lime/5 p-4 text-sm text-cream/75">
-            <ShieldCheck className="mt-0.5 shrink-0 text-lime" size={18} />
-            Tất cả nguồn thu của ChessCast đều là cơ chế giải trí ảo — không phải cá cược trên kết quả trận đấu.
-          </div>
+          <Kicker>Câu hỏi thường gặp</Kicker>
+          <Words text="Còn thắc mắc? *Hỏi đi.*" className="display mt-5 text-[clamp(2.2rem,4.2vw,3.4rem)]" />
+          <p className="mt-5 max-w-sm text-[15px] text-fg-2">Mọi nguồn thu của ChessCast là cơ chế giải trí ảo — không phải cá cược trên kết quả trận đấu.</p>
         </div>
         <Faq />
       </section>

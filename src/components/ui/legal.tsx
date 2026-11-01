@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
+import { Aurora } from "./aurora";
 
 export function LegalPage({ title, updated, children }: { title: string; updated: string; children: ReactNode }) {
   return (
-    <section className="container-x pb-24 pt-32 md:pt-40">
-      <div className="mx-auto max-w-3xl">
-        <div className="eyebrow text-lime">Pháp lý</div>
-        <h1 className="mt-4 font-display text-5xl font-bold uppercase md:text-7xl">{title}</h1>
-        <p className="mt-3 text-sm text-cream/45">Cập nhật lần cuối: {updated}</p>
-        <div className="mt-10 space-y-8 text-[16px] leading-relaxed text-cream/75 [&_h2]:mb-3 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:uppercase [&_h2]:text-cream [&_li]:ml-5 [&_li]:list-disc [&_ul]:space-y-1.5">
-          {children}
+    <section className="relative pb-24 pt-36 md:pt-44">
+      <Aurora />
+      <div className="shell relative">
+        <div className="mx-auto max-w-2xl">
+          <div className="kicker text-fg-3">Pháp lý · cập nhật {updated}</div>
+          <h1 className="display mt-4 text-5xl md:text-6xl">{title}</h1>
+          <div className="mt-12 space-y-10 text-[16px] leading-[1.75] text-fg-2 [&_a]:text-violet [&_h2]:mb-3 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-fg [&_li]:ml-5 [&_li]:list-disc [&_li]:marker:text-violet [&_ul]:space-y-2">
+            {children}
+          </div>
         </div>
       </div>
     </section>

@@ -2,42 +2,50 @@
 
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
-import { SectionLabel, SplitText } from "./reveal";
+import { Kicker } from "./section";
+import { Words } from "./reveal";
+import { Aurora } from "./aurora";
 
 export function PageHero({
-  label,
+  kicker,
   title,
-  accent,
   children,
-  tone = "lime",
   aside,
+  tone = "violet",
 }: {
-  label: string;
+  kicker: string;
   title: string;
-  accent?: string;
   children?: ReactNode;
-  tone?: "lime" | "pink";
   aside?: ReactNode;
+  tone?: "violet" | "ember" | "teal";
 }) {
   return (
-    <section className="relative overflow-hidden pb-12 pt-32 md:pb-20 md:pt-40">
-      <div className="grid-bg pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
-      <div className={`pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full blur-[120px] ${tone === "pink" ? "bg-pink/15" : "bg-lime/10"}`} />
-      <div className={`container-x relative grid items-end gap-10 ${aside ? "lg:grid-cols-[1.4fr_1fr]" : ""}`}>
-        <div>
-          <SectionLabel tone={tone}>{label}</SectionLabel>
-          <h1 className="mt-5 font-display text-[clamp(3rem,9vw,8.5rem)] font-bold uppercase leading-[0.92]">
-            <SplitText text={title} animateOnMount delay={0.3} className="block" />
-            {accent && <SplitText text={accent} animateOnMount delay={0.5} className={`block ${tone === "pink" ? "text-pink" : "text-lime"}`} />}
-          </h1>
+    <section className="relative overflow-hidden pb-14 pt-36 md:pb-20 md:pt-44">
+      <Aurora tone={tone} />
+      <div className={`shell relative grid items-center gap-12 ${aside ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
+        <div className={aside ? "" : "mx-auto max-w-4xl text-center"}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}>
+            <Kicker tone={tone}>{kicker}</Kicker>
+          </motion.div>
+          <Words as="h1" onMount delay={0.3} text={title} className="display mt-6 text-[clamp(2.7rem,6.6vw,5.6rem)]" accentClass={tone === "ember" ? "serif-accent text-ember" : "serif-accent text-aurora"} />
           {children && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.8 }} className="mt-6 max-w-2xl text-lg text-cream/65">
+            <motion.div
+              initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
+              transition={{ delay: 0.8, duration: 0.9 }}
+              className={`mt-6 text-lg leading-relaxed text-fg-2 ${aside ? "max-w-xl" : "mx-auto max-w-2xl"}`}
+            >
               {children}
             </motion.div>
           )}
         </div>
         {aside && (
-          <motion.div initial={{ opacity: 0, y: 30, rotateX: 20 }} animate={{ opacity: 1, y: 0, rotateX: 0 }} transition={{ delay: 0.7, duration: 1, ease: [0.16, 1, 0.3, 1] }} style={{ transformPerspective: 900 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 40, rotateX: 18, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
+            transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformPerspective: 1000 }}
+          >
             {aside}
           </motion.div>
         )}

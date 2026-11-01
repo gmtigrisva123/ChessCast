@@ -11,6 +11,8 @@ export type Host = {
   role: string;
   bio: string;
   color: string;
+  /** Gradient cho quả cầu giọng nói */
+  orb: [string, string, string];
   catchphrase: string;
   voice: { pitch: number; rate: number };
   rival: HostId;
@@ -24,7 +26,8 @@ export const HOSTS: Record<HostId, Host> = {
     handle: "@captgambit",
     role: "Host chính · Cuồng thí quân",
     bio: "Giọng hét có thể làm vỡ kính. Tin rằng mọi quân cờ sinh ra là để hy sinh. Đang có mối thù 3 mùa với GS. Zugzwang.",
-    color: "#d8ff3c",
+    color: "#ffb36b",
+    orb: ["#ffd29a", "#ff8a4c", "#ff4f7b"],
     catchphrase: "THÍ ĐI! THÍ HẾT ĐI!",
     voice: { pitch: 1.1, rate: 1.12 },
     rival: "zugzwang",
@@ -39,7 +42,8 @@ export const HOSTS: Record<HostId, Host> = {
     handle: "@gs.zugzwang",
     role: "Chuyên gia phân tích · Lạnh lùng",
     bio: "Tiến sĩ khoa học thế cờ. Nói bằng con số, khinh bỉ bằng ánh mắt. Chưa bao giờ cười kể từ năm 1997.",
-    color: "#48e5ff",
+    color: "#7cc4ff",
+    orb: ["#c7fff7", "#3ee6e0", "#4d8dff"],
     catchphrase: "Về mặt kỹ thuật, đây là một thảm họa.",
     voice: { pitch: 0.75, rate: 0.95 },
     rival: "gambit",
@@ -54,7 +58,8 @@ export const HOSTS: Record<HostId, Host> = {
     handle: "@mc.blunder",
     role: "Chuyên gia cà khịa · Hỗn loạn",
     bio: "Sống vì những nước đi sai. Nhận tip để “cà khịa” kỳ thủ theo yêu cầu. Bị cấm ở 4 giải đấu vì nói quá thật.",
-    color: "#ff4d6a",
+    color: "#c4a8ff",
+    orb: ["#ffb3d1", "#ff6b9a", "#8b7cff"],
     catchphrase: "Ối dồi ôi, toang thật rồi!",
     voice: { pitch: 1.3, rate: 1.18 },
     rival: "zugzwang",

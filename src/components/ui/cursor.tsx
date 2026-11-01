@@ -3,46 +3,29 @@
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
 
+/** Con trỏ: chấm sáng + quầng kính đi theo, phình ra khi trỏ vào phần tử tương tác. */
 export function Cursor() {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const rx = useSpring(x, { stiffness: 380, damping: 32, mass: 0.6 });
-  const ry = useSpring(y, { stiffness: 380, damping: 32, mass: 0.6 });
-  const [enabled, setEnabled] = useState(false);
-  const [state, setState] = useState<"idle" | "hover" | "text" | "view">("idle");
-  const [label, setLabel] = useState<string | null>(null);
+  const sx = useSpring(x, { stiffness: 300, damping: 28, mass: 0.5 });
+  const sy = useSpring(y, { stiffness: 300, damping: 28, mass: 0.5 });
+  const [on, setOn] = useState(false);
+  const [mode, setMode] = useState<"idle" | "hover" | "text">("idle");
   const [down, setDown] = useState(false);
 
   useEffect(() => {
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!fine || reduce) return;
-    setEnabled(true);
+    setOn(true);
     document.documentElement.classList.add("has-custom-cursor");
     const move = (e: PointerEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);
       const t = e.target as HTMLElement | null;
-      const el = t?.closest?.("[data-cursor], a, button, input, textarea, select, label, [role=button], canvas") as HTMLElement | null;
-      if (!el) {
-        setState("idle");
-        setLabel(null);
-        return;
-      }
-      const kind = el.getAttribute("data-cursor");
-      if (kind === "view") {
-        setState("view");
-        setLabel(el.getAttribute("data-cursor-label") ?? "Xem");
-      } else if (el.matches("input, textarea")) {
-        setState("text");
-        setLabel(null);
-      } else if (el.tagName === "CANVAS" && !kind) {
-        setState("idle");
-        setLabel(null);
-      } else {
-        setState("hover");
-        setLabel(null);
-      }
+      if (t?.closest?.("input, textarea")) setMode("text");
+      else if (t?.closest?.("a, button, [role=button], [role=tab], label, select")) setMode("hover");
+      else setMode("idle");
     };
     const d = () => setDown(true);
     const u = () => setDown(false);
@@ -57,32 +40,29 @@ export function Cursor() {
     };
   }, [x, y]);
 
-  if (!enabled) return null;
-  const size = state === "view" ? 88 : state === "hover" ? 54 : state === "text" ? 6 : 34;
+  if (!on) return null;
+  const size = mode === "hover" ? 46 : mode === "text" ? 4 : 28;
   return (
     <>
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[100] flex items-center justify-center rounded-full mix-blend-difference"
-        style={{ x: rx, y: ry, translateX: "-50%", translateY: "-50%" }}
+        className="pointer-events-none fixed left-0 top-0 z-[100] rounded-full border border-white/40 bg-white/[0.04] backdrop-blur-[2px]"
+        style={{ x: sx, y: sy, translateX: "-50%", translateY: "-50%" }}
         animate={{
           width: size,
-          height: state === "text" ? 28 : size,
-          backgroundColor: state === "view" ? "rgba(216,255,60,1)" : state === "hover" ? "rgba(242,239,231,1)" : "rgba(242,239,231,0)",
-          borderWidth: state === "idle" ? 1.5 : 0,
-          scale: down ? 0.8 : 1,
-          borderRadius: state === "text" ? 3 : 999,
+          height: mode === "text" ? 26 : size,
+          borderRadius: mode === "text" ? 2 : 999,
+          scale: down ? 0.82 : 1,
+          borderColor: mode === "hover" ? "rgba(185,176,255,0.9)" : "rgba(255,255,255,0.4)",
+          backgroundColor: mode === "hover" ? "rgba(139,124,255,0.12)" : "rgba(255,255,255,0.03)",
         }}
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      >
-        <span className="absolute inset-0 rounded-[inherit] border border-cream/80" style={{ opacity: state === "idle" ? 1 : 0 }} />
-        {label && <span className="text-[11px] font-bold uppercase tracking-widest text-ink mix-blend-normal">{label}</span>}
-      </motion.div>
+        transition={{ type: "spring", stiffness: 420, damping: 30 }}
+      />
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[101] h-1.5 w-1.5 rounded-full bg-lime"
+        className="pointer-events-none fixed left-0 top-0 z-[101] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_12px_4px_rgba(139,124,255,0.7)]"
         style={{ x, y, translateX: "-50%", translateY: "-50%" }}
-        animate={{ opacity: state === "idle" ? 1 : 0 }}
+        animate={{ opacity: mode === "idle" ? 1 : 0 }}
       />
     </>
   );

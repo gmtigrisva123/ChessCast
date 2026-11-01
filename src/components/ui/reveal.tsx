@@ -1,26 +1,25 @@
 "use client";
 
-import { motion, type HTMLMotionProps } from "motion/react";
-import { Children, type ElementType, type ReactNode } from "react";
+import { motion, useScroll, useTransform, type HTMLMotionProps, type MotionValue } from "motion/react";
+import { Children, useRef, type ElementType, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+export const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function Reveal({
   children,
   delay = 0,
-  y = 40,
+  y = 28,
   className,
-  once = true,
   ...rest
-}: { children: ReactNode; delay?: number; y?: number; className?: string; once?: boolean } & HTMLMotionProps<"div">) {
+}: { children: ReactNode; delay?: number; y?: number; className?: string } & HTMLMotionProps<"div">) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y, filter: "blur(8px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once, margin: "-10% 0px -10% 0px" }}
-      transition={{ duration: 0.9, delay, ease: EASE }}
+      initial={{ opacity: 0, y, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
+      viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
+      transition={{ duration: 1, delay, ease: EASE }}
       {...rest}
     >
       {children}
@@ -28,20 +27,21 @@ export function Reveal({
   );
 }
 
-export function Stagger({ children, className, gap = 0.08, delay = 0 }: { children: ReactNode; className?: string; gap?: number; delay?: number }) {
+export function Stagger({ children, className, gap = 0.07, delay = 0 }: { children: ReactNode; className?: string; gap?: number; delay?: number }) {
   return (
     <motion.div
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-10% 0px" }}
+      viewport={{ once: true, margin: "-8% 0px" }}
       variants={{ hidden: {}, show: { transition: { staggerChildren: gap, delayChildren: delay } } }}
     >
       {Children.map(children, (c) => (
         <motion.div
+          className="h-full"
           variants={{
-            hidden: { opacity: 0, y: 36, scale: 0.97 },
-            show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: EASE } },
+            hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+            show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: EASE }, transitionEnd: { filter: "none" } },
           }}
         >
           {c}
@@ -51,61 +51,85 @@ export function Stagger({ children, className, gap = 0.08, delay = 0 }: { childr
   );
 }
 
-/** Chữ tách từng từ, trượt lên từ mặt nạ. */
-export function SplitText({
+/**
+ * Tiêu đề hiện từng từ (mờ → rõ). Dùng `*chữ*` để đánh dấu từ in nghiêng kiểu serif.
+ */
+export function Words({
   text,
   className,
-  as: Tag = "span",
+  as: Tag = "h2",
   delay = 0,
-  stagger = 0.06,
-  animateOnMount = false,
-  wordClassName,
+  onMount = false,
+  accentClass = "serif-accent text-aurora",
+  id,
 }: {
+  id?: string;
   text: string;
   className?: string;
   as?: ElementType;
   delay?: number;
-  stagger?: number;
-  animateOnMount?: boolean;
-  wordClassName?: (word: string, i: number) => string | undefined;
+  onMount?: boolean;
+  accentClass?: string;
 }) {
-  const words = text.split(" ");
-  const trigger = animateOnMount ? { animate: "show" } : { whileInView: "show", viewport: { once: true, margin: "-8% 0px" } };
+  const tokens = text.split(" ");
+  let inAccent = false;
+  const words = tokens.map((t) => {
+    let w = t;
+    const start = w.startsWith("*");
+    if (start) {
+      inAccent = true;
+      w = w.slice(1);
+    }
+    const end = w.endsWith("*");
+    if (end) w = w.slice(0, -1);
+    const accent = inAccent;
+    if (end) inAccent = false;
+    return { w, accent };
+  });
+  const plain = words.map((x) => x.w).join(" ");
+  const trigger = onMount ? { animate: "show" } : { whileInView: "show", viewport: { once: true, margin: "-6% 0px" } };
   return (
-    <Tag className={className} aria-label={text}>
-      <motion.span aria-hidden className="inline" initial="hidden" {...trigger} transition={{ staggerChildren: stagger, delayChildren: delay }}>
-        {words.map((w, i) => (
-          <span key={i} className="-mt-[0.22em] inline-block overflow-hidden pb-[0.14em] pt-[0.22em] align-bottom">
-            <motion.span
-              className={cn("inline-block will-change-transform", wordClassName?.(w, i))}
-              variants={{
-                hidden: { y: "110%", rotate: 4 },
-                show: { y: "0%", rotate: 0, transition: { duration: 0.95, ease: EASE } },
-              }}
-            >
-              {w}
-              {i < words.length - 1 ? " " : ""}
-            </motion.span>
-          </span>
+    <Tag id={id} className={className} aria-label={plain}>
+      <motion.span aria-hidden initial="hidden" {...trigger} transition={{ staggerChildren: 0.055, delayChildren: delay }}>
+        {words.map((x, i) => (
+          <motion.span
+            key={i}
+            className={cn("inline-block", x.accent && accentClass, x.accent && "pr-[0.06em]")}
+            variants={{
+              hidden: { opacity: 0, y: "0.35em", filter: "blur(12px)" },
+              show: { opacity: 1, y: "0em", filter: "blur(0px)", transition: { duration: 1.1, ease: EASE }, transitionEnd: { filter: "none" } },
+            }}
+          >
+            {x.w}
+            {i < words.length - 1 ? " " : ""}
+          </motion.span>
         ))}
       </motion.span>
     </Tag>
   );
 }
 
-export function SectionLabel({ children, className, tone = "lime" }: { children: ReactNode; className?: string; tone?: "lime" | "pink" | "ink" }) {
+function ScrubWord({ children, range, p }: { children: string; range: [number, number]; p: MotionValue<number> }) {
+  const o = useTransform(p, range, [0.14, 1]);
   return (
-    <div
-      className={cn(
-        "eyebrow inline-flex items-center gap-2",
-        tone === "lime" && "text-lime",
-        tone === "pink" && "text-pink",
-        tone === "ink" && "text-ink",
-        className,
-      )}
-    >
-      <span className={cn("h-1.5 w-1.5 rotate-45", tone === "ink" ? "bg-ink" : tone === "pink" ? "bg-pink" : "bg-lime")} />
-      {children}
-    </div>
+    <motion.span style={{ opacity: o }} className="inline">
+      {children}{" "}
+    </motion.span>
+  );
+}
+
+/** Đoạn văn sáng dần theo tiến độ cuộn. */
+export function ScrollText({ text, className }: { text: string; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 45%"] });
+  const words = text.split(" ");
+  return (
+    <p ref={ref} className={className}>
+      {words.map((w, i) => (
+        <ScrubWord key={i} p={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>
+          {w}
+        </ScrubWord>
+      ))}
+    </p>
   );
 }

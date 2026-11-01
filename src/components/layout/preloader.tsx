@@ -21,10 +21,10 @@ export function Preloader() {
     const start = performance.now();
     let raf = 0;
     const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / 1300);
+      const p = Math.min(1, (t - start) / 1400);
       setN(Math.round((1 - Math.pow(1 - p, 3)) * 100));
       if (p < 1) raf = requestAnimationFrame(tick);
-      else setTimeout(() => setShow(false), 250);
+      else setTimeout(() => setShow(false), 200);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
@@ -33,18 +33,20 @@ export function Preloader() {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[200] flex items-end justify-between bg-lime p-6 text-ink md:p-10"
-          exit={{ clipPath: "inset(0 0 100% 0)" }}
-          initial={{ clipPath: "inset(0 0 0% 0)" }}
-          transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
+          className="fixed inset-0 z-[200] grid place-items-center bg-void"
+          exit={{ opacity: 0, filter: "blur(20px)", scale: 1.06 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <motion.div animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>
-              <LogoMark className="h-20 w-20 [&>rect]:fill-ink [&>path:first-of-type]:fill-lime" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-[60vmin] w-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-iris/30 blur-[100px]" />
+          <div className="relative flex flex-col items-center">
+            <motion.div initial={{ scale: 0.6, opacity: 0, rotate: -40 }} animate={{ scale: 1, opacity: 1, rotate: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}>
+              <LogoMark className="h-16 w-16" />
             </motion.div>
+            <div className="mt-8 h-px w-48 overflow-hidden rounded-full bg-white/10">
+              <div className="h-full bg-[linear-gradient(90deg,#8b7cff,#3ee6e0)]" style={{ width: `${n}%` }} />
+            </div>
+            <div className="mt-3 font-mono text-[11px] tabular-nums tracking-widest text-fg-3">{String(n).padStart(3, "0")} · ĐANG DỰNG SÂN KHẤU</div>
           </div>
-          <div className="font-display text-xl font-bold uppercase tracking-tight">ChessCast · Unhinged Edition</div>
-          <div className="font-display text-[22vw] font-bold leading-[0.8] tabular-nums md:text-[14vw]">{n}</div>
         </motion.div>
       )}
     </AnimatePresence>

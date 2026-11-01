@@ -99,6 +99,8 @@ export const useWallet = create<WalletState>()(
 );
 
 type UIState = {
+  commandOpen: boolean;
+  setCommandOpen: (v: boolean) => void;
   walletOpen: boolean;
   setWalletOpen: (v: boolean) => void;
   toasts: Toast[];
@@ -109,6 +111,8 @@ type UIState = {
 };
 
 export const useUI = create<UIState>()((set, get) => ({
+  commandOpen: false,
+  setCommandOpen: (commandOpen) => set({ commandOpen }),
   walletOpen: false,
   setWalletOpen: (walletOpen) => set({ walletOpen }),
   toasts: [],

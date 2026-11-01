@@ -2,15 +2,16 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Crown, Flame, Play, RotateCcw, Shield, Swords, Timer, Trophy, Zap } from "lucide-react";
+import { Crown, Play, RotateCcw, Shield, Swords, Timer, Zap } from "lucide-react";
 import { useUI, useWallet } from "@/lib/store";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn, pick } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { PageHero } from "../ui/page-hero";
-import { Reveal, SectionLabel } from "../ui/reveal";
-import { HostAvatar } from "../ui/host-avatar";
-import { Tilt } from "../ui/tilt";
+import { Reveal, Words } from "../ui/reveal";
+import { Kicker } from "../ui/section";
+import { HostOrb, VoiceBars } from "../ui/orb";
+import { Spotlight } from "../ui/spotlight";
 
 const PREFIX = ["Tốt", "Mã", "Xe", "Hậu", "Vua", "Tượng", "Gambit", "Blitz", "Pawn", "Knight"];
 const SUFFIX = ["Điên", "SG", "HN", "Đen", "Trắng", "VN", "99", "Pro", "Chill", "Nổ", "Ninja", "Bá"];
@@ -25,8 +26,8 @@ function seeded(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-
-function makeField(me: string | null, rng: () => number = Math.random) {
+type Tile = { id: number; name: string; rating: number };
+function makeField(me: string | null, rng: () => number = Math.random): Tile[] {
   const names = new Set<string>();
   const pk = <T,>(a: readonly T[]) => a[Math.floor(rng() * a.length)];
   while (names.size < 100) names.add(`${pk(PREFIX)}${pk(SUFFIX)}${Math.floor(rng() * 90 + 10)}`);
@@ -35,26 +36,39 @@ function makeField(me: string | null, rng: () => number = Math.random) {
   return list;
 }
 
-const ROUND_NAMES = ["Vòng 1 · 100 → 50", "Vòng 2 · 50 → 25", "Vòng 3 · 25 → 13", "Vòng 4 · 13 → 7", "Tứ kết · 7 → 4", "Bán kết · 4 → 2", "Chung kết"];
-const QUIPS = [
-  "{a} vừa tiễn {b} ra khỏi màn hình!",
-  "{b} nổ tung! {a} đi tiếp!",
-  "Chaos Card định mệnh: {b} bị loại bởi {a}!",
-  "{a} chiếu hết {b} chỉ trong 19 nước!",
-  "{b} hết giờ. Đồng hồ không chờ ai, kể cả {b}.",
-];
+const ROUNDS = ["100 → 50", "50 → 25", "25 → 13", "13 → 7", "7 → 4", "4 → 2", "Chung kết"];
+const QUIPS = ["{a} tiễn {b} ra khỏi sân khấu!", "{b} nổ tung — {a} đi tiếp!", "Chaos Card định mệnh: {b} bị loại bởi {a}!", "{a} chiếu hết {b} trong 19 nước!", "{b} hết giờ. Đồng hồ không chờ ai."];
+
+/** Toạ độ vòng tròn đồng tâm cho n chấm. */
+function layout(n: number) {
+  const out: [number, number][] = [];
+  if (n === 1) return [[0, 0]] as [number, number][];
+  let placed = 0;
+  let ring = 0;
+  while (placed < n) {
+    const r = 22 + ring * 21;
+    const cap = Math.max(6, Math.floor((2 * Math.PI * r) / 15));
+    const k = Math.min(cap, n - placed);
+    for (let j = 0; j < k; j++) {
+      const a = (j / k) * Math.PI * 2 + ring * 0.4;
+      out.push([Math.round(Math.cos(a) * r * 100) / 100, Math.round(Math.sin(a) * r * 100) / 100]);
+    }
+    placed += k;
+    ring++;
+  }
+  return out;
+}
 
 function nextSaturday() {
   const d = new Date();
-  const day = d.getDay();
-  const add = (6 - day + 7) % 7 || 7;
+  const add = (6 - d.getDay() + 7) % 7 || 7;
   d.setDate(d.getDate() + add);
   d.setHours(20, 0, 0, 0);
-  return d;
+  return d.getTime();
 }
 
 function Countdown() {
-  const target = useMemo(() => nextSaturday().getTime(), []);
+  const target = useMemo(() => nextSaturday(), []);
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     setNow(Date.now());
@@ -63,44 +77,41 @@ function Countdown() {
   }, []);
   const diff = Math.max(0, target - (now ?? target));
   const parts = [
-    ["Ngày", Math.floor(diff / 86400000)],
-    ["Giờ", Math.floor(diff / 3600000) % 24],
-    ["Phút", Math.floor(diff / 60000) % 60],
-    ["Giây", Math.floor(diff / 1000) % 60],
+    ["ngày", Math.floor(diff / 86400000)],
+    ["giờ", Math.floor(diff / 3600000) % 24],
+    ["phút", Math.floor(diff / 60000) % 60],
+    ["giây", Math.floor(diff / 1000) % 60],
   ] as const;
   return (
     <div className="grid grid-cols-4 gap-2">
       {parts.map(([l, v]) => (
-        <div key={l} className="rounded-2xl bg-ink/70 p-3 text-center ring-1 ring-cream/10">
-          <AnimatePresence mode="popLayout">
-            <motion.div key={v} initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 16, opacity: 0 }} className="font-display text-3xl font-bold tabular-nums md:text-4xl">
+        <div key={l} className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] py-3 text-center">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.div key={v} initial={{ y: -20, opacity: 0, filter: "blur(4px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }} exit={{ y: 20, opacity: 0, filter: "blur(4px)" }} className="font-mono text-3xl tabular-nums">
               {now === null ? "--" : String(v).padStart(2, "0")}
             </motion.div>
           </AnimatePresence>
-          <div className="text-[10px] uppercase tracking-widest text-cream/45">{l}</div>
+          <div className="mt-1 text-[10.5px] text-fg-3">{l}</div>
         </div>
       ))}
     </div>
   );
 }
 
-type Tile = { id: number; name: string; rating: number };
-
-function Simulator() {
+function Arena() {
   const username = useWallet((s) => s.username);
   const registered = useWallet((s) => s.royaleRegistered);
   const mounted = useMounted();
   const me = mounted && registered ? username : null;
   const [field, setField] = useState<Tile[]>(() => makeField(null, seeded(2026)));
-  const [alive, setAlive] = useState<Set<number>>(() => new Set(Array.from({ length: 100 }, (_, i) => i)));
-  const [booming, setBooming] = useState<Set<number>>(new Set());
+  const fieldRef = useRef(field);
+  fieldRef.current = field;
+  const [alive, setAlive] = useState<number[]>(() => Array.from({ length: 100 }, (_, i) => i));
+  const [dying, setDying] = useState<Set<number>>(new Set());
   const [round, setRound] = useState(-1);
   const [log, setLog] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fieldRef = useRef(field);
-  fieldRef.current = field;
-
   useEffect(() => {
     if (me) setField(makeField(me, seeded(2026)));
   }, [me]);
@@ -108,167 +119,153 @@ function Simulator() {
     if (timer.current) clearTimeout(timer.current);
   }, []);
 
-  const resetState = () => {
+  const reset = () => {
     if (timer.current) clearTimeout(timer.current);
-    setAlive(new Set(Array.from({ length: 100 }, (_, i) => i)));
-    setBooming(new Set());
+    setAlive(Array.from({ length: 100 }, (_, i) => i));
+    setDying(new Set());
     setRound(-1);
     setLog([]);
     setRunning(false);
   };
-  const reset = () => {
-    resetState();
-    setField(makeField(me));
-  };
-
-  const step = (aliveNow: Set<number>, r: number) => {
-    const ids = [...aliveNow].sort(() => Math.random() - 0.5);
-    const next = new Set<number>();
+  const step = (now: number[], r: number) => {
+    const ids = [...now].sort(() => Math.random() - 0.5);
+    const next: number[] = [];
     const dead = new Set<number>();
     const lines: string[] = [];
-    if (ids.length % 2 === 1) next.add(ids.pop()!); // bye
+    if (ids.length % 2) next.push(ids.pop()!);
     for (let i = 0; i < ids.length; i += 2) {
       const a = fieldRef.current[ids[i]];
       const b = fieldRef.current[ids[i + 1]];
       const pa = 1 / (1 + Math.pow(10, (b.rating - a.rating) / 400));
-      const aWins = Math.random() < pa;
-      const w = aWins ? a : b;
-      const l = aWins ? b : a;
-      next.add(w.id);
+      const w = Math.random() < pa ? a : b;
+      const l = w === a ? b : a;
+      next.push(w.id);
       dead.add(l.id);
-      if (lines.length < 3) lines.push(pick(QUIPS).replace("{a}", w.name).replace("{b}", l.name));
+      if (lines.length < 2) lines.push(pick(QUIPS).replace("{a}", w.name).replace("{b}", l.name));
     }
-    setBooming(dead);
+    setDying(dead);
     setRound(r);
-    setLog((lg) => [...lines.map((l) => `${ROUND_NAMES[r] ?? "Vòng"} — ${l}`), ...lg].slice(0, 12));
+    setLog((lg) => [...lines, ...lg].slice(0, 9));
     timer.current = setTimeout(() => {
-      setAlive(next);
-      setBooming(new Set());
-      if (next.size > 1) timer.current = setTimeout(() => step(next, r + 1), 900);
+      setAlive(next.sort((x, y) => x - y));
+      setDying(new Set());
+      if (next.length > 1) timer.current = setTimeout(() => step(next, r + 1), 1000);
       else {
         setRunning(false);
-        const champ = fieldRef.current[[...next][0]];
-        setLog((lg) => [`👑 ${champ.name} là VUA ROYALE mùa này!`, ...lg]);
+        setLog((lg) => [`👑 ${fieldRef.current[next[0]].name} là Vua Royale!`, ...lg]);
       }
-    }, 900);
+    }, 850);
   };
-
   const start = () => {
-    resetState();
+    reset();
     setRunning(true);
-    const all = new Set(Array.from({ length: 100 }, (_, i) => i));
-    timer.current = setTimeout(() => step(all, 0), 500);
+    timer.current = setTimeout(() => step(Array.from({ length: 100 }, (_, i) => i), 0), 400);
   };
 
-  const champion = alive.size === 1 ? field[[...alive][0]] : null;
+  const pos = layout(alive.length);
+  const champion = alive.length === 1 ? field[alive[0]] : null;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
-      <div className="relative overflow-hidden rounded-[28px] border border-cream/10 bg-ink-2 p-4 md:p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-xs uppercase tracking-widest text-cream/45">{round >= 0 ? ROUND_NAMES[round] : "Sẵn sàng"}</div>
-            <div className="font-display text-3xl font-bold uppercase">
-              Còn lại <span className="text-lime tabular-nums">{alive.size}</span>/100
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={start} disabled={running} size="sm">
-              <Play size={14} fill="currentColor" /> {round >= 0 ? "Chạy lại" : "Mô phỏng mùa đấu"}
-            </Button>
-            <Button onClick={reset} variant="outline" size="sm" aria-label="Đặt lại">
-              <RotateCcw size={14} />
-            </Button>
+    <div className="grid gap-5 lg:grid-cols-[1.25fr_1fr]">
+      <Spotlight className="relative aspect-square max-h-[640px] w-full p-4 sm:aspect-auto sm:h-[600px]">
+        <div className="absolute left-5 top-5 z-10">
+          <div className="kicker text-fg-3">{round >= 0 ? `Vòng ${round + 1} · ${ROUNDS[round]}` : "Sẵn sàng"}</div>
+          <div className="display mt-1 text-3xl tabular-nums">
+            {alive.length}
+            <span className="text-fg-3">/100</span>
           </div>
         </div>
-        <div className="mx-auto grid max-w-[600px] grid-cols-10 gap-1.5 md:gap-2">
-          {field.map((p) => {
-            const isAlive = alive.has(p.id);
-            const boom = booming.has(p.id);
-            const isMe = me && p.name === me;
+        <div className="absolute right-5 top-5 z-10 flex gap-2">
+          <Button size="sm" onClick={start} disabled={running}>
+            <Play size={13} fill="currentColor" /> {round >= 0 ? "Chạy lại" : "Mô phỏng mùa"}
+          </Button>
+          <Button size="sm" variant="glass" onClick={reset} aria-label="Đặt lại">
+            <RotateCcw size={13} />
+          </Button>
+        </div>
+        <svg viewBox="-170 -170 340 340" className="h-full w-full">
+          <defs>
+            <radialGradient id="ra-center">
+              <stop offset="0" stopColor="#8b7cff" stopOpacity="0.5" />
+              <stop offset="1" stopColor="#8b7cff" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle r="150" fill="none" stroke="rgba(255,255,255,0.05)" />
+          <circle r="100" fill="none" stroke="rgba(255,255,255,0.05)" strokeDasharray="2 5" />
+          <circle r="50" fill="url(#ra-center)" />
+          {alive.map((id, i) => {
+            const [x, y] = pos[i] ?? [0, 0];
+            const t = field[id];
+            const isMe = me && t.name === me;
+            const boom = dying.has(id);
             return (
-              <div key={p.id} className="relative aspect-square">
-                <motion.div
-                  title={p.name}
-                  className={cn(
-                    "absolute inset-0 grid place-items-center rounded-lg text-[9px] font-bold md:rounded-xl md:text-[11px]",
-                    isMe ? "bg-pink text-ink" : "bg-lime text-ink",
-                  )}
-                  animate={
-                    boom
-                      ? { scale: [1, 1.4, 0], rotate: [0, 20, -40], opacity: [1, 1, 0] }
-                      : isAlive
-                        ? { scale: champion?.id === p.id ? 1.15 : 1, opacity: 1, rotate: 0 }
-                        : { scale: 0.55, opacity: 0.08, rotate: 0 }
-                  }
-                  transition={{ duration: boom ? 0.75 : 0.4, ease: "easeOut" }}
-                >
-                  {p.name.slice(0, 2)}
-                </motion.div>
-                <AnimatePresence>
-                  {boom &&
-                    Array.from({ length: 6 }).map((_, k) => (
-                      <motion.span
-                        key={k}
-                        className="absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-pink"
-                        initial={{ x: 0, y: 0, opacity: 1 }}
-                        animate={{ x: Math.cos((k / 6) * Math.PI * 2) * 26, y: Math.sin((k / 6) * Math.PI * 2) * 26, opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.7 }}
-                      />
-                    ))}
-                </AnimatePresence>
-              </div>
+              <motion.g key={id} initial={false} animate={{ x, y }} transition={{ type: "spring", stiffness: 70, damping: 14 }}>
+                <motion.circle
+                  r={champion ? 16 : 5.4}
+                  fill={isMe ? "#ff6b9a" : champion ? "#ffc56b" : "#c9c2ff"}
+                  animate={boom ? { scale: [1, 2.2, 0], opacity: [1, 1, 0] } : { scale: 1, opacity: 1 }}
+                  transition={{ duration: boom ? 0.8 : 0.3 }}
+                  style={{ filter: isMe || champion ? "drop-shadow(0 0 6px currentColor)" : undefined }}
+                />
+                {boom && <motion.circle r={4} fill="none" stroke="#ff6b9a" strokeWidth={1.5} initial={{ scale: 1, opacity: 1 }} animate={{ scale: 5, opacity: 0 }} transition={{ duration: 0.8 }} />}
+              </motion.g>
             );
           })}
-        </div>
+        </svg>
         <AnimatePresence>
           {champion && !running && (
-            <motion.div className="absolute inset-0 grid place-items-center bg-ink/70 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <motion.div initial={{ scale: 0.6, y: 40 }} animate={{ scale: 1, y: 0 }} transition={{ type: "spring", stiffness: 200, damping: 14 }} className="text-center">
-                <motion.div animate={{ rotate: [0, -8, 8, 0], y: [0, -6, 0] }} transition={{ duration: 2, repeat: Infinity }} className="mx-auto grid h-20 w-20 place-items-center rounded-3xl bg-lime text-ink">
-                  <Crown size={40} />
-                </motion.div>
-                <div className="mt-4 text-xs uppercase tracking-[0.3em] text-cream/60">Vua Royale</div>
-                <div className="font-display text-5xl font-bold uppercase text-lime">{champion.name}</div>
-                <Button className="mt-5" variant="outline" size="sm" onClick={reset}>
-                  Xem lại lưới đấu
-                </Button>
-              </motion.div>
+            <motion.div className="absolute inset-x-0 bottom-8 z-10 flex justify-center" initial={{ opacity: 0, y: 20, filter: "blur(8px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} exit={{ opacity: 0 }}>
+              <div className="glass-strong flex items-center gap-3 rounded-full py-2 pl-2 pr-5">
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-[linear-gradient(135deg,#ffc56b,#ff8a4c)] text-void">
+                  <Crown size={17} />
+                </span>
+                <div>
+                  <div className="kicker text-[9.5px] text-fg-3">Vua Royale</div>
+                  <div className="text-[15px] font-medium">{champion.name}</div>
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </Spotlight>
       <div className="flex flex-col gap-4">
-        <div className="flex-1 rounded-[28px] border border-cream/10 bg-ink-2 p-5">
+        <div className="flex flex-wrap gap-1.5">
+          {ROUNDS.map((r, i) => (
+            <span key={r} className={cn("rounded-full border px-3 py-1 font-mono text-[11px] transition-colors", i < round ? "border-transparent bg-white/[0.06] text-fg-3 line-through" : i === round ? "border-violet/50 bg-violet/15 text-fg" : "border-white/10 text-fg-3")}>
+              {r}
+            </span>
+          ))}
+        </div>
+        <Spotlight className="flex-1 p-5">
           <div className="flex items-center gap-3">
-            <HostAvatar id="gambit" size={40} talking={running} />
-            <div>
-              <div className="font-semibold text-lime">Captain Gambit</div>
-              <div className="text-xs text-cream/45">Bình luận Chess Royale</div>
+            <HostOrb id="gambit" size={36} talking={running} />
+            <div className="flex-1">
+              <div className="text-[14px] font-medium">Captain Gambit</div>
+              <div className="font-mono text-[10.5px] text-fg-3">bình luận Chess Royale</div>
             </div>
+            {running && <VoiceBars color="#ffb36b" />}
           </div>
           <div className="mt-4 space-y-2" aria-live="polite">
-            {log.length === 0 && <p className="text-sm text-cream/45">Bấm “Mô phỏng mùa đấu” để xem 100 kỳ thủ nổ tung từng vòng.</p>}
+            {log.length === 0 && <p className="text-[14px] text-fg-3">Bấm “Mô phỏng mùa” để xem 100 kỳ thủ bị loại dần, vòng này qua vòng khác.</p>}
             <AnimatePresence initial={false}>
               {log.map((l, i) => (
-                <motion.p key={l + i} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1 - i * 0.07, x: 0 }} className="rounded-xl bg-ink-3/70 px-3 py-2 text-sm text-cream/85">
+                <motion.p key={l + i} layout initial={{ opacity: 0, x: 16, filter: "blur(6px)" }} animate={{ opacity: 1 - i * 0.09, x: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} className="rounded-xl bg-white/[0.03] px-3 py-2 text-[13.5px] text-fg-2">
                   {l}
                 </motion.p>
               ))}
             </AnimatePresence>
           </div>
-        </div>
+        </Spotlight>
       </div>
     </div>
   );
 }
 
 const FORMAT = [
-  { icon: Swords, title: "Loại trực tiếp", body: "100 kỳ thủ, bốc cặp ngẫu nhiên mỗi vòng. Thua một ván là nổ khỏi màn hình." },
-  { icon: Timer, title: "Blitz 3+0", body: "Mỗi ván 3 phút. 7 vòng trong khoảng 45 phút — vừa một tập show." },
-  { icon: Zap, title: "Chaos từ khán giả", body: "Từ tứ kết, khán giả được ném Chaos Cards vào các bàn đấu đang phát sóng." },
-  { icon: Shield, title: "Fair-play", body: "Chống gian lận bằng engine phát hiện, và mọi tranh cãi được đưa ra Chess Court." },
+  { icon: Swords, title: "Loại trực tiếp", body: "Bốc cặp ngẫu nhiên mỗi vòng. Thua một ván là rời sân khấu." },
+  { icon: Timer, title: "Blitz 3+0", body: "7 vòng trong khoảng 45 phút — vừa một tập show." },
+  { icon: Zap, title: "Chaos từ khán giả", body: "Từ tứ kết, khán giả được ném Chaos Cards vào bàn đang phát sóng." },
+  { icon: Shield, title: "Fair-play", body: "Engine phát hiện gian lận; mọi tranh cãi được đưa ra Chess Court." },
 ];
 
 const BOARD = [
@@ -287,96 +284,87 @@ export function RoyaleView() {
   return (
     <>
       <PageHero
-        label="Chess Royale · Mùa 1"
-        title="100 người."
-        accent="1 người sống sót."
+        kicker="Chess Royale · Mùa 1"
+        title="100 người vào. *Một người bước ra.*"
         aside={
-          <Tilt max={8} className="rounded-[28px]">
-            <div className="relative overflow-hidden rounded-[28px] bg-violet p-6 text-ink">
-              <div className="checker-bg absolute inset-0 opacity-30 mix-blend-multiply" />
-              <div className="relative">
-                <div className="flex items-center justify-between">
-                  <span className="eyebrow text-ink/70">Khai mạc tối thứ Bảy · 20:00</span>
-                  <Trophy size={22} />
-                </div>
-                <div className="mt-4 [&_div.rounded-2xl]:bg-ink [&_div.rounded-2xl]:text-cream">
-                  <Countdown />
-                </div>
-                <ul className="mt-4 space-y-1 text-sm font-medium">
-                  <li>✦ Phí tham gia: Miễn phí</li>
-                  <li>✦ Phần thưởng: danh hiệu Vua Royale, khung avatar Huyền thoại, 5.000 Chaos Coins</li>
-                </ul>
-                <Button
-                  variant="dark"
-                  className="mt-5 w-full"
-                  disabled={mounted && registered}
-                  onClick={() => {
-                    register();
-                    toast({ title: "Đã giữ chỗ Chess Royale!", body: "Bạn sẽ xuất hiện trong lưới 100 người. Thử mô phỏng bên dưới nhé.", tone: "lime" });
-                  }}
-                >
-                  {mounted && registered ? "✓ Đã giữ chỗ" : "Giữ chỗ miễn phí"}
-                </Button>
+          <div className="glass-strong beam rounded-[30px] p-6">
+            <div className="flex items-center justify-between">
+              <span className="kicker text-fg-3">Khai mạc · thứ Bảy 20:00</span>
+              <Crown size={18} className="text-amber" />
+            </div>
+            <div className="mt-5">
+              <Countdown />
+            </div>
+            <div className="mt-5 space-y-2 text-[13.5px] text-fg-2">
+              <div className="flex justify-between border-b border-white/[0.06] pb-2">
+                <span>Phí tham gia</span>
+                <span className="text-fg">Miễn phí</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <span>Phần thưởng</span>
+                <span className="text-right text-fg">Danh hiệu Vua Royale · 5.000 Chaos Coins</span>
               </div>
             </div>
-          </Tilt>
+            <Button
+              className="mt-6 w-full"
+              size="lg"
+              disabled={mounted && registered}
+              onClick={() => {
+                register();
+                toast({ title: "Đã giữ chỗ Chess Royale", body: "Bạn sẽ xuất hiện (màu hồng) trong đấu trường mô phỏng bên dưới." });
+              }}
+            >
+              {mounted && registered ? "Đã giữ chỗ ✓" : "Giữ chỗ miễn phí"}
+            </Button>
+          </div>
         }
       >
-        Lưới đấu loại trực tiếp kiểu battle royale cho cờ vua. Mỗi vòng có host AI riêng, mỗi lần thua là một vụ nổ trên livestream.
+        Đấu trường loại trực tiếp cho cờ vua. Mỗi vòng có host AI riêng, mỗi lần thua là một vụ nổ trên livestream.
       </PageHero>
 
-      <section className="container-x py-12">
-        <SectionLabel>Thử ngay · Mô phỏng</SectionLabel>
-        <h2 className="mb-8 mt-3 font-display text-4xl font-bold uppercase md:text-6xl">Lưới đấu sống</h2>
-        <Simulator />
+      <section className="shell py-10">
+        <Kicker>Thử ngay</Kicker>
+        <Words text="Đấu trường *co lại* sau mỗi vòng." className="display mb-10 mt-5 text-[clamp(2rem,4vw,3.2rem)]" />
+        <Arena />
       </section>
 
-      <section className="container-x py-20">
-        <SectionLabel>Thể thức</SectionLabel>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="shell py-24">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {FORMAT.map((f, i) => {
             const Icon = f.icon;
             return (
-              <Reveal key={f.title} delay={i * 0.08}>
-                <div className="h-full rounded-[24px] border border-cream/10 bg-ink-2 p-6">
-                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-violet text-ink">
-                    <Icon size={20} />
-                  </span>
-                  <div className="mt-5 font-display text-2xl font-bold uppercase">{f.title}</div>
-                  <p className="mt-2 text-sm text-cream/60">{f.body}</p>
-                </div>
+              <Reveal key={f.title} delay={i * 0.07} className="h-full">
+                <Spotlight className="h-full p-6">
+                  <Icon size={20} className="text-violet" />
+                  <div className="mt-8 font-display text-lg font-semibold tracking-tight">{f.title}</div>
+                  <p className="mt-2 text-[14px] leading-relaxed text-fg-2">{f.body}</p>
+                </Spotlight>
               </Reveal>
             );
           })}
         </div>
       </section>
 
-      <section className="container-x pb-24">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
+      <section className="shell pb-28">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
           <div>
-            <SectionLabel>Bảng xếp hạng</SectionLabel>
-            <h2 className="mt-3 font-display text-4xl font-bold uppercase md:text-6xl">
-              Mùa <span className="text-lime">beta</span>
-            </h2>
-            <p className="mt-4 max-w-md text-cream/60">Kết quả các mùa thử nghiệm nội bộ với cộng đồng cờ vua đầu tiên. Mùa 1 chính thức tính điểm từ tối thứ Bảy.</p>
+            <Kicker tone="ember">Bảng xếp hạng</Kicker>
+            <Words text="Những cái tên *mùa beta.*" className="display mt-5 text-[clamp(2rem,4vw,3.2rem)]" accentClass="serif-accent text-ember" />
+            <p className="mt-4 max-w-sm text-fg-2">Kết quả các mùa thử nghiệm nội bộ cùng cộng đồng cờ vua đầu tiên. Mùa 1 tính điểm từ tối thứ Bảy.</p>
           </div>
-          <div className="overflow-hidden rounded-[24px] border border-cream/10">
+          <div className="space-y-2">
             {BOARD.map((b, i) => (
-              <motion.div
-                key={b.name}
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.6 }}
-                className={cn("flex items-center gap-4 border-b border-cream/5 px-5 py-4 last:border-0", i === 0 ? "bg-lime text-ink" : "bg-ink-2")}
-              >
-                <span className="w-8 font-display text-3xl font-bold">{i + 1}</span>
-                <span className="flex-1 font-semibold">{b.name}</span>
-                <span className={cn("flex items-center gap-1 text-sm", i === 0 ? "text-ink/70" : "text-cream/50")}>
-                  <Flame size={14} /> {b.wins} lần vô địch
-                </span>
-                <span className="font-display text-2xl font-bold tabular-nums">{b.pts}</span>
-              </motion.div>
+              <Reveal key={b.name} delay={i * 0.06}>
+                <div className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-4">
+                  <span className={cn("w-6 font-mono text-[13px]", i === 0 ? "text-amber" : "text-fg-3")}>{String(i + 1).padStart(2, "0")}</span>
+                  <span className="flex-1 font-medium">{b.name}</span>
+                  <div className="hidden h-1.5 w-40 overflow-hidden rounded-full bg-white/[0.06] sm:block">
+                    <motion.div className="h-full rounded-full bg-[linear-gradient(90deg,#8b7cff,#3ee6e0)]" initial={{ width: 0 }} whileInView={{ width: `${(b.pts / 2200) * 100}%` }} viewport={{ once: true }} transition={{ duration: 1.2, delay: i * 0.08 }} />
+                  </div>
+                  <span className="font-mono text-[12px] text-fg-3">{b.wins}× vô địch</span>
+                  <span className="w-14 text-right font-mono tabular-nums">{b.pts}</span>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>

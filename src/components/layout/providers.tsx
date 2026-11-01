@@ -8,6 +8,7 @@ import { Toaster } from "../commerce/toaster";
 import { WalletDrawer } from "../commerce/wallet-drawer";
 import { CheckoutModal } from "../commerce/checkout-modal";
 import { Preloader } from "./preloader";
+import { CommandMenu } from "./command-menu";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <Toaster />
         <WalletDrawer />
         <CheckoutModal />
+        <CommandMenu />
         <div className="grain" aria-hidden />
       </SmoothScroll>
     </MotionConfig>

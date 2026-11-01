@@ -1,220 +1,198 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useState } from "react";
-import { ArrowUpRight, Check, Copy, Webhook } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, Building2, Check, Code2, Copy, Megaphone } from "lucide-react";
 import { B2B_PLANS } from "@/lib/catalog";
 import { PageHero } from "../ui/page-hero";
-import { Reveal, SectionLabel } from "../ui/reveal";
-import { Tilt } from "../ui/tilt";
+import { Kicker } from "../ui/section";
+import { Words } from "../ui/reveal";
 import { ContactForm } from "../ui/contact-form";
-import { Counter } from "../ui/counter";
+import { Spotlight } from "../ui/spotlight";
 import { cn } from "@/lib/utils";
-
-function BrandedBoard() {
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-1, 1], [62, 48]), { stiffness: 120, damping: 15 });
-  const rz = useSpring(useTransform(mx, [-1, 1], [-38, -22]), { stiffness: 120, damping: 15 });
-  return (
-    <div
-      className="relative grid aspect-square w-full max-w-md place-items-center justify-self-end [perspective:1200px]"
-      onPointerMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        mx.set(((e.clientX - r.left) / r.width) * 2 - 1);
-        my.set(((e.clientY - r.top) / r.height) * 2 - 1);
-      }}
-    >
-      <motion.div style={{ rotateX: rx, rotateZ: rz }} className="relative aspect-square w-[78%] [transform-style:preserve-3d]">
-        <div className="absolute inset-0 rounded-2xl bg-ink shadow-[0_60px_80px_-20px_rgba(0,0,0,0.9)]" style={{ transform: "translateZ(-22px)" }} />
-        <div className="absolute -inset-3 rounded-[22px] border-2 border-lime bg-ink-2 shadow-[0_0_40px_rgba(216,255,60,0.35)]" />
-        <div className="relative grid h-full w-full grid-cols-8 overflow-hidden rounded-lg">
-          {Array.from({ length: 64 }, (_, i) => (
-            <div key={i} className={(Math.floor(i / 8) + i) % 2 ? "bg-[#2a2d36]" : "bg-[#b8b09a]"} />
-          ))}
-        </div>
-        <div className="absolute inset-0 grid place-items-center" style={{ transform: "translateZ(30px)" }}>
-          <div className="rounded-2xl bg-pink px-5 py-3 text-center font-display text-2xl font-bold uppercase text-ink shadow-2xl">
-            Thương hiệu
-            <br />
-            của bạn
-          </div>
-        </div>
-        {[
-          ["♜", "8%", "8%"],
-          ["♛", "40%", "70%"],
-          ["♞", "75%", "20%"],
-        ].map(([g, l, t]) => (
-          <span key={g} className="absolute text-5xl text-cream drop-shadow-[0_10px_8px_rgba(0,0,0,0.6)]" style={{ left: l, top: t, transform: "translateZ(40px) rotateX(-60deg)" }}>
-            {g}
-          </span>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
 
 const SNIPPET = `import { ChessCast } from "@chesscast/sdk";
 
 const cc = new ChessCast({ apiKey: process.env.CHESSCAST_KEY });
 
-// 1. Gắn host AI vào một ván đấu của bạn
+// Gắn host AI vào một ván đấu của bạn
 const show = await cc.shows.create({
-  gameId: "lichess:abc123",
+  gameId: "your-game-123",
   hosts: ["gambit", "zugzwang"],
   language: "vi",
 });
 
-// 2. Nhận bình luận theo thời gian thực
-show.on("commentary", (line) => overlay.say(line.host, line.text));
+show.on("commentary", (line) => overlay.say(line));
+show.on("chaos.played", (card) => board.apply(card));`;
 
-// 3. Bật Chaos Cards cho khán giả của bạn
-show.on("chaos.played", (card) => board.apply(card.effect));`;
+function highlight(line: string) {
+  if (line.trim().startsWith("//")) return `<span style="color:#6c7189">${line.replace(/</g, "&lt;")}</span>`;
+  return line
+    .replace(/</g, "&lt;")
+    .replace(/("[^"]*")/g, '<span style="color:#9ff3ff">$1</span>')
+    .replace(/\b(import|from|const|await|new)\b/g, '<span style="color:#b9b0ff">$1</span>')
+    .replace(/\b(on|create)\b(?=\()/g, '<span style="color:#ffc56b">$1</span>');
+}
 
-const EVENTS = ["commentary.line", "chaos.played", "clip.ready", "court.verdict", "royale.eliminated"];
+function CodeWindow() {
+  const [copied, setCopied] = useState(false);
+  const lines = SNIPPET.split("\n");
+  return (
+    <div className="glass-strong overflow-hidden rounded-[26px]">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+        <div className="flex gap-1.5">
+          <span className="h-3 w-3 rounded-full bg-white/15" />
+          <span className="h-3 w-3 rounded-full bg-white/15" />
+          <span className="h-3 w-3 rounded-full bg-white/15" />
+        </div>
+        <span className="font-mono text-[11px] text-fg-3">show.ts</span>
+        <button
+          onClick={() => {
+            navigator.clipboard?.writeText(SNIPPET);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
+          className="flex items-center gap-1 font-mono text-[11px] text-fg-3 hover:text-fg"
+        >
+          {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? "đã chép" : "chép"}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-[1.75]" data-lenis-prevent>
+        {lines.map((l, i) => (
+          <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 + i * 0.05 }} className="whitespace-pre">
+            <span className="mr-4 inline-block w-4 select-none text-right text-white/15">{i + 1}</span>
+            <span className="text-fg/85" dangerouslySetInnerHTML={{ __html: highlight(l) || " " }} />
+          </motion.div>
+        ))}
+      </pre>
+      <div className="border-t border-white/[0.06] px-5 py-3 font-mono text-[11px] text-fg-3">Bản xem trước API · đăng ký truy cập sớm bên dưới</div>
+    </div>
+  );
+}
+
+const EVENTS = [
+  ["commentary.line", "gambit: “THÍ XE! KHÔNG AI CẢN NỔI!”"],
+  ["chaos.played", "fog · bởi viewer_2841 · 50c"],
+  ["clip.ready", "clip_9f2a · 0:15 · 9:16"],
+  ["court.verdict", "case_0427 · có tội 68%"],
+  ["royale.eliminated", "round 3 · KnightPro89"],
+  ["commentary.line", "zugzwang: “−2,4. Đúng như dự đoán.”"],
+];
+
+function EventStream() {
+  const [items, setItems] = useState<{ k: number; e: (typeof EVENTS)[number]; t: string }[]>([]);
+  useEffect(() => {
+    let k = 0;
+    const push = () => {
+      const d = new Date();
+      setItems((s) => [{ k: k++, e: EVENTS[k % EVENTS.length], t: d.toLocaleTimeString("vi-VN") }, ...s].slice(0, 6));
+    };
+    push();
+    const t = setInterval(push, 1600);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div className="glass-strong h-[340px] overflow-hidden rounded-[26px] p-4 font-mono text-[12px]">
+      <div className="mb-3 flex items-center gap-2 text-fg-3">
+        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-teal" /> webhook · POST /your-endpoint
+      </div>
+      <div className="space-y-2">
+        <AnimatePresence initial={false}>
+          {items.map((it) => (
+            <motion.div key={it.k} layout initial={{ opacity: 0, y: -12, filter: "blur(6px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} exit={{ opacity: 0 }} className="flex items-start gap-3 rounded-xl bg-white/[0.03] px-3 py-2">
+              <span className="text-fg-3">{it.t}</span>
+              <span className="text-violet">{it.e[0]}</span>
+              <span className="truncate text-fg-2">{it.e[1]}</span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+const ICONS = { sponsor: Megaphone, api: Code2, enterprise: Building2 } as const;
+
+function Offerings() {
+  const [tab, setTab] = useState(1);
+  const p = B2B_PLANS[tab];
+  const Icon = ICONS[p.id as keyof typeof ICONS];
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2" role="tablist">
+        {B2B_PLANS.map((b, i) => (
+          <button key={b.id} role="tab" aria-selected={tab === i} onClick={() => setTab(i)} className={cn("relative rounded-full px-5 py-2.5 text-[14px] transition-colors", tab === i ? "text-void" : "text-fg-2 hover:text-fg")}>
+            {tab === i && <motion.span layoutId="b2b-pill" className="absolute inset-0 rounded-full bg-fg" transition={{ type: "spring", stiffness: 400, damping: 32 }} />}
+            {tab !== i && <span className="absolute inset-0 rounded-full border border-white/10" />}
+            <span className="relative">{b.name}</span>
+          </button>
+        ))}
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div key={p.id} initial={{ opacity: 0, y: 16, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }} exit={{ opacity: 0, y: -10, filter: "blur(8px)" }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="mt-6">
+          <Spotlight className="grid gap-8 p-7 md:grid-cols-[1.1fr_1fr] md:p-10">
+            <div>
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#8b7cff,#3ee6e0)] text-void">
+                <Icon size={22} />
+              </span>
+              <div className="display mt-6 text-4xl">{p.name}</div>
+              <p className="mt-3 max-w-md text-[16px] leading-relaxed text-fg-2">{p.description}</p>
+              <div className="mt-8 flex items-end gap-2">
+                <span className="display text-5xl">{p.price}</span>
+                <span className="pb-2 text-fg-3">{p.unit}</span>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <ul className="flex-1 space-y-4">
+                {p.features.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-[15.5px] text-fg-2">
+                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/[0.07]">
+                      <Check size={12} strokeWidth={3} className="text-teal" />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a href="#contact" className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-fg font-medium text-void transition-transform active:scale-95">
+                {p.cta} <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </Spotlight>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export function PartnersView() {
-  const [copied, setCopied] = useState(false);
   return (
     <>
-      <PageHero label="Đối tác · B2B" title="Lớp giải trí" accent="cho mọi bàn cờ." aside={<BrandedBoard />}>
-        Thương hiệu tài trợ giải đấu với host AI mang giọng riêng. Nền tảng cờ vua tích hợp bình luận AI, Chaos Cards và clip viral chỉ bằng vài dòng code.
+      <PageHero kicker="Đối tác & API" title="Đưa *sân khấu* tới nền tảng của bạn." tone="teal" aside={<CodeWindow />}>
+        Thương hiệu tài trợ giải đấu với host AI mang giọng riêng. Nền tảng cờ vua tích hợp bình luận AI, Chaos Cards và clip tự động chỉ với vài dòng code.
       </PageHero>
 
-      <section className="container-x py-10">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {[
-            [3, "nguồn doanh thu B2B"],
-            [99.9, "% SLA cho gói API"],
-            [24, "giờ để tích hợp bản thử"],
-            [5, "loại webhook sự kiện"],
-          ].map(([n, l]) => (
-            <Reveal key={l as string}>
-              <div className="rounded-[24px] border border-cream/10 bg-ink-2 p-6">
-                <div className="font-display text-5xl font-bold text-lime">
-                  <Counter to={n as number} format={(v) => (Number.isInteger(n) ? Math.round(v).toString() : v.toFixed(1))} />
-                </div>
-                <div className="mt-1 text-sm text-cream/55">{l}</div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+      <section className="shell py-20">
+        <Kicker tone="teal">Cách hợp tác</Kicker>
+        <Words text="Ba cách để *cùng tạo kịch tính.*" className="display mb-10 mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]" />
+        <Offerings />
       </section>
 
-      <section className="container-x py-20">
-        <SectionLabel>Gói doanh nghiệp</SectionLabel>
-        <h2 className="mt-3 max-w-3xl font-display text-5xl font-bold uppercase leading-[0.95] md:text-7xl">Chọn cách bạn chơi cùng ChessCast</h2>
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {B2B_PLANS.map((p, i) => (
-            <Reveal key={p.id} delay={i * 0.1}>
-              <Tilt max={6} className="rounded-[28px]">
-                <div className={cn("flex h-full flex-col rounded-[28px] border p-7", i === 1 ? "border-lime/60 bg-gradient-to-b from-lime/10 to-ink-2" : "border-cream/10 bg-ink-2")}>
-                  <div className="font-display text-3xl font-bold uppercase">{p.name}</div>
-                  <div className="mt-4 flex items-end gap-1">
-                    <span className="font-display text-5xl font-bold">{p.price}</span>
-                    <span className="pb-1 text-sm text-cream/50">{p.unit}</span>
-                  </div>
-                  <p className="mt-3 text-cream/60">{p.description}</p>
-                  <ul className="mt-6 flex-1 space-y-3">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-[15px] text-cream/80">
-                        <Check size={16} className="mt-1 shrink-0 text-lime" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href="#contact" className={cn("mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full font-semibold transition-transform active:scale-95", i === 1 ? "bg-lime text-ink" : "border border-cream/20 hover:border-lime hover:text-lime")}>
-                    {p.cta} <ArrowUpRight size={16} />
-                  </a>
-                </div>
-              </Tilt>
-            </Reveal>
-          ))}
+      <section id="api" className="shell grid scroll-mt-28 items-center gap-12 py-24 lg:grid-cols-2">
+        <div>
+          <Kicker>Webhook thời gian thực</Kicker>
+          <Words text="Mọi khoảnh khắc là *một sự kiện.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" />
+          <p className="mt-5 max-w-md text-[16px] leading-relaxed text-fg-2">Bình luận, Chaos Cards, clip, phán quyết Court, loại khỏi Royale — tất cả được đẩy tới hệ thống của bạn ngay khi xảy ra, kèm SLA 99,9% cho gói API.</p>
         </div>
+        <EventStream />
       </section>
 
-      <section id="api" className="container-x scroll-mt-28 py-20">
-        <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.3fr]">
-          <div>
-            <SectionLabel>License / API</SectionLabel>
-            <h2 className="mt-3 font-display text-5xl font-bold uppercase leading-[0.95] md:text-6xl">
-              Ba bước. <span className="text-lime">Một show.</span>
-            </h2>
-            <p className="mt-4 text-cream/60">SDK cho web và mobile, REST API và webhook. Bạn giữ người chơi, chúng tôi mang kịch tính tới bàn cờ của bạn.</p>
-            <div className="mt-6 space-y-2">
-              {EVENTS.map((e, i) => (
-                <motion.div
-                  key={e}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.06 }}
-                  className="flex items-center gap-3 rounded-xl bg-ink-2 px-4 py-2.5 font-mono text-sm"
-                >
-                  <Webhook size={14} className="text-lime" /> {e}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-          <Reveal>
-            <div className="overflow-hidden rounded-[24px] border border-cream/10 bg-[#0d0e12] shadow-2xl">
-              <div className="flex items-center justify-between border-b border-cream/10 px-4 py-3">
-                <div className="flex gap-1.5">
-                  <span className="h-3 w-3 rounded-full bg-pink" />
-                  <span className="h-3 w-3 rounded-full bg-[#ffd23c]" />
-                  <span className="h-3 w-3 rounded-full bg-lime" />
-                </div>
-                <span className="font-mono text-xs text-cream/40">show.ts</span>
-                <button
-                  onClick={() => {
-                    navigator.clipboard?.writeText(SNIPPET);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1500);
-                  }}
-                  className="flex items-center gap-1 text-xs text-cream/50 hover:text-lime"
-                >
-                  {copied ? <Check size={13} /> : <Copy size={13} />} {copied ? "Đã chép" : "Chép"}
-                </button>
-              </div>
-              <pre className="overflow-x-auto p-5 text-[13px] leading-relaxed" data-lenis-prevent>
-                <code>
-                  {SNIPPET.split("\n").map((line, i) => (
-                    <div key={i} className="whitespace-pre">
-                      <span className="mr-4 inline-block w-5 select-none text-right text-cream/20">{i + 1}</span>
-                      <span
-                        className={cn(
-                          line.trim().startsWith("//") ? "text-cream/35" : "text-cream/85",
-                        )}
-                        dangerouslySetInnerHTML={{
-                          __html: line.trim().startsWith("//")
-                            ? line.replace(/</g, "&lt;")
-                            : line
-                                .replace(/</g, "&lt;")
-                                .replace(/("[^"]*")/g, '<span style="color:#d8ff3c">$1</span>')
-                                .replace(/\b(import|from|const|await|new)\b/g, '<span style="color:#ff4d6a">$1</span>')
-                                .replace(/\b(on|create)\b(?=\()/g, '<span style="color:#48e5ff">$1</span>'),
-                        }}
-                      />
-                    </div>
-                  ))}
-                </code>
-              </pre>
-              <div className="border-t border-cream/10 px-5 py-3 text-xs text-cream/40">Bản xem trước API — đăng ký truy cập sớm qua form liên hệ bên dưới.</div>
-            </div>
-          </Reveal>
+      <section id="contact" className="shell grid scroll-mt-28 gap-12 py-24 lg:grid-cols-[1fr_1.3fr]">
+        <div>
+          <Kicker tone="ember">Liên hệ</Kicker>
+          <Words text="Kể cho chúng tôi *về sân khấu của bạn.*" className="display mt-5 text-[clamp(2.2rem,4.4vw,3.6rem)]" accentClass="serif-accent text-ember" />
+          <p className="mt-5 max-w-md text-fg-2">Giải đấu, nền tảng hay thương hiệu — bản demo tuỳ biến sẵn sàng trong 24 giờ.</p>
         </div>
-      </section>
-
-      <section id="contact" className="container-x scroll-mt-28 py-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
-          <div>
-            <SectionLabel>Liên hệ</SectionLabel>
-            <h2 className="mt-3 font-display text-5xl font-bold uppercase leading-[0.95] md:text-6xl">
-              Cùng tạo <span className="text-pink">kịch tính.</span>
-            </h2>
-            <p className="mt-4 text-cream/60">Kể cho chúng tôi về giải đấu, nền tảng hay thương hiệu của bạn. Bản demo tùy biến sẵn sàng trong 24 giờ.</p>
-          </div>
-          <ContactForm topics={["Tài trợ giải đấu", "License / API", "Enterprise", "Khác"]} />
-        </div>
+        <ContactForm topics={["Tài trợ giải đấu", "License / API", "Enterprise", "Khác"]} />
       </section>
     </>
   );
