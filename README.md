@@ -88,7 +88,7 @@ The app deploys to Cloudflare Workers through `@opennextjs/cloudflare` (`npm run
 ## Before going live
 
 - **Payments**: add your Stripe keys and point a webhook at `/api/stripe/webhook`.
-- **Accounts & database**: with Supabase configured, signed-in purchases are credited server-side by the Stripe webhook. Spending coins in the Arena and Court is still deducted in the browser only.
+- **Accounts & database**: with Supabase configured, signed-in purchases are credited server-side by the Stripe webhook. Chaos Cards and tips are charged server-side (`/api/wallet/spend`, priced from the catalog), Court jury rewards are paid once per case (`/api/wallet/court-vote`), and every movement is logged in `coin_ledger`.
 - **Content to confirm**: market figures (labelled as estimates), team details, round size, contact emails in `src/lib/site.ts`, prices in `src/lib/catalog.ts`.
 
 ## Structure

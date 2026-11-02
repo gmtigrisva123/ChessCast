@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Gavel, Scale, ShieldQuestion, Users, Video } from "lucide-react";
 import { useUI, useWallet } from "@/lib/store";
+import { rewardCourtVote } from "@/lib/account";
+import { COURT_VOTE_REWARD } from "@/lib/catalog";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn, formatNum } from "@/lib/utils";
 import type { HostId } from "@/lib/hosts";
@@ -151,9 +153,13 @@ function CaseRoom({ c }: { c: Case }) {
   const pct = Math.round((g / (g + i)) * 100);
   const guilty = pct >= 50;
   const cast = (v: "guilty" | "innocent") => {
+    const first = !votes[c.id];
     vote(c.id, v);
-    credit(5);
-    toast({ title: v === "guilty" ? "You voted: Guilty" : "You voted: Innocent", body: "+5 coins for jury duty.", tone: v === "guilty" ? "pink" : "cyan" });
+    if (first) {
+      credit(COURT_VOTE_REWARD);
+      rewardCourtVote(c.id);
+    }
+    toast({ title: v === "guilty" ? "You voted: Guilty" : "You voted: Innocent", body: first ? `+${COURT_VOTE_REWARD} coins for jury duty.` : "Vote changed.", tone: v === "guilty" ? "pink" : "cyan" });
   };
 
   return (

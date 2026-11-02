@@ -5,7 +5,7 @@ Code đã sẵn sàng. Dưới đây là phần **bạn phải tự làm trên t
 ## 1. Supabase (đăng nhập + database)
 
 1. Vào https://supabase.com/dashboard → **New project** → Region **Southeast Asia (Singapore)**. Lưu mật khẩu database.
-2. **SQL Editor → New query** → dán toàn bộ nội dung file `supabase/migrations/0001_wallets_orders.sql` → **Run**.
+2. **SQL Editor → New query** → dán toàn bộ nội dung file `supabase/migrations/0001_wallets_orders.sql` → **Run**. Sau đó làm tương tự với `supabase/migrations/0002_spend_coins.sql`.
 3. **Authentication → URL Configuration**
    - Site URL: domain thật (vd. `https://chesscast.io`)
    - Redirect URLs: `http://localhost:3000/**`, `http://localhost:8787/**`, `https://*.workers.dev/**`, `https://chesscast.io/**`
@@ -68,4 +68,6 @@ Stripe Dashboard → Developers → Webhooks → **Add endpoint**
 
 - Chưa cấu hình Supabase → site chạy y như cũ (ví lưu trong trình duyệt).
 - Có Supabase → ví hiện nút **Sign in** (magic link qua email). Người đã đăng nhập mua coin thì webhook Stripe cộng coin vào bảng `wallets` (mỗi session chỉ cộng một lần), và ví trên web đồng bộ từ server.
-- Còn lại: coin **tiêu** trong Arena/Court vẫn trừ ở phía trình duyệt; khi tải lại trang, số dư sẽ lấy lại từ server. Muốn chống gian lận hoàn toàn thì cần thêm API trừ coin ở server.
+- Coin **tiêu** (Chaos Card, tip) được trừ ở server qua `POST /api/wallet/spend`. Giá do server tính từ bảng giá và gói của người dùng, không tin số liệu từ trình duyệt; không đủ coin thì server từ chối (402) và số dư hiển thị được sửa lại theo server.
+- Thưởng bỏ phiếu Chess Court (+5) qua `POST /api/wallet/court-vote`, mỗi vụ chỉ thưởng một lần.
+- Mọi biến động coin (ngoài mua Stripe) được ghi vào bảng `coin_ledger`.

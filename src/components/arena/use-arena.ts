@@ -5,7 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { applyMove, piecesFromFen, relocate, swapSquares, type PieceMap } from "@/lib/chess/tracker";
 import { evaluate, pickMove, randomMove, type BotStyle } from "@/lib/chess/engine";
 import { chaosQuake, chaosSwap, fogRows } from "@/lib/chess/chaos";
-import { CHAOS_CARDS, type ChaosCardId } from "@/lib/catalog";
+import { CHAOS_CARDS, chaosCardCost, type ChaosCardId } from "@/lib/catalog";
+import { chargeServer } from "@/lib/account";
 import { commentChaos, commentMove, commentTip, HOSTS, speak, type HostId, type Line } from "@/lib/hosts";
 import { useUI, useWallet } from "@/lib/store";
 import { pick, uid } from "@/lib/utils";
@@ -474,9 +475,7 @@ export function useArena() {
   );
 
   const cardCost = useCallback((id: ChaosCardId) => {
-    const c = CHAOS_CARDS.find((x) => x.id === id)!;
-    const plan = useWallet.getState().plan;
-    return plan === "free" ? c.cost : Math.ceil(c.cost * 0.9);
+    return chaosCardCost(id, useWallet.getState().plan)!;
   }, []);
 
   const playCard = useCallback(
@@ -542,6 +541,7 @@ export function useArena() {
         return false;
       }
       useWallet.getState().spend(cost);
+      chargeServer({ kind: "card", id });
       setFlash((n) => n + 1);
       const user = wallet.username;
       pushChat({ user, color: card.accent, badge: "you", text: `threw ${card.name}!` });
@@ -567,6 +567,7 @@ export function useArena() {
         setWalletOpen(true);
         return false;
       }
+      chargeServer({ kind: "tip", amount, target });
       const targetName = playersRef.current[target].name;
       pushChat({ user: wallet.username, color: "#9ff3ff", badge: "you", text: request?.trim() || `tipped for a roast of ${targetName}`, tip: amount });
       say(commentTip(wallet.username, amount, targetName, request), "tip");
