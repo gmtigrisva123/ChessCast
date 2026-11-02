@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clapperboard, CloudFog, Play } from "lucide-react";
-import { heroSignal } from "../three/hero-scene";
+import { heroSignal } from "../scene-signals";
 import { HOSTS, type HostId } from "@/lib/hosts";
 import { ButtonLink } from "../ui/button";
 import { HostOrb, VoiceBars } from "../ui/orb";

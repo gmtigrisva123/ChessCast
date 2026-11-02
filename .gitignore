@@ -9,3 +9,14 @@ next-env.d.ts
 .DS_Store
 npm-debug.log*
 .vercel
+
+# Cloudflare / OpenNext
+.open-next
+.wrangler
+.dev.vars
+
+# cf-build.mjs parks the dev env file here while building
+.env.development.local.build-hidden
+
+# Supabase CLI scratch
+supabase/.temp

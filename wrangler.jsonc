@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "chesscast",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    // Self-reference binding used by OpenNext for caching; must match "name".
+    { "binding": "WORKER_SELF_REFERENCE", "service": "chesscast" }
+  ],
+  "observability": { "enabled": true }
+  // Secrets (STRIPE_SECRET_KEY, SUPABASE_SECRET_KEY, ...) are set with
+  // `npx wrangler secret put <NAME>`, never written here.
+}

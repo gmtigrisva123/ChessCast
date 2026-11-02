@@ -9,9 +9,9 @@ import type { PieceSymbol } from "chess.js";
 import { AuroraBackdrop, StageLights } from "./stage";
 import { getGlassMaterial, getPieceGeometries, getPieceMaterials } from "./pieces";
 import { pinnedHighQuality, pinnedLowQuality } from "@/lib/quality";
+import { heroSignal } from "../scene-signals";
 
 /** Signals shared between the DOM and the 3D scene (no React re-renders). */
-export const heroSignal = { progress: 0, mx: 0, my: 0 };
 
 const ORBIT: { type: PieceSymbol; color: "w" | "b" }[] = [
   { type: "q", color: "w" },

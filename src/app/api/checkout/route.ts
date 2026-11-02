@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { CURRENCY, getStripe, resolveItem, siteUrl, type CheckoutRequest } from "@/lib/payments";
+import { getUserId } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
   let body: CheckoutRequest;
@@ -18,6 +19,7 @@ export async function POST(req: Request) {
   }
 
   const base = siteUrl(req.url);
+  const userId = await getUserId();
   try {
     const session = await stripe.checkout.sessions.create({
       mode: item.mode,
@@ -35,7 +37,8 @@ export async function POST(req: Request) {
           },
         },
       ],
-      metadata: { kind: item.kind, id: item.id, cycle: item.cycle ?? "", coins: String(item.coins) },
+      ...(userId ? { client_reference_id: userId } : {}),
+      metadata: { kind: item.kind, id: item.id, cycle: item.cycle ?? "", coins: String(item.coins), user_id: userId ?? "" },
       success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/pricing?canceled=1`,
       allow_promotion_codes: true,

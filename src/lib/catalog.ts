@@ -100,6 +100,17 @@ export const CHAOS_CARDS: ChaosCard[] = [
 
 export const TIP_PRESETS = [20, 50, 100, 500] as const;
 
+/** Card price after the 10% member discount (paid plans). Shared by the Arena and the server. */
+export function chaosCardCost(id: ChaosCardId, plan: string): number | null {
+  const c = CHAOS_CARDS.find((x) => x.id === id);
+  if (!c) return null;
+  return plan === "free" ? c.cost : Math.ceil(c.cost * 0.9);
+}
+
+/** Chess Court cases that pay a jury reward (one vote each). Keep in sync with the cases on /court. */
+export const COURT_CASE_IDS = ["c427", "c431", "c436"] as const;
+export const COURT_VOTE_REWARD = 5;
+
 export type CoinPackId = "starter" | "fan" | "chaos" | "overlord";
 export type CoinPack = {
   id: CoinPackId;

@@ -8,9 +8,9 @@ import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 import { getPieceGeometries } from "../three/pieces";
 import { SIMPLEX3 } from "./glsl";
+import { morphSignal } from "../scene-signals";
 
 /** 0..3 — 0 nebula, 1 king, 2 knight, 3 queen. Written by the DOM, read every frame. */
-export const morphSignal = { t: 0, mx: 0, my: 0 };
 
 const VERT = /* glsl */ `
 uniform float uT;

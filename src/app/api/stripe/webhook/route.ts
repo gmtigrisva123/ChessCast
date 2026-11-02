@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { getStripe } from "@/lib/payments";
+import { getStripe, resolveItem } from "@/lib/payments";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
   const stripe = getStripe();
@@ -11,7 +12,8 @@ export async function POST(req: Request) {
   const raw = await req.text();
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(raw, sig ?? "", secret);
+    // Async variant uses Web Crypto, which is what Cloudflare Workers provide.
+    event = await stripe.webhooks.constructEventAsync(raw, sig ?? "", secret);
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
@@ -19,8 +21,33 @@ export async function POST(req: Request) {
   switch (event.type) {
     case "checkout.session.completed": {
       const s = event.data.object as Stripe.Checkout.Session;
-      // TODO(production): persist the order and credit coins to the user account in a database.
-      console.info("[stripe] checkout completed", s.id, s.metadata);
+      const md = s.metadata ?? {};
+      const userId = s.client_reference_id || md.user_id || "";
+      // Re-resolve from the catalog so coin amounts never come from client-controlled data.
+      const item = resolveItem({
+        kind: md.kind as "coin" | "plan",
+        id: md.id ?? "",
+        cycle: (md.cycle || undefined) as "monthly" | "yearly" | undefined,
+      });
+      const db = getSupabaseAdmin();
+      if (!db || !userId || !item) {
+        console.info("[stripe] checkout completed (not credited server-side)", s.id, { signedIn: Boolean(userId), db: Boolean(db) });
+        break;
+      }
+      const { error } = await db.rpc("credit_checkout", {
+        p_user_id: userId,
+        p_session_id: s.id,
+        p_kind: item.kind,
+        p_item_id: item.id,
+        p_cycle: item.cycle ?? "",
+        p_coins: item.coins,
+        p_amount_cents: s.amount_total ?? item.amount,
+      });
+      if (error) {
+        console.error("[stripe] credit failed", s.id, error.message);
+        // 500 makes Stripe retry; credit_checkout is idempotent per session.
+        return NextResponse.json({ error: "Credit failed" }, { status: 500 });
+      }
       break;
     }
     case "customer.subscription.deleted": {

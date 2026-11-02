@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { morphSignal } from "../gl/particle-morph";
+import { morphSignal } from "../scene-signals";
 import { Scramble } from "../ui/scramble";
 
 const ParticleMorph = dynamic(() => import("../gl/particle-morph"), { ssr: false, loading: () => <div className="absolute inset-0 bg-void" /> });

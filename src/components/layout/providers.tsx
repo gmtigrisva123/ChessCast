@@ -8,6 +8,7 @@ import { Cursor } from "../ui/cursor";
 import { Toaster } from "../commerce/toaster";
 import { WalletDrawer } from "../commerce/wallet-drawer";
 import { CheckoutModal } from "../commerce/checkout-modal";
+import { AccountSync } from "../commerce/account-sync";
 import { Preloader } from "./preloader";
 import { CommandMenu } from "./command-menu";
 import { liquidSupported } from "../ui/liquid-glass";
@@ -28,6 +29,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <Toaster />
         <WalletDrawer />
         <CheckoutModal />
+        <AccountSync />
         <CommandMenu />
         <div className="grain" aria-hidden />
       </SmoothScroll>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check, Loader2, X } from "lucide-react";
 import { useWallet } from "@/lib/store";
+import { useAccount } from "@/lib/account";
 import { ButtonLink } from "@/components/ui/button";
 import { formatNum } from "@/lib/utils";
 
@@ -25,6 +26,14 @@ export function SuccessView() {
       .then((j: { paid?: boolean; item?: Item }) => {
         if (!j.paid || !j.item) throw new Error();
         const w = useWallet.getState();
+        if (useAccount.getState().email !== null) {
+          // Signed in: the webhook credits the account; pull the server wallet (twice, in case the webhook is a beat behind).
+          useAccount.getState().refresh();
+          setTimeout(() => useAccount.getState().refresh(), 4000);
+          setItem(j.item);
+          setState("ok");
+          return;
+        }
         w.purchase({ label: j.item.label, amount: j.item.amount, coins: j.item.coins, provider: "stripe" }, sessionId);
         if (j.item.kind === "plan") w.setPlan(j.item.id as "pro" | "lord", j.item.cycle ?? "monthly");
         setItem(j.item);
