@@ -14,3 +14,9 @@ npm-debug.log*
 .open-next
 .wrangler
 .dev.vars
+
+# cf-build.mjs parks the dev env file here while building
+.env.development.local.build-hidden
+
+# Supabase CLI scratch
+supabase/.temp

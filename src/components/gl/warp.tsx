@@ -4,9 +4,9 @@ import * as THREE from "three";
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { FULLSCREEN_VERT } from "./glsl";
+import { warpSignal } from "../scene-signals";
 
 /** Speed multiplier written by the DOM (scroll velocity). */
-export const warpSignal = { speed: 0 };
 
 const FRAG = /* glsl */ `
 precision highp float;

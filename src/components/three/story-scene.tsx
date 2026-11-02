@@ -11,8 +11,8 @@ import { getGlassMaterial } from "./pieces";
 import { applyMove, piecesFromFen } from "@/lib/chess/tracker";
 import { evaluate } from "@/lib/chess/engine";
 import { commentMove, HOSTS, type HostId, type Line } from "@/lib/hosts";
+import { storySignal } from "../scene-signals";
 
-export const storySignal = { progress: 0, speaking: null as HostId | null };
 
 const SCRIPT = [
   "e4", "e5", "Nf3", "d6", "d4", "Bg4", "dxe5", "Bxf3", "Qxf3", "dxe5", "Bc4", "Nf6", "Qb3", "Qe7",

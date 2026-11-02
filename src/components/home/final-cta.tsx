@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Play } from "lucide-react";
 import { ButtonLink } from "../ui/button";
 import { ProximityText } from "../ui/proximity-text";
-import { warpSignal } from "../gl/warp";
+import { warpSignal } from "../scene-signals";
 
 const Warp = dynamic(() => import("../gl/warp"), { ssr: false, loading: () => <div className="absolute inset-0 bg-void" /> });
 

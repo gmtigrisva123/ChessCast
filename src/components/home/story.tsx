@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { CloudFog, Heart, MessageCircle, Send } from "lucide-react";
-import { storySignal } from "../three/story-scene";
+import { storySignal } from "../scene-signals";
 import { HOSTS, type Line } from "@/lib/hosts";
 import { HostOrb, VoiceBars } from "../ui/orb";
 import { Kicker } from "../ui/section";
