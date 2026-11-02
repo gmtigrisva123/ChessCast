@@ -3,8 +3,9 @@
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useEffect } from "react";
-import { Clapperboard, Crown, Receipt, Trash2, X } from "lucide-react";
+import { Clapperboard, Crown, LogIn, LogOut, Receipt, Trash2, X } from "lucide-react";
 import { useUI, useWallet } from "@/lib/store";
+import { useAccount } from "@/lib/account";
 import { PLANS } from "@/lib/catalog";
 import { formatMoney, formatNum } from "@/lib/utils";
 import { Coin } from "./coin";
@@ -14,7 +15,8 @@ export function WalletDrawer() {
   const open = useUI((s) => s.walletOpen);
   const setOpen = useUI((s) => s.setWalletOpen);
   const w = useWallet();
-  const plan = PLANS.find((p) => p.id === w.plan)!;
+  const plan = PLANS.find((p) => p.id === w.plan) ?? PLANS[0];
+  const account = useAccount();
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -73,6 +75,27 @@ export function WalletDrawer() {
                   Use in the Arena
                 </ButtonLink>
               </div>
+              {account.enabled && (
+                <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 text-[13px]">
+                  {account.email !== null ? (
+                    <>
+                      <span className="min-w-0 truncate text-fg-2">
+                        Synced to <b className="text-fg">{account.email}</b>
+                      </span>
+                      <button onClick={() => account.signOut()} className="flex shrink-0 items-center gap-1.5 text-fg-3 hover:text-fg">
+                        <LogOut size={14} /> Sign out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-fg-2">Sign in to keep your coins on every device.</span>
+                      <Link href="/login" onClick={() => setOpen(false)} className="flex shrink-0 items-center gap-1.5 text-violet hover:underline">
+                        <LogIn size={14} /> Sign in
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
               <div className="mt-5 flex items-center justify-between rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
                 <div className="flex items-center gap-3">
                   <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet/15 text-violet">

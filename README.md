@@ -78,11 +78,17 @@ Copy `.env.example` to `.env.local` and fill in:
 | `NEXT_PUBLIC_SITE_URL` | When deployed | Base URL Stripe redirects back to. |
 | `ANTHROPIC_API_KEY` | Optional | Live AI commentary in the Arena (`/api/commentary`). |
 | `RESEND_API_KEY`, `CONTACT_TO_EMAIL` | Optional | Sends contact / waitlist emails. Empty = log only. |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Optional | Sign-in and a server-side wallet. Empty = wallet stays in the browser. |
+| `SUPABASE_SECRET_KEY` | With Supabase | Server only. Lets the Stripe webhook credit coins. |
+
+## Deploy (Cloudflare Workers + Supabase)
+
+The app deploys to Cloudflare Workers through `@opennextjs/cloudflare` (`npm run preview`, `npm run deploy`). The database schema is in `supabase/migrations/`. Step-by-step setup: [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ## Before going live
 
 - **Payments**: add your Stripe keys and point a webhook at `/api/stripe/webhook`.
-- **Accounts & database**: the coin wallet currently lives in the browser (`localStorage`) so the whole flow can be demoed. Production needs sign-in plus a database so the webhook credits coins server-side (the hook-up points are marked `TODO(production)`).
+- **Accounts & database**: with Supabase configured, signed-in purchases are credited server-side by the Stripe webhook. Spending coins in the Arena and Court is still deducted in the browser only.
 - **Content to confirm**: market figures (labelled as estimates), team details, round size, contact emails in `src/lib/site.ts`, prices in `src/lib/catalog.ts`.
 
 ## Structure
